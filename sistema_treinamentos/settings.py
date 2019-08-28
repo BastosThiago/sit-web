@@ -76,22 +76,11 @@ WSGI_APPLICATION = 'sistema_treinamentos.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'sistema_treinamentos',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
-else:
-    default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
-    DATABASES = {
-        'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
-    }
+
+default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+DATABASES = {
+    'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
