@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'treinamentos'
+    'core',
+    'crispy_forms',  # aplicação instalada através de pip install django-crispy-forms
+    'accounts',      # aplicação de contas de usuário
 ]
 
 MIDDLEWARE = [
@@ -58,7 +60,7 @@ ROOT_URLCONF = 'sistema_treinamentos.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], #adicionado o conteúdo desse dicionário para os templates criados de login
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,5 +121,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = 'media'
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [
+    'statics',
+]
+
 STATIC_URL = '/static/'
+
+# instalado através de: pip install django-crispy-forms
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_REDIRECT_URL = '/' #informa ao Django para qual URL a operação de login deve levar o usuário
+
+LOGOUT_REDIRECT_URL = '/accounts/login' #informa ao Django para qual URL a operação de logout deve levar o usuário
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+

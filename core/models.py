@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from sistema_treinamentos.settings import AUTH_USER_MODEL
 
 from .fields import OrderField
 
@@ -30,7 +30,7 @@ class Inscricao(models.Model):
         ('REPROVADO', 'REPROVADO'),
     ]
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     percentual_andamento = models.DecimalField(max_digits=10, decimal_places=1)
     percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1)
     situacao = models.CharField(max_length=12, choices=SITUACOES, default='EM ANDAMENTO')
@@ -55,7 +55,7 @@ class Avaliacao(models.Model):
         (5, '5'),
     ]
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     nota = models.IntegerField(choices=NOTAS)
     comentario = models.TextField()
     data_inscricao = models.DateTimeField(auto_now_add=True)
@@ -114,7 +114,7 @@ class Arquivo(models.Model):
 
 
 class UsuarioVideo(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     acessado = models.BooleanField()
     data_acesso = models.DateTimeField(auto_now=True)
@@ -142,7 +142,7 @@ class Questionario(models.Model):
 
 
 class UsuarioQuestionario(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1)
     data_execucao = models.DateTimeField(auto_now=True)
@@ -185,7 +185,7 @@ class Alternativa(models.Model):
 
 
 class UsuarioResposta(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
     alternativa = models.ForeignKey(Alternativa, on_delete=models.CASCADE)
 

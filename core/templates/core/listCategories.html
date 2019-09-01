@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %} Lista de {{titulo_pagina}} {% endblock %}
+
+{% block content %}
+<div class="offset-1 col-10 list-div">
+    <h1>{{titulo_pagina}}</h1>
+    <a id="add-link" href="nova-categoria/">
+        <div class="col-4 add-div">
+            <i class="fas fa-plus"></i> Adicionar
+        </div>
+    </a>
+    <div class="col-12 search-div">
+        <form method="GET" id="search-form">
+            <input class="form-control" type="text" id="search" name="search"
+                   placeholder="Digite um nome para buscar"
+                   value="{{ request.GET.search }}">
+            <i class="fas fa-search" id="search-btn"></i>
+        </form>
+    </div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li
+                    {% if message.tags %}
+                        class="alert alert-{{message.tags }}"
+                    {% endif %}
+                >
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <ul class="itens-lista">
+        {% for item in itens %}
+            <li class="item-lista">
+                <span><a href="/edita-{{nome_item}}/{{item.id}}">{{ item.nome }}</a></span>
+                <a href="remove-{{nome_item}}/{{ item.id }}" class="delete-btn"><span><i class="fas fa-trash"></i></span></a>
+                <a href="edita-{{nome_item}}/{{ item.id }}"><span><i class="fas fa-edit"></i></span></a>
+            </li>
+        {% endfor %}
+
+    </ul>
+
+    <div class="pagination">
+        <span class="step-links">
+            <span>
+                {% if itens.has_previous %}
+                    <a href="?page={{ itens.previous_page_number }}"><i class="fas fa-arrow-left"></i></a>
+                {% endif %}
+
+
+                {% if itens.paginator.num_pages %}
+                <span class="current">
+                    {{ itens.number }} de {{ itens.paginator.num_pages }}
+                </span>
+                {% endif %}
+
+                {% if itens.has_next %}
+                    <a href="?page={{ itens.next_page_number }}"><i class="fas fa-arrow-right"></i></a>
+                {% endif %}
+            </span>
+        </span>
+    </div>
+</div>
+{% endblock %}
