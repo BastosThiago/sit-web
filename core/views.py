@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from .forms import *
+from django.apps import apps
 
 # Create your views here.
 
@@ -16,73 +17,120 @@ class Home(TemplateView):
 
 @login_required
 def categoriasListView(request):
+    """
+    View responsável pelo tratamento de obtenção da lista de Categorias e retorna-las para o template associado
+    """
+
+    tituloPagina = Categoria._meta.verbose_name_plural
+    nomeObjeto = Categoria._meta.verbose_name_plural.lower()
 
     search = request.GET.get('search')
 
     if search:
 
-        categorias = Categoria.objects.filter(nome__icontains=search)
+        objetos = Categoria.objects.filter(nome__icontains=search)
 
     else:
-        categorias_list = Categoria.objects.all().order_by('nome')
+        listaObjetos = Categoria.objects.all().order_by('nome')
 
-        paginator = Paginator(categorias_list, 5)
+        paginator = Paginator(listaObjetos, 5)
 
         page = request.GET.get('page')
 
-        categorias = paginator.get_page(page)
+        objetos = paginator.get_page(page)
 
-    return render(request,
-                  'core/listCategories.html',
-                  {'itens': categorias,
-                   'titulo_pagina':'Categorias',
-                   'nome_item': 'categoria'
-                   })
+    return render(
+        request,
+        'core/listaObjetos.html',
+        {
+            'objetos': objetos,
+            'tituloPagina': tituloPagina,
+            'nomeObjeto': nomeObjeto
+        }
+    )
 
 
+@login_required
 def novaCategoriaView(request):
+    """
+    View responsável pelo tratamento de adição de uma nova Categoria
+    """
+
+    tituloPagina = 'Adicione uma nova Categoria de curso'
+
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
 
         if form.is_valid():
-            categoria = form.save(commit=False)
-            categoria.save()
-            return redirect('lista-categorias')
+            objeto = form.save(commit=False)
+            objeto.save()
+            return redirect(
+                'lista-categorias'
+            )
     else:
         form = CategoriaForm()
 
-    return render(request,
-                  'core/addCategory.html',
-                  {'form': form,
-                   'titulo_pagina': 'Adicione uma Categoria de curso'
-                  })
+    return render(
+        request,
+        'core/adicionaObjeto.html',
+        {
+            'form': form,
+            tituloPagina: tituloPagina
+        }
+    )
 
-
-def editaCategoria(request, id): # Edita uma categoria já existente
-
-    categoria = get_object_or_404(Categoria, pk=id)
-    form = CategoriaForm(instance=categoria)
-
-    if request.method == 'POST':
-        form = CategoriaForm(request.POST, instance=categoria)
-
-        if(form.is_valid()):
-            categoria.save()
-            return redirect('lista-categorias')
-        else:
-            return render(request,
-                          'core/editCategory.html',
-                          {'form': form,
-                           'task': categoria,
-                           'titulo_pagina': 'Edite uma Categoria de curso'
-                           })
-    else:
-        return render(request, 'core/editCategory.html', {'form': form, 'task': categoria})
 
 @login_required
-def removeCategoriaView(request, id): # Remove uma tarefa do banco de dados de acordo com o id da mesma fornecido na requisição
-    categoria = get_object_or_404(Categoria, pk=id)
-    categoria.delete()
+def editaCategoriaView(request, id):
+    """
+    View responsável pelo tratamento de edição de uma Categoria existente
+    """
 
-    messages.info(request, 'Categoria removida com sucesso')
-    return redirect('lista-categorias')
+    tituloPagina = 'Edite uma Categoria de curso'
+
+    objeto = get_object_or_404(Categoria, pk=id)
+    form = CategoriaForm(instance=objeto)
+
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST, instance=objeto)
+
+        if(form.is_valid()):
+            objeto.save()
+            return redirect(
+                'lista-categorias'
+            )
+        else:
+            return render(
+                request,
+                'core/editaObjeto.html',
+                {'form': form,
+                 tituloPagina: tituloPagina
+                }
+            )
+    else:
+        return render(
+            request,
+            'core/editaObjeto.html',
+            {
+                'form': form,
+            }
+        )
+
+
+@login_required
+def removeCategoriaView(request, id):
+    """
+    View responsável pelo tratamento de remoção de uma Categoria
+    """
+
+    objeto = get_object_or_404(Categoria, pk=id)
+    objeto.delete()
+
+    messages.info(
+        request,
+        'Categoria removida com sucesso'
+    )
+
+    return redirect(
+        'lista-categorias'
+    )

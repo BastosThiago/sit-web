@@ -2,11 +2,11 @@
 
 {% load crispy_forms_tags %}
 
-{% block title %}{{titulo_pagina}}{%endblock %}
+{% block title %}{{tituloPagina}}{%endblock %}
 
 {% block content %}
 <div class="offset-1 col-10 list-div">
-    <h1>{{titulo_pagina}}</h1>
+    <h1>{{tituloPagina}}</h1>
     <form method="POST">
         {% csrf_token %}
         {{ form | crispy }}

@@ -22,6 +22,7 @@ urlpatterns = [
     path('', Home.as_view()),
     path('categorias', categoriasListView, name='lista-categorias'), # url raiz leva para lista de tarefas
     path('nova-categoria/', novaCategoriaView, name='nova-categoria'),        # url que apresenta um template para criação de uma nova tarefa
-    path('edita-categoria/<int:id>', editaCategoria, name='edita-categoria'), # url que apresenta as informações de uma tarefa já existente para edição
+    path('edita-categoria/<int:id>', editaCategoriaView, name='edita-categoria'), # url que apresenta as informações de uma tarefa já existente para edição
     path('remove-categoria/<int:id>', removeCategoriaView, name='remove-categoria'),
+
 ]+ static(STATIC_URL, document_root=STATIC_ROOT)

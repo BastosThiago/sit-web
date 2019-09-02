@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %} Lista de {{titulo_pagina}} {% endblock %}
+{% block title %} Lista de {{tituloPagina}} {% endblock %}
 
 {% block content %}
 <div class="offset-1 col-10 list-div">
-    <h1>{{titulo_pagina}}</h1>
+    <h1>{{tituloPagina}}</h1>
     <a id="add-link" href="nova-categoria/">
         <div class="col-4 add-div">
             <i class="fas fa-plus"></i> Adicionar
@@ -33,11 +33,11 @@
     {% endif %}
 
     <ul class="itens-lista">
-        {% for item in itens %}
+        {% for objeto in objetos %}
             <li class="item-lista">
-                <span><a href="/edita-{{nome_item}}/{{item.id}}">{{ item.nome }}</a></span>
-                <a href="remove-{{nome_item}}/{{ item.id }}" class="delete-btn"><span><i class="fas fa-trash"></i></span></a>
-                <a href="edita-{{nome_item}}/{{ item.id }}"><span><i class="fas fa-edit"></i></span></a>
+                <span><a href="/edita-{{nome_item}}/{{objeto.id}}">{{ objeto.nome }}</a></span>
+                <a href="remove-{{nomeObjeto}}/{{ objeto.id }}" class="delete-btn"><span><i class="fas fa-trash"></i></span></a>
+                <a href="edita-{{nomeObjeto}}/{{ objeto.id }}"><span><i class="fas fa-edit"></i></span></a>
             </li>
         {% endfor %}
 
@@ -46,19 +46,19 @@
     <div class="pagination">
         <span class="step-links">
             <span>
-                {% if itens.has_previous %}
-                    <a href="?page={{ itens.previous_page_number }}"><i class="fas fa-arrow-left"></i></a>
+                {% if objetos.has_previous %}
+                    <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-arrow-left"></i></a>
                 {% endif %}
 
 
-                {% if itens.paginator.num_pages %}
+                {% if objetos.paginator.num_pages %}
                 <span class="current">
-                    {{ itens.number }} de {{ itens.paginator.num_pages }}
+                    {{ objetos.number }} de {{ objetos.paginator.num_pages }}
                 </span>
                 {% endif %}
 
-                {% if itens.has_next %}
-                    <a href="?page={{ itens.next_page_number }}"><i class="fas fa-arrow-right"></i></a>
+                {% if objetos.has_next %}
+                    <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-arrow-right"></i></a>
                 {% endif %}
             </span>
         </span>

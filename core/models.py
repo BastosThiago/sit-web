@@ -7,6 +7,10 @@ from .fields import OrderField
 class Categoria(models.Model):
     nome = models.CharField(max_length=200)
 
+    class Meta:
+        verbose_name = "Categoria"
+        verbose_name_plural = "Categorias"
+
     def __str__(self):
         return self.nome
 
@@ -18,6 +22,10 @@ class Curso(models.Model):
     palavras_chaves = models.CharField(max_length=150, null=True, blank=True)
     descricao = models.TextField(max_length=150, null=True, blank=True)
     publicado = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Curso"
+        verbose_name_plural = "Cursos"
 
     def __str__(self):
         return self.nome
@@ -77,6 +85,8 @@ class Unidade(models.Model):
     ordem = OrderField(blank=True, for_fields=['curso'])
 
     class Meta:
+        verbose_name = "Unidade"
+        verbose_name_plural = "Unidades"
         ordering = ['ordem']
         unique_together = (('titulo', 'curso'), ('curso', 'ordem'),)
 
@@ -92,6 +102,7 @@ class Video(models.Model):
 
     class Meta:
         verbose_name = "Vídeo"
+        verbose_name_plural = "Vídeos"
         ordering = ['ordem']
         unique_together = (('titulo', 'unidade'), ('unidade', 'ordem'),)
 
@@ -106,6 +117,8 @@ class Arquivo(models.Model):
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:
+        verbose_name = "Arquivo"
+        verbose_name_plural = "Arquivos"
         ordering = ['ordem']
         unique_together = (('titulo', 'unidade'), ('unidade', 'ordem'),)
 
@@ -176,8 +189,9 @@ class Alternativa(models.Model):
     correta = models.BooleanField()
 
     class Meta:
+        verbose_name = "Alternativa"
+        verbose_name_plural = "Alternativas"
         ordering = ['ordem']
-
         unique_together = (('descricao', 'questao'), ('questao', 'ordem'),)
 
     def __str__(self):
