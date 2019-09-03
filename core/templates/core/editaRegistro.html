@@ -2,15 +2,15 @@
 
 {% load crispy_forms_tags %}
 
-{% block title %}{{tituloPagina}}{% endblock %}
+{% block title %}{{tituloPagina}}{%endblock %}
 
 {% block content %}
 <div class="offset-1 col-10 list-div">
-    <h1>{{tituloPagina}}</h1>
+    <h2>{{tituloPagina}}</h2>
     <form method="POST">
         {% csrf_token %}
         {{ form | crispy }}
-        <input type="submit" class="btn btn-success" value="Criar">
+        <input type="submit" class="btn btn-success" value="Confirmar alterações">
     </form>
 </div>
 {% endblock %}

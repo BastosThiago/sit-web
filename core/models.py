@@ -5,18 +5,18 @@ from .fields import OrderField
 
 
 class Categoria(models.Model):
-    nome = models.CharField(max_length=200)
+    titulo = models.CharField(max_length=200)
 
     class Meta:
         verbose_name = "Categoria"
         verbose_name_plural = "Categorias"
 
     def __str__(self):
-        return self.nome
+        return self.titulo
 
 
 class Curso(models.Model):
-    nome = models.CharField(unique=True, max_length=200)
+    titulo = models.CharField(unique=True, max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     nome_instrutor = models.CharField(max_length=150)
     palavras_chaves = models.CharField(max_length=150, null=True, blank=True)
@@ -28,7 +28,7 @@ class Curso(models.Model):
         verbose_name_plural = "Cursos"
 
     def __str__(self):
-        return self.nome
+        return self.titulo
 
 
 class Inscricao(models.Model):
@@ -66,7 +66,7 @@ class Avaliacao(models.Model):
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     nota = models.IntegerField(choices=NOTAS)
     comentario = models.TextField()
-    data_inscricao = models.DateTimeField(auto_now_add=True)
+    data_avaliacao = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Avaliação"
@@ -79,9 +79,8 @@ class Avaliacao(models.Model):
 
 
 class Unidade(models.Model):
-
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     titulo = models.CharField(unique=True, max_length=200)
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['curso'])
 
     class Meta:
@@ -95,8 +94,8 @@ class Unidade(models.Model):
 
 
 class Video(models.Model):
-    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     titulo = models.CharField(unique=True, max_length=200)
+    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     url = models.URLField(max_length=200)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
@@ -111,8 +110,8 @@ class Video(models.Model):
 
 
 class Arquivo(models.Model):
-    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     titulo = models.CharField(unique=True, max_length=200)
+    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     arquivo = models.FileField()
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
@@ -140,8 +139,8 @@ class UsuarioVideo(models.Model):
 
 
 class Questionario(models.Model):
-    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     titulo = models.CharField(unique=True, max_length=200)
+    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:

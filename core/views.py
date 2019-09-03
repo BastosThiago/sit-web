@@ -9,29 +9,42 @@ from django.views.generic.base import TemplateView
 from .forms import *
 from django.apps import apps
 
-# Create your views here.
+forms = {
+    'categoria': CategoriaForm,
+    'curso': CursoForm,
+    'inscricao': InscricaoForm,
+    'avaliacao': AvaliacaoForm,
+    'unidade': UnidadeForm,
+    'vídeo': VideoForm,
+    'arquivo': ArquivoForm,
+    'questionario': QuestionarioForm,
+    'questao': QuestaoForm,
+    'alternativa': AlternativaForm,
+}
+
+
 
 class Home(TemplateView):
     template_name = 'base.html'
 
 
 @login_required
-def categoriasListView(request):
+def registrosListView(request, modelo):
     """
-    View responsável pelo tratamento de obtenção da lista de Categorias e retorna-las para o template associado
+    View responsável pelo tratamento de obtenção da lista de registros associados ao modelo fornecido
     """
 
-    tituloPagina = Categoria._meta.verbose_name_plural
-    nomeObjeto = Categoria._meta.verbose_name_plural.lower()
+    tituloPagina = modelo._meta.verbose_name_plural
+    nomeLink = modelo._meta.verbose_name.lower()
 
     search = request.GET.get('search')
 
     if search:
 
-        objetos = Categoria.objects.filter(nome__icontains=search)
+        objetos = modelo.objects.filter(titulo__icontains=search)
 
     else:
-        listaObjetos = Categoria.objects.all().order_by('nome')
+        listaObjetos = modelo.objects.all().order_by('titulo')
 
         paginator = Paginator(listaObjetos, 5)
 
@@ -41,96 +54,114 @@ def categoriasListView(request):
 
     return render(
         request,
-        'core/listaObjetos.html',
+        'core/listaRegistro.html',
         {
             'objetos': objetos,
             'tituloPagina': tituloPagina,
-            'nomeObjeto': nomeObjeto
+            'nomeLink': nomeLink
         }
     )
 
 
 @login_required
-def novaCategoriaView(request):
+def novoRegistroView(request, modelo):
     """
-    View responsável pelo tratamento de adição de uma nova Categoria
+    View responsável pelo tratamento de adição de um novo registro associado ao modelo fornecido
     """
 
-    tituloPagina = 'Adicione uma nova Categoria de curso'
+    nomeModelo = modelo._meta.verbose_name
+    nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
+
+    tituloPagina = f"Novo registro de {nomeModelo}"
+    nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
+
+    formModelo = forms[nomeModelo.lower()]
 
     if request.method == 'POST':
-        form = CategoriaForm(request.POST)
+        form = formModelo(request.POST)
 
         if form.is_valid():
             objeto = form.save(commit=False)
             objeto.save()
             return redirect(
-                'lista-categorias'
+                nomeLinkRedirecionamento
             )
     else:
-        form = CategoriaForm()
+        form = formModelo()
 
     return render(
         request,
-        'core/adicionaObjeto.html',
+        'core/adicionaRegistro.html',
         {
             'form': form,
-            tituloPagina: tituloPagina
+            'tituloPagina': tituloPagina
         }
     )
 
 
 @login_required
-def editaCategoriaView(request, id):
+def editaRegistroView(request, id, modelo):
     """
-    View responsável pelo tratamento de edição de uma Categoria existente
+    View responsável pelo tratamento de edição de um registro associado ao modelo fornecido
     """
 
-    tituloPagina = 'Edite uma Categoria de curso'
+    nomeModelo = modelo._meta.verbose_name
+    nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
 
-    objeto = get_object_or_404(Categoria, pk=id)
-    form = CategoriaForm(instance=objeto)
+    tituloPagina = f"Edição de registro de {nomeModelo}"
+    nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
+
+    formModelo = forms[nomeModelo.lower()]
+
+    objeto = get_object_or_404(modelo, pk=id)
+
+    form = formModelo(instance=objeto)
 
     if request.method == 'POST':
-        form = CategoriaForm(request.POST, instance=objeto)
+        form = formModelo(request.POST, instance=objeto)
 
         if(form.is_valid()):
             objeto.save()
             return redirect(
-                'lista-categorias'
+                nomeLinkRedirecionamento
             )
         else:
             return render(
                 request,
-                'core/editaObjeto.html',
-                {'form': form,
-                 tituloPagina: tituloPagina
+                'core/editaRegistro.html',
+                {
+                    'form': form,
+                    'tituloPagina': tituloPagina
                 }
             )
     else:
         return render(
             request,
-            'core/editaObjeto.html',
+            'core/editaRegistro.html',
             {
                 'form': form,
+                'tituloPagina': tituloPagina
             }
         )
 
 
 @login_required
-def removeCategoriaView(request, id):
+def removeRegistroView(request, id, modelo):
     """
-    View responsável pelo tratamento de remoção de uma Categoria
+    View responsável pelo tratamento de remoção de um registro associado ao modelo fornecido
     """
 
-    objeto = get_object_or_404(Categoria, pk=id)
+    nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
+    nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
+
+    objeto = get_object_or_404(modelo, pk=id)
     objeto.delete()
 
     messages.info(
         request,
-        'Categoria removida com sucesso'
+        'Registro removido com sucesso'
     )
 
     return redirect(
-        'lista-categorias'
+        nomeLinkRedirecionamento
     )

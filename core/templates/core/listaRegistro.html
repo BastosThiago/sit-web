@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="offset-1 col-10 list-div">
-    <h1>{{tituloPagina}}</h1>
-    <a id="add-link" href="nova-categoria/">
+    <h2>Lista de {{tituloPagina}}</h2>
+    <a id="add-link" href="adiciona-{{nomeLink}}/">
         <div class="col-4 add-div">
             <i class="fas fa-plus"></i> Adicionar
         </div>
@@ -35,9 +35,9 @@
     <ul class="itens-lista">
         {% for objeto in objetos %}
             <li class="item-lista">
-                <span><a href="/edita-{{nome_item}}/{{objeto.id}}">{{ objeto.nome }}</a></span>
-                <a href="remove-{{nomeObjeto}}/{{ objeto.id }}" class="delete-btn"><span><i class="fas fa-trash"></i></span></a>
-                <a href="edita-{{nomeObjeto}}/{{ objeto.id }}"><span><i class="fas fa-edit"></i></span></a>
+                <span><a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto.titulo }}</a></span>
+                <a href="remove-{{nomeLink}}/{{ objeto.id }}" class="delete-btn"><span><i class="fas fa-trash"></i></span></a>
+                <a href="edita-{{nomeLink}}/{{ objeto.id }}"><span><i class="fas fa-edit"></i></span></a>
             </li>
         {% endfor %}
 
