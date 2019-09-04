@@ -8,6 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from .forms import *
 from unicodedata import normalize
+from functools import reduce
+from operator import or_
+from django.db.models import Q
+
 
 forms = {
     'categoria': CategoriaForm,
@@ -43,11 +47,12 @@ def registrosListView(request, modelo):
     search = request.GET.get('search')
 
     if search:
-
-        objetos = modelo.objects.filter(titulo__icontains=search)
+        search_fields = modelo.CustomMeta.search_fields
+        filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
+        objetos = modelo.objects.filter(filtro)
 
     else:
-        listaObjetos = modelo.objects.all().order_by('id')
+        listaObjetos = modelo.objects.all().order_by(modelo.CustomMeta.ordering_field)
 
         paginator = Paginator(listaObjetos, 5)
 

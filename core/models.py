@@ -14,6 +14,10 @@ class Categoria(models.Model):
     def __str__(self):
         return self.titulo
 
+    class CustomMeta:
+        ordering_field = 'titulo'
+        search_fields = ['titulo',]
+
 
 class Curso(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
@@ -29,6 +33,10 @@ class Curso(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    class CustomMeta:
+        ordering_field = 'titulo'
+        search_fields = ['titulo', 'categoria', 'nome_instrutor', 'palavras_chaves', 'descricao']
 
 
 class Inscricao(models.Model):
@@ -52,6 +60,10 @@ class Inscricao(models.Model):
         verbose_name = "Inscrição"
         verbose_name_plural = "Inscrições"
         unique_together = (('curso', 'usuario'),)
+
+    class CustomMeta:
+        ordering_field = 'data_inscricao'
+        search_fields = ['curso__titulo', 'usuario__username', 'data_inscricao']
 
 
 class Avaliacao(models.Model):
@@ -77,6 +89,10 @@ class Avaliacao(models.Model):
     def __str__(self):
         return f"Avaliação do usuário {self.usuario}"
 
+    class CustomMeta:
+        ordering_field = 'data_avaliacao'
+        search_fields = ['curso__titulo', 'usuario__username', 'nota', 'comentario', 'data_avaliacao']
+
 
 class Unidade(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
@@ -91,6 +107,10 @@ class Unidade(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    class CustomMeta:
+        ordering_field = 'titulo'
+        search_fields = ['titulo', 'curso__titulo']
 
 
 class Video(models.Model):
@@ -108,6 +128,10 @@ class Video(models.Model):
     def __str__(self):
         return self.titulo
 
+    class CustomMeta:
+        ordering_field = 'titulo'
+        search_fields = ['titulo', 'unidade__titulo']
+
 
 class Arquivo(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
@@ -123,6 +147,10 @@ class Arquivo(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    class CustomMeta:
+        ordering_field = 'titulo'
+        search_fields = ['titulo', 'unidade__titulo']
 
 
 class UsuarioVideo(models.Model):
@@ -152,6 +180,10 @@ class Questionario(models.Model):
     def __str__(self):
         return self.titulo
 
+    class CustomMeta:
+        ordering_field = 'titulo'
+        search_fields = ['titulo', 'unidade__titulo']
+
 
 class UsuarioQuestionario(models.Model):
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -180,6 +212,10 @@ class Questao(models.Model):
     def __str__(self):
         return self.enunciado
 
+    class CustomMeta:
+        ordering_field = 'titulo'
+        search_fields = ['questionario_titulo', 'enunciado']
+
 
 class Alternativa(models.Model):
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
@@ -196,6 +232,9 @@ class Alternativa(models.Model):
     def __str__(self):
         return self.descricao
 
+    class CustomMeta:
+        ordering_field = 'ordem'
+        search_fields = ['descricao', 'questao__enunciado']
 
 class UsuarioResposta(models.Model):
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
