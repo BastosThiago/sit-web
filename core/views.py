@@ -86,7 +86,7 @@ def novoRegistroView(request, modelo):
     formModelo = forms[remover_acentos(nomeModelo.lower())]
 
     if request.method == 'POST':
-        form = formModelo(request.POST)
+        form = formModelo(request.POST, request.FILES or None)
 
         if form.is_valid():
             objeto = form.save(commit=False)

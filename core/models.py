@@ -36,7 +36,7 @@ class Curso(models.Model):
 
     class CustomMeta:
         ordering_field = 'titulo'
-        search_fields = ['titulo', 'categoria', 'nome_instrutor', 'palavras_chaves', 'descricao']
+        search_fields = ['titulo', 'categoria__titulo', 'nome_instrutor', 'palavras_chaves', 'descricao']
 
 
 class Inscricao(models.Model):
@@ -136,7 +136,7 @@ class Video(models.Model):
 class Arquivo(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    arquivo = models.FileField()
+    arquivo = models.FileField(upload_to='arquivos_cursos')
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:
@@ -213,7 +213,7 @@ class Questao(models.Model):
         return self.enunciado
 
     class CustomMeta:
-        ordering_field = 'titulo'
+        ordering_field = 'ordem'
         search_fields = ['questionario_titulo', 'enunciado']
 
 
