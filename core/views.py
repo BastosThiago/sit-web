@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from .forms import *
-from django.apps import apps
+from unicodedata import normalize
 
 forms = {
     'categoria': CategoriaForm,
@@ -15,7 +15,7 @@ forms = {
     'inscricao': InscricaoForm,
     'avaliacao': AvaliacaoForm,
     'unidade': UnidadeForm,
-    'vídeo': VideoForm,
+    'video': VideoForm,
     'arquivo': ArquivoForm,
     'questionario': QuestionarioForm,
     'questao': QuestaoForm,
@@ -23,9 +23,12 @@ forms = {
 }
 
 
+def remover_acentos(txt):
+    return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
+
 
 class Home(TemplateView):
-    template_name = 'base.html'
+    template_name = 'index.html'
 
 
 @login_required
@@ -35,7 +38,7 @@ def registrosListView(request, modelo):
     """
 
     tituloPagina = modelo._meta.verbose_name_plural
-    nomeLink = modelo._meta.verbose_name.lower()
+    nomeLink = remover_acentos(modelo._meta.verbose_name.lower())
 
     search = request.GET.get('search')
 
@@ -44,7 +47,7 @@ def registrosListView(request, modelo):
         objetos = modelo.objects.filter(titulo__icontains=search)
 
     else:
-        listaObjetos = modelo.objects.all().order_by('titulo')
+        listaObjetos = modelo.objects.all().order_by('id')
 
         paginator = Paginator(listaObjetos, 5)
 
@@ -58,7 +61,7 @@ def registrosListView(request, modelo):
         {
             'objetos': objetos,
             'tituloPagina': tituloPagina,
-            'nomeLink': nomeLink
+            'nomeLink': nomeLink,
         }
     )
 
@@ -70,12 +73,12 @@ def novoRegistroView(request, modelo):
     """
 
     nomeModelo = modelo._meta.verbose_name
-    nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
+    nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
     tituloPagina = f"Novo registro de {nomeModelo}"
     nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
 
-    formModelo = forms[nomeModelo.lower()]
+    formModelo = forms[remover_acentos(nomeModelo.lower())]
 
     if request.method == 'POST':
         form = formModelo(request.POST)
@@ -106,12 +109,12 @@ def editaRegistroView(request, id, modelo):
     """
 
     nomeModelo = modelo._meta.verbose_name
-    nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
+    nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
     tituloPagina = f"Edição de registro de {nomeModelo}"
     nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
 
-    formModelo = forms[nomeModelo.lower()]
+    formModelo = forms[remover_acentos(nomeModelo.lower())]
 
     objeto = get_object_or_404(modelo, pk=id)
 

@@ -1,0 +1,46 @@
+{% extends  'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Lista de cadastros{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <div class="card  auth-card">
+            <div class="card-body">
+                <p>
+                   <a href="categorias">Categorias</a>
+                </p>
+                <p>
+                   <a href="cursos">Cursos</a>
+                </p>
+                <p>
+                   <a href="inscricoes">Inscrições</a>
+                </p>
+                <p>
+                   <a href="avaliacoes">Avaliações</a>
+                </p>
+                <p>
+                   <a href="unidades">Unidades</a>
+                </p>
+                <p>
+                   <a href="videos">Videos</a>
+                </p>
+                <p>
+                   <a href="arquivos">Arquivos</a>
+                </p>
+                <p>
+                   <a href="questionarios">Questionários</a>
+                </p>
+                <p>
+                   <a href="questoes">Questões</a>
+                </p>
+                <p>
+                   <a href="alternativas">Alternativos</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

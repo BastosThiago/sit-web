@@ -35,7 +35,7 @@
     <ul class="itens-lista">
         {% for objeto in objetos %}
             <li class="item-lista">
-                <span><a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto.titulo }}</a></span>
+                <span><a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto }}</a></span>
                 <a href="remove-{{nomeLink}}/{{ objeto.id }}" class="delete-btn"><span><i class="fas fa-trash"></i></span></a>
                 <a href="edita-{{nomeLink}}/{{ objeto.id }}"><span><i class="fas fa-edit"></i></span></a>
             </li>
