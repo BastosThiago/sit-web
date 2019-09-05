@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 
 from .models import *
+from accounts.models import CustomUser
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -81,7 +82,7 @@ def novoRegistroView(request, modelo):
     nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
     tituloPagina = f"Novo registro de {nomeModelo}"
-    nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
+    nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
     formModelo = forms[remover_acentos(nomeModelo.lower())]
 
@@ -117,7 +118,7 @@ def editaRegistroView(request, id, modelo):
     nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
     tituloPagina = f"Edição de registro de {nomeModelo}"
-    nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
+    nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
     formModelo = forms[remover_acentos(nomeModelo.lower())]
 
@@ -160,7 +161,7 @@ def removeRegistroView(request, id, modelo):
     """
 
     nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
-    nomeLinkRedirecionamento = f"lista-{nomeModeloPlural}"
+    nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
     objeto = get_object_or_404(modelo, pk=id)
     objeto.delete()
@@ -172,4 +173,65 @@ def removeRegistroView(request, id, modelo):
 
     return redirect(
         nomeLinkRedirecionamento
+    )
+
+
+@login_required
+def cursosListView(request):
+    """
+    View responsável pelo tratamento de obtenção da lista de cursos cadastrados no sistema
+    """
+
+    # Verifica o perfil do usuário para retornar a lista de cursos
+    cursos = None
+    if request.user.perfil == request.user.ALUNO:
+        cursos = Curso.objects.filter(publicado=True).order_by('titulo')
+    else:
+        cursos = Curso.objects.filter(usuario=request.user).order_by('titulo')
+
+    if cursos:
+        search = request.GET.get('search')
+
+        if search:
+            search_fields = Curso.CustomMeta.search_fields
+            filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
+            cursos = cursos.filter(filtro)
+
+        else:
+
+            paginator = Paginator(cursos, 5)
+
+            page = request.GET.get('page')
+
+            cursos = paginator.get_page(page)
+
+    return render(
+        request,
+        'core/listaCursos.html',
+        {
+            'objetos': cursos,
+        }
+    )
+
+
+@login_required
+def informacoesCursoView(request, id):
+    """
+    View responsável pelo tratamento de apresentação das informações de um curso
+    """
+
+    curso = get_object_or_404(Curso, pk=id)
+
+    unidades = Unidade.objects.filter(curso=curso)
+
+    avaliacoes = Avaliacao.objects.filter(curso=curso)
+
+    return render(
+        request,
+        'core/informacoesCurso.html',
+        {
+            'curso': curso,
+            'unidades': unidades,
+            'avaliacoes': avaliacoes,
+        }
     )

@@ -22,7 +22,7 @@ class Categoria(models.Model):
 class Curso(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    nome_instrutor = models.CharField(max_length=150)
+    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     palavras_chaves = models.CharField(max_length=150, null=True, blank=True)
     descricao = models.TextField(max_length=150, null=True, blank=True)
     publicado = models.BooleanField(default=False)
@@ -36,7 +36,7 @@ class Curso(models.Model):
 
     class CustomMeta:
         ordering_field = 'titulo'
-        search_fields = ['titulo', 'categoria__titulo', 'nome_instrutor', 'palavras_chaves', 'descricao']
+        search_fields = ['titulo', 'categoria__titulo', 'usuario__username', 'palavras_chaves', 'descricao']
 
 
 class Inscricao(models.Model):

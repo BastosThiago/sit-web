@@ -81,7 +81,7 @@
     background-color: #CCC;
 }
 
-.fas.fa-trash, .fas.fa-edit {
+.fas.fa-trash, .fas.fa-edit, .fas.fa-arrow-right {
     cursor: pointer;
     margin: 5px;
     font-size: 20px;
@@ -92,7 +92,7 @@
     color: red;
 }
 
-.fas.fa-edit {
+.fas.fa-edit, .fas.fa-arrow-right {
     color: green;
 }
 
