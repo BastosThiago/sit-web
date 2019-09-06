@@ -33,13 +33,21 @@
         {% endfor %}
     </ul>
 
-    {% if exibe_botao_inscriacao %}
+    {% if exibe_botao_inscricao %}
         <a class="likebutton" id="add-link" href="#" data-catid="{{ curso.id }}">
         <div class="col-4 add-div">
             <i class="fas fa-plus"></i> Adicionar
         </div>
     {% endif %}
-    </a>
+
+    {% if exibe_botao_conteudo %}
+        <a id="add-link" href="/conteudo-curso/{{ curso.id }}">
+        <div class="col-4 add-div">
+            <i class="fas fa-plus"></i> Acessar
+        </div>
+    {% endif %}
+
+    <p id="message"></p>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script type="text/javascript">

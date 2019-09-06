@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %} Conteúdo {{curso.titulo}} {% endblock %}
+
+{% block content %}
+<div class="offset-1 col-10 list-div">
+    <h2>Conteúdo {{curso.titulo}}</h2>
+
+    <ul>
+
+        {% for unidade in unidades %}
+            <li>
+
+                <p>{{unidade.titulo}}</p>
+                <ul>
+                    <li>Vídeos</li>
+                        <ul>
+                            {% for video in videos %}
+                                {% if video.unidade.id == unidade.id %}
+                                <li>
+                                    <a href="/visualizacao-video/{{video.id}}">{{ video.titulo }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    <li>Arquivos</li>
+                    <li>Questionários</li>
+                </ul>
+
+            </li>
+        {% endfor %}
+
+    </ul>
+
+</div>
+{% endblock %}

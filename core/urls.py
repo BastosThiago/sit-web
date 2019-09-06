@@ -24,6 +24,8 @@ urlpatterns = [
     path('cursos',                         cursosListView,                                 name='cursos'),
     path('informacoes-curso/<int:id>',     informacoesCursoView,                           name='informacoes-curso'),
     path('inscricao-curso/',               inscricaoCursoView,                             name='inscricao-curso'),
+    path('conteudo-curso/<int:id>',        conteudoCursoView,                              name='conteudo-curso'),
+    path('visualizacao-video/<int:id>',    visualizacaoVideoView,                          name='visualizacao-curso'),
 
     path('cadastros-categorias/',          registrosListView,  {'modelo': Categoria},      name='cadastros-categorias'),
     path('adiciona-categoria/',            novoRegistroView,   {'modelo': Categoria},      name='nova-categoria'),

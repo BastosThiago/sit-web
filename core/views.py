@@ -226,13 +226,16 @@ def informacoesCursoView(request, id):
 
     avaliacoes = Avaliacao.objects.filter(curso=curso)
 
-    exibe_botao_inscriacao = False
+    exibe_botao_inscricao = False
+    exibe_botao_conteudo  = False
 
     if request.user.perfil == request.user.ALUNO:
         inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
 
         if(inscricao.count() == 0):
             exibe_botao_inscriacao = True
+        else:
+            exibe_botao_conteudo = True
 
     return render(
         request,
@@ -241,7 +244,8 @@ def informacoesCursoView(request, id):
             'curso': curso,
             'unidades': unidades,
             'avaliacoes': avaliacoes,
-            'exibe_botao_inscriacao': exibe_botao_inscriacao,
+            'exibe_botao_inscricao': exibe_botao_inscricao,
+            'exibe_botao_conteudo': exibe_botao_conteudo,
         }
     )
 
@@ -249,13 +253,63 @@ def informacoesCursoView(request, id):
 @login_required
 def inscricaoCursoView(request):
     """
-    View responsável pelo tratamento de apresentação das informações de um curso
+    View responsável pelo tratamento de inscrição de um usuário no curso selecionado
     """
+    resposta = "Falha ao realizar inscrição."
     if request.method == 'GET':
-           curso_id = request.GET['curso_id']
-           curso = Curso.objects.get(pk=curso_id) #getting the liked posts
-           m = Inscricao.create(curso, request.user) # Creating Like Object
-           m.save()  # saving it to store in database
-           return HttpResponse("Success!") # Sending an success response
+        try:
+            curso_id = request.GET['curso_id']
+            curso = Curso.objects.get(pk=curso_id)
+
+            inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+
+            if(inscricao):
+                Inscricao.objects.create(curso=curso, usuario=request.user)
+                resposta = "Inscrição realizada com sucesso."
+            else:
+                resposta ="Inscrição já realizada."
+
+            return HttpResponse(resposta)
+        except:
+            return HttpResponse(resposta)
     else:
-           return HttpResponse("Request method is not a GET")
+        return HttpResponse(resposta)
+
+
+@login_required
+def conteudoCursoView(request, id):
+    """
+    View responsável pelo tratamento de apresentação do conteúdo do curso selecioando
+    """
+
+    curso = get_object_or_404(Curso, pk=id)
+
+    unidades = Unidade.objects.filter(curso=curso)
+
+    videos = Video.objects.filter(unidade__in=unidades)
+
+    return render(
+        request,
+        'core/conteudoCurso.html',
+        {
+            'curso': curso,
+            'unidades': unidades,
+            'videos': videos,
+        }
+    )
+
+@login_required
+def visualizacaoVideoView(request, id):
+    """
+    View responsável pelo tratamento de apresentação do vídeo selecionado
+    """
+
+    video = get_object_or_404(Video, pk=id)
+
+    return render(
+        request,
+        'core/visualizacaoVideo.html',
+        {
+            'video': video,
+        }
+    )
