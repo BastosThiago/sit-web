@@ -226,6 +226,14 @@ def informacoesCursoView(request, id):
 
     avaliacoes = Avaliacao.objects.filter(curso=curso)
 
+    exibe_botao_inscriacao = False
+
+    if request.user.perfil == request.user.ALUNO:
+        inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+
+        if(inscricao.count() == 0):
+            exibe_botao_inscriacao = True
+
     return render(
         request,
         'core/informacoesCurso.html',
@@ -233,5 +241,21 @@ def informacoesCursoView(request, id):
             'curso': curso,
             'unidades': unidades,
             'avaliacoes': avaliacoes,
+            'exibe_botao_inscriacao': exibe_botao_inscriacao,
         }
     )
+
+
+@login_required
+def inscricaoCursoView(request):
+    """
+    View responsável pelo tratamento de apresentação das informações de um curso
+    """
+    if request.method == 'GET':
+           curso_id = request.GET['curso_id']
+           curso = Curso.objects.get(pk=curso_id) #getting the liked posts
+           m = Inscricao.create(curso, request.user) # Creating Like Object
+           m.save()  # saving it to store in database
+           return HttpResponse("Success!") # Sending an success response
+    else:
+           return HttpResponse("Request method is not a GET")

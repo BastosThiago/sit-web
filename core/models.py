@@ -47,10 +47,10 @@ class Inscricao(models.Model):
     ]
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    percentual_andamento = models.DecimalField(max_digits=10, decimal_places=1)
-    percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1)
+    percentual_andamento = models.DecimalField(max_digits=10, decimal_places=1, default=0)
+    percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1, default=0)
     situacao = models.CharField(max_length=12, choices=SITUACOES, default='EM ANDAMENTO')
-    obteve_certificado = models.BooleanField()
+    obteve_certificado = models.BooleanField(default=False)
     data_inscricao = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
