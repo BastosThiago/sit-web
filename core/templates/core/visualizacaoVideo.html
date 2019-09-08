@@ -2,13 +2,174 @@
 
 {% load crispy_forms_tags %}
 
+{% load static %}
+
 {% block title %} {{video.titulo}} {% endblock %}
 
 {% block content %}
 <div class="offset-1 col-10 list-div">
     <h2>{{video.titulo}}</h2>
-     <iframe width="420" height="315"
-             src="https://player.vimeo.com/video/76979871">
-     </iframe>
+
+
+    {% if tipo_video == 'interno' %}
+        <video id="video_interno" style="width:400px;max-width:100%;" frameborder="0" controls="controls" tabindex="0" >
+          <source src="../media/{{ caminho_video }}" type="video/mp4">
+          <source src="../media/{{ caminho_video }}" type="video/ogg">
+          <source src="../media/{{ caminho_video }}" type="video/webm">
+        Seu browser não suporta o formato para reprodução do vídeo.
+        </video>
+    {% else %}
+        <iframe id="player" width="420" height="315"
+                src="{{ caminho_video }}" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+        </iframe>
+
+    {% endif %}
+
+    {% if tipo_video == 'interno' %}
+        <script type='text/javascript'>
+            document.getElementById('video_interno').addEventListener('ended',fimDoVideo,false);
+
+            document.getElementById('video_interno').addEventListener('loadedmetadata', function() {
+                //this.play();
+                this.currentTime = {{ usuario_video.tempo_corrente }};
+            }, true);
+
+            //__ Evento de inicio do video
+            $('#video_interno').bind('play', function (e) {
+                a = 10;
+            });
+
+            //__ Evento de fim do video
+            function fimDoVideo(e) {
+                a = 10;
+            }
+
+            $(window).on("beforeunload", function() {
+                current_time = $('#video_interno')[0].currentTime;
+                //alert(2);
+            })
+
+        </script>
+    {% else %}
+        <script src="{{ src_api_video }}"></script>
+    {% endif %}
+
+    {% if tipo_video == 'youtube' %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+        <script>
+
+            var player;
+            var tempo_corrente = 0;
+            var video_assistido = false;
+
+
+            $(document).ready(function(){
+                $.ajax(
+                {
+                    type:"GET",
+                    url: "/obtem-usuario-video",
+                    data:{
+                        usuario_video_id: {{ usuario_video.id }},
+                    },
+                    success: function( data )
+                    {
+                        tempo_corrente = parseInt(data["tempo_corrente"]);
+                    }
+                 })
+
+            })
+
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player( 'player', {
+                    events: { 'onReady': onPlayerReady , 'onStateChange': onPlayerStateChange }
+                });
+            }
+
+            /*function callViewUpdateVideo(){
+                tempo_corrente = player.getCurrentTime()
+                $.ajax(
+                {
+                    type:"GET",
+                    url: "/atualiza-usuario-video",
+                    data:{
+                        usuario_video_id: {{ usuario_video.id }},
+                        tempo_corrente: tempo_corrente,
+                        video_assistido: video_assistido
+                    }
+                 })
+            }*/
+
+            function onPlayerReady(event) {
+                player.seekTo(tempo_corrente, true);
+            }
+
+            function onPlayerStateChange(event) {
+
+                //__ Evento de inicio do video
+                if (event.data == YT.PlayerState.PLAYING) {
+                    tempo_corrente = player.getCurrentTime()
+                    video_assistido = false;
+                    //setInterval (callViewUpdateVideo, 5000);
+                }
+
+                //__ Evento de fim do video
+                if (event.data == YT.PlayerState.ENDED) {
+                    tempo_corrente = player.getCurrentTime()
+                    video_assistido = true;
+                    //callViewUpdateVideo()
+                }
+            }
+            /*
+            $(window).on("beforeunload", function() {
+                tempo_corrente = player.getCurrentTime()
+            })*/
+
+
+        </script>
+
+    {% endif %}
+
+    {% if tipo_video == 'vimeo' %}
+        <script>
+
+            var iframe = document.querySelector('#player');
+            var player = new Vimeo.Player(iframe);
+            var current_time = 0
+
+            function getCurrentTime(){
+              current_time = player.getCurrentTime().then(function(seconds) {
+                current_time = seconds;
+                return;
+              })
+            }
+
+
+            //__ Evento de inicio do video
+            player.on('play', function() {
+                //alert('You have played the video')
+                setInterval (getCurrentTime, 10000);
+            });
+
+            //__ Evento de fim do video
+            player.on('ended', function(){
+                //alert('Video play completed');
+            });
+
+            player.ready().then(function() {
+                // the player is ready
+                //alert('Ready');
+                //player.setCurrentTime(60)
+                player.setCurrentTime({{ usuario_video.tempo_corrente }});
+            });
+
+
+            $(window).on("beforeunload", function(e) {
+
+            })
+
+        </script>
+    {% endif %}
 </div>
 {% endblock %}

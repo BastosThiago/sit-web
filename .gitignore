@@ -1,3 +1,5 @@
 .idea
 venv
 *pyc
+media/arquivos/*
+media/videos/*

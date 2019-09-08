@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from .models import *
 from accounts.models import CustomUser
@@ -306,10 +306,89 @@ def visualizacaoVideoView(request, id):
 
     video = get_object_or_404(Video, pk=id)
 
+    # Registra que o usuário acessou a página do vídeo(caso ainda essa condição não tenha sido registrada)
+    if video:
+
+        try:
+            usuario_video = UsuarioVideo.objects.get(video=video, usuario=request.user)
+        except:
+            usuario_video = UsuarioVideo.objects.create(video=video, usuario=request.user)
+
+    tipo_video = 'arquivo'
+    src_api_video = ''
+    tempo_corrente = 0
+
+
+    if usuario_video:
+        tempo_corrente = usuario_video.tempo_corrente
+        if usuario_video.asssitido == True:
+            tempo_corrente = 0
+
+    if video:
+
+        if video.video_interno:
+            caminho_video = video.path
+            tipo_video = 'interno'
+        else:
+            caminho_video = video.url
+            if 'https://www.youtube.com/embed/' in caminho_video:
+                tipo_video = 'youtube'
+                src_api_video = 'http://www.youtube.com/player_api'
+            else:
+                if 'https://player.vimeo.com/' in caminho_video:
+                    tipo_video = 'vimeo'
+                    src_api_video = 'https://player.vimeo.com/api/player.js'
+
     return render(
         request,
         'core/visualizacaoVideo.html',
         {
             'video': video,
-        }
+            'usuario_video': usuario_video,
+            'tipo_video': tipo_video,
+            'tempo_corrente': tempo_corrente,
+            'caminho_video': caminho_video,
+            'src_api_video': src_api_video,
+        },
+    )
+
+
+@login_required
+def atualizaVideoUsuarioView(request):
+    """
+    View responsável pelo tratamento de atualização das informações dos videos acessados pelo usuário
+    """
+    resposta = HttpResponse('SUCESSO')
+    resposta.status_code = 200
+    if request.method == 'GET':
+        try:
+            usuario_video_id = request.GET['usuario_video_id']
+            tempo_corrente = request.GET['tempo_corrente']
+            video_assistido = request.GET['video_assistido']
+
+            usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
+            usuario_video.tempo_corrente = tempo_corrente
+            usuario_video.video_assistido = video_assistido
+            usuario_video.save()
+        except:
+            return resposta
+    return resposta
+
+
+@login_required
+def obtemInformacoesVideoUsuarioView(request):
+    """
+    View responsável pelo tratamento de atualização das informações dos videos acessados pelo usuário
+    """
+    resposta = HttpResponse('SUCESSO')
+    if request.method == 'GET':
+        try:
+            usuario_video_id = request.GET['usuario_video_id']
+
+            usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
+
+        except:
+            return JsonResponse({})
+    return JsonResponse(
+        {"tempo_corrente": usuario_video.tempo_corrente}
     )

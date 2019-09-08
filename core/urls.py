@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 from .views import *
-from sistema_treinamentos.settings import STATIC_URL, STATIC_ROOT
+from sistema_treinamentos.settings import STATIC_URL, STATIC_ROOT, MEDIA_URL, MEDIA_ROOT
 from django.conf.urls.static import static
 
 urlpatterns = [
@@ -26,6 +26,8 @@ urlpatterns = [
     path('inscricao-curso/',               inscricaoCursoView,                             name='inscricao-curso'),
     path('conteudo-curso/<int:id>',        conteudoCursoView,                              name='conteudo-curso'),
     path('visualizacao-video/<int:id>',    visualizacaoVideoView,                          name='visualizacao-curso'),
+    path('atualiza-usuario-video/',        atualizaVideoUsuarioView,                       name='atualiza-usuario-video'),
+    path('obtem-usuario-video/',           obtemInformacoesVideoUsuarioView,               name='obtem-usuario-video'),
 
     path('cadastros-categorias/',          registrosListView,  {'modelo': Categoria},      name='cadastros-categorias'),
     path('adiciona-categoria/',            novoRegistroView,   {'modelo': Categoria},      name='nova-categoria'),
@@ -78,4 +80,4 @@ urlpatterns = [
     path('remove-alternativa/<int:id>',    removeRegistroView, {'modelo': Alternativa},    name='remove-alternativa'),
     
 
-] + static(STATIC_URL, document_root=STATIC_ROOT)
+] + static(STATIC_URL, document_root=STATIC_ROOT) + static(MEDIA_URL, document_root=MEDIA_ROOT)

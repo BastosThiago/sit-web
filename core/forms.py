@@ -47,7 +47,7 @@ class VideoForm(forms.ModelForm):
 
     class Meta:
         model = Video
-        fields = ('titulo', 'unidade', 'url', 'ordem',)
+        fields = ('titulo', 'unidade', 'url', 'path', 'video_interno', 'ordem',)
 
 
 class ArquivoForm(forms.ModelForm):

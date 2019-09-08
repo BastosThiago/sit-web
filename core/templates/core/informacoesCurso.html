@@ -34,7 +34,7 @@
     </ul>
 
     {% if exibe_botao_inscricao %}
-        <a class="likebutton" id="add-link" href="#" data-catid="{{ curso.id }}">
+        <a class="botao_inscricao" id="add-link" href="#" data-curso_id="{{ curso.id }}">
         <div class="col-4 add-div">
             <i class="fas fa-plus"></i> Adicionar
         </div>
@@ -51,15 +51,15 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script type="text/javascript">
-        $('.likebutton').click(function(){
-        var catid;
-        catid = $(this).attr("data-catid");
+        $('.botao_inscricao').click(function(){
+        var curso_id;
+        curso_id = $(this).attr("data-curso_id");
         $.ajax(
         {
             type:"GET",
             url: "/inscricao-curso",
             data:{
-                     curso_id: catid
+                     curso_id: curso_id
             },
             success: function( data )
             {

@@ -116,7 +116,9 @@ class Unidade(models.Model):
 class Video(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    url = models.URLField(max_length=200)
+    video_interno = models.BooleanField(default=False)
+    url = models.URLField(max_length=200, null=True, blank=True)
+    path = models.FileField(upload_to='videos', null=True, blank=True)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:
@@ -136,7 +138,7 @@ class Video(models.Model):
 class Arquivo(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    arquivo = models.FileField(upload_to='arquivos_cursos')
+    arquivo = models.FileField(upload_to='arquivos')
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:
@@ -156,8 +158,11 @@ class Arquivo(models.Model):
 class UsuarioVideo(models.Model):
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    acessado = models.BooleanField()
+    acessado = models.BooleanField(default=True)
     data_acesso = models.DateTimeField(auto_now=True)
+    tempo_corrente = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+    asssitido = models.BooleanField(default=False)
+    data_assistido = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.usuario} - {self.video}"
