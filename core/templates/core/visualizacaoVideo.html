@@ -6,6 +6,7 @@
 
 {% block title %} {{video.titulo}} {% endblock %}
 
+
 {% block content %}
 <div class="offset-1 col-10 list-div">
     <h2>{{video.titulo}}</h2>
@@ -28,12 +29,31 @@
 
     {% if tipo_video == 'interno' %}
         <script type='text/javascript'>
+            var tempo_corrente = 0;
+            var video_assistido = false;
+
             document.getElementById('video_interno').addEventListener('ended',fimDoVideo,false);
 
             document.getElementById('video_interno').addEventListener('loadedmetadata', function() {
                 //this.play();
                 this.currentTime = {{ usuario_video.tempo_corrente }};
             }, true);
+
+            //__ Obtém o tempo corrente do video que será exibido
+            $(document).ready(function(){
+                $.ajax(
+                {
+                    type:"GET",
+                    url: "/obtem-usuario-video",
+                    data:{
+                        usuario_video_id: {{ usuario_video.id }},
+                    },
+                    success: function( data )
+                    {
+                        tempo_corrente = parseInt(data["tempo_corrente"]);
+                    }
+                 })
+            })
 
             //__ Evento de inicio do video
             $('#video_interno').bind('play', function (e) {
@@ -56,7 +76,7 @@
     {% endif %}
 
     {% if tipo_video == 'youtube' %}
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
 
         <script>
 
@@ -64,7 +84,7 @@
             var tempo_corrente = 0;
             var video_assistido = false;
 
-
+            //__ Obtém o tempo corrente do video que será exibido
             $(document).ready(function(){
                 $.ajax(
                 {
@@ -78,16 +98,18 @@
                         tempo_corrente = parseInt(data["tempo_corrente"]);
                     }
                  })
-
             })
 
+
+            //__ Cria o player especifico do Youtube
             function onYouTubeIframeAPIReady() {
                 player = new YT.Player( 'player', {
                     events: { 'onReady': onPlayerReady , 'onStateChange': onPlayerStateChange }
                 });
             }
 
-            /*function callViewUpdateVideo(){
+            //__ Função para atualizar na base de dados via Ajax algumas informações do video
+            function callViewUpdateVideo(){
                 tempo_corrente = player.getCurrentTime()
                 $.ajax(
                 {
@@ -99,18 +121,23 @@
                         video_assistido: video_assistido
                     }
                  })
-            }*/
-
-            function onPlayerReady(event) {
-                player.seekTo(tempo_corrente, true);
             }
 
+            //__ Método associado ao carregamento completo do player.
+            //   Aqui é posicionado o video no tempo corrente da sua última execução.
+            function onPlayerReady(event) {
+                player.seekTo(tempo_corrente, true);
+                player.pauseVideo();
+            }
+
+            //__ Método associado a troca de estado do player
             function onPlayerStateChange(event) {
 
                 //__ Evento de inicio do video
                 if (event.data == YT.PlayerState.PLAYING) {
                     tempo_corrente = player.getCurrentTime()
                     video_assistido = false;
+                    callViewUpdateVideo()
                     //setInterval (callViewUpdateVideo, 5000);
                 }
 
@@ -118,13 +145,14 @@
                 if (event.data == YT.PlayerState.ENDED) {
                     tempo_corrente = player.getCurrentTime()
                     video_assistido = true;
-                    //callViewUpdateVideo()
+                    callViewUpdateVideo()
                 }
             }
-            /*
+
+            //__ Método executado antes de fechar a página
             $(window).on("beforeunload", function() {
-                tempo_corrente = player.getCurrentTime()
-            })*/
+                callViewUpdateVideo()
+            })
 
 
         </script>
@@ -136,12 +164,43 @@
 
             var iframe = document.querySelector('#player');
             var player = new Vimeo.Player(iframe);
-            var current_time = 0
+            var tempo_corrente = 0;
+            var video_assistido = false;
+
+            //__ Obtém o tempo corrente do video que será exibido
+            $(document).ready(function(){
+                $.ajax(
+                {
+                    type:"GET",
+                    url: "/obtem-usuario-video",
+                    data:{
+                        usuario_video_id: {{ usuario_video.id }},
+                    },
+                    success: function( data )
+                    {
+                        tempo_corrente = parseInt(data["tempo_corrente"]);
+                    }
+                 })
+            })
+
+            //__ Função para atualizar na base de dados via Ajax algumas informações do video
+            function callViewUpdateVideo(){
+                $.ajax(
+                {
+                    type:"GET",
+                    url: "/atualiza-usuario-video",
+                    data:{
+                        usuario_video_id: {{ usuario_video.id }},
+                        tempo_corrente: tempo_corrente,
+                        video_assistido: video_assistido
+                    }
+                 })
+            }
 
             function getCurrentTime(){
-              current_time = player.getCurrentTime().then(function(seconds) {
-                current_time = seconds;
-                return;
+              player.getCurrentTime().then(function(seconds) {
+                  tempo_corrente = seconds;
+                  return;
               })
             }
 
@@ -149,24 +208,26 @@
             //__ Evento de inicio do video
             player.on('play', function() {
                 //alert('You have played the video')
-                setInterval (getCurrentTime, 10000);
+                video_assistido = false;
+                callViewUpdateVideo()
+                setInterval (getCurrentTime, 2000);
             });
 
             //__ Evento de fim do video
             player.on('ended', function(){
-                //alert('Video play completed');
+                video_assistido = true;
+                callViewUpdateVideo()
             });
 
             player.ready().then(function() {
                 // the player is ready
                 //alert('Ready');
-                //player.setCurrentTime(60)
-                player.setCurrentTime({{ usuario_video.tempo_corrente }});
+                player.setCurrentTime(tempo_corrente)
             });
 
 
             $(window).on("beforeunload", function(e) {
-
+                callViewUpdateVideo()
             })
 
         </script>

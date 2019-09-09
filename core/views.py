@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.cache import never_cache
 
 from .models import *
 from accounts.models import CustomUser
@@ -13,6 +14,7 @@ from functools import reduce
 from operator import or_
 from django.db.models import Q
 
+from datetime import datetime
 
 forms = {
     'categoria': CategoriaForm,
@@ -321,7 +323,7 @@ def visualizacaoVideoView(request, id):
 
     if usuario_video:
         tempo_corrente = usuario_video.tempo_corrente
-        if usuario_video.asssitido == True:
+        if usuario_video.assistido == True:
             tempo_corrente = 0
 
     if video:
@@ -354,6 +356,7 @@ def visualizacaoVideoView(request, id):
 
 
 @login_required
+@never_cache
 def atualizaVideoUsuarioView(request):
     """
     View responsável pelo tratamento de atualização das informações dos videos acessados pelo usuário
@@ -368,14 +371,20 @@ def atualizaVideoUsuarioView(request):
 
             usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
             usuario_video.tempo_corrente = tempo_corrente
-            usuario_video.video_assistido = video_assistido
+            assistido = bool(video_assistido)
+            if(video_assistido == 'true'):
+
+                usuario_video.assistido = True
+                usuario_video.data_assistido = datetime.now()
             usuario_video.save()
         except:
             return resposta
     return resposta
 
 
+
 @login_required
+@never_cache
 def obtemInformacoesVideoUsuarioView(request):
     """
     View responsável pelo tratamento de atualização das informações dos videos acessados pelo usuário

@@ -161,7 +161,7 @@ class UsuarioVideo(models.Model):
     acessado = models.BooleanField(default=True)
     data_acesso = models.DateTimeField(auto_now=True)
     tempo_corrente = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-    asssitido = models.BooleanField(default=False)
+    assistido = models.BooleanField(default=False)
     data_assistido = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
