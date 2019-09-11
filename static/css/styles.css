@@ -147,10 +147,6 @@ ul.messages li {
     text-align: center;
 }
 
-.player-container {
-    display: inline-block;
-    position: relative;
-}
 .player-container.ended::after {
     content:"";
     position: absolute;
@@ -166,3 +162,24 @@ ul.messages li {
     background-image: url(data:image/svg+xml;utf8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiB2aWV3Qm94PSIwIDAgNTEwIDUxMCI+PHBhdGggZD0iTTI1NSAxMDJWMEwxMjcuNSAxMjcuNSAyNTUgMjU1VjE1M2M4NC4xNSAwIDE1MyA2OC44NSAxNTMgMTUzcy02OC44NSAxNTMtMTUzIDE1My0xNTMtNjguODUtMTUzLTE1M0g1MWMwIDExMi4yIDkxLjggMjA0IDIwNCAyMDRzMjA0LTkxLjggMjA0LTIwNC05MS44LTIwNC0yMDQtMjA0eiIgZmlsbD0iI0ZGRiIvPjwvc3ZnPg==);
 }
 
+.player-container {
+    position: relative;
+    overflow: hidden;
+    padding-top: 56.25%;
+}
+
+
+.player-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80%;
+    border: 0;
+}
+
+
+video {
+  width: 100%;
+  height: auto;
+}
