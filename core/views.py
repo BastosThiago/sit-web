@@ -12,7 +12,8 @@ from .forms import *
 from unicodedata import normalize
 from functools import reduce
 from operator import or_
-from django.db.models import Q
+from django.db.models import Q, Min, Max
+
 
 from datetime import datetime
 
@@ -315,6 +316,16 @@ def visualizacaoVideoView(request, id):
             usuario_video = UsuarioVideo.objects.get(video=video, usuario=request.user)
         except:
             usuario_video = UsuarioVideo.objects.create(video=video, usuario=request.user)
+
+        prev_video = Video.objects.filter(unidade=video.unidade, ordem=video.ordem-1)
+
+        next_video = Video.objects.get(unidade=video.unidade, ordem=video.ordem+1)
+
+        if next_video.count() == 0:
+            next_file = Arquivo.objects.filter(unidade=video.unidade).order_by('ordem')[0]
+
+            if next_file == None:
+                next_quiz = Questionario.objects.aggregate(Min('ordem'))
 
     tipo_video = 'arquivo'
     src_api_video = ''
