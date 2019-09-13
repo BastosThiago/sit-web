@@ -12,6 +12,9 @@
     <h2>{{video.titulo}}</h2>
 
 
+    <a href="{{ conteudo_anterior_url }}"><span><i class="fas fa-arrow-left"></i></span></a>
+    <a href="{{ proximo_conteudo_url }}"><span><i class="fas fa-arrow-right"></i></span></a>
+
     {% if tipo_video == 'interno' %}
         <video id="video_interno"  controls="controls" tabindex="0" >
           <source src="../media/{{ caminho_video }}" type="video/mp4">

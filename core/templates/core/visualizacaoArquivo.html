@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} {{arquivo.titulo}} {% endblock %}
+
+
+{% block content %}
+<div class="offset-1 col-10 list-div">
+    <h2>{{arquivo.titulo}}</h2>
+
+
+    <a href="{{ conteudo_anterior_url }}"><span><i class="fas fa-arrow-left"></i></span></a>
+    <a href="{{ proximo_conteudo_url }}"><span><i class="fas fa-arrow-right"></i></span></a>
+
+</div>
+{% endblock %}

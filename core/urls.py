@@ -21,13 +21,15 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', Home.as_view()),
 
-    path('cursos',                         cursosListView,                                 name='cursos'),
-    path('informacoes-curso/<int:id>',     informacoesCursoView,                           name='informacoes-curso'),
-    path('inscricao-curso/',               inscricaoCursoView,                             name='inscricao-curso'),
-    path('conteudo-curso/<int:id>',        conteudoCursoView,                              name='conteudo-curso'),
-    path('visualizacao-video/<int:id>',    visualizacaoVideoView,                          name='visualizacao-curso'),
-    path('atualiza-usuario-video/',        atualizaVideoUsuarioView,                       name='atualiza-usuario-video'),
-    path('obtem-usuario-video/',           obtemInformacoesVideoUsuarioView,               name='obtem-usuario-video'),
+    path('cursos',                              cursosListView,                                 name='cursos'),
+    path('informacoes-curso/<int:id>',          informacoesCursoView,                           name='informacoes-curso'),
+    path('inscricao-curso/',                    inscricaoCursoView,                             name='inscricao-curso'),
+    path('conteudo-curso/<int:id>',             conteudoCursoView,                              name='conteudo-curso'),
+    path('visualizacao-video/<int:id>',         visualizacaoVideoView,                          name='visualizacao-video'),
+    path('visualizacao-arquivo/<int:id>',       visualizacaoArquivoView,                        name='visualizacao-arquivo'),
+    path('visualizacao-questionario/<int:id>',  visualizacaoQuestionarioView,              name='visualizacao-questionario'),
+    path('atualiza-usuario-video/',             atualizaVideoUsuarioView,                       name='atualiza-usuario-video'),
+    path('obtem-usuario-video/',                obtemInformacoesVideoUsuarioView,               name='obtem-usuario-video'),
 
     path('cadastros-categorias/',          registrosListView,  {'modelo': Categoria},      name='cadastros-categorias'),
     path('adiciona-categoria/',            novoRegistroView,   {'modelo': Categoria},      name='nova-categoria'),

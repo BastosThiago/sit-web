@@ -31,11 +31,62 @@ forms = {
 }
 
 
+def obtemListaConteudoCurso(course_id):
+
+    lista = []
+    curso = Curso.objects.get(pk=course_id)
+
+    unidades = Unidade.objects.filter(curso=curso)
+
+    for unidade in unidades:
+
+        videos = Video.objects.filter(unidade=unidade).order_by('ordem')
+        for video in videos:
+            lista.append(dict({video.id: 'video'}))
+
+        arquivos = Arquivo.objects.filter(unidade=unidade).order_by('ordem')
+        for arquivo in arquivos:
+            lista.append(dict({arquivo.id: 'arquivo'}))
+
+        questionarios = Questionario.objects.filter(unidade=unidade).order_by('ordem')
+        for questionario in questionarios:
+            lista.append(dict({questionario.id: 'questionario'}))
+
+    return lista
+
+
+def geraLinksConteudosCurso(curso_id, conteudo_nome, conteudo_id):
+
+    lista_conteudo_curso = obtemListaConteudoCurso(curso_id)
+
+    indice = lista_conteudo_curso.index(dict({conteudo_id: conteudo_nome}))
+
+    # Caso tenha encontrado o item na lista
+    if indice >= 0:
+        [[conteudo_id, conteudo_nome]] = lista_conteudo_curso[indice].items()
+
+        if indice - 1 >= 0:
+            conteudo_anterior = lista_conteudo_curso[indice - 1]
+            [[conteudo_anterior_id, conteudo_anterior_nome]] = lista_conteudo_curso[indice - 1].items()
+            conteudo_anterior_url = f"/visualizacao-{conteudo_anterior_nome}/{conteudo_anterior_id}"
+        else:
+            conteudo_anterior_url = ''
+
+        if indice + 1 < len(lista_conteudo_curso):
+            proximo_conteudo = lista_conteudo_curso[indice + 1]
+            [[prox_conteudo_id, prox_conteudo_nome]] = lista_conteudo_curso[indice + 1].items()
+            prox_conteudo_url = f"/visualizacao-{prox_conteudo_nome}/{prox_conteudo_id}"
+        else:
+            prox_conteudo_url = ''
+
+    return conteudo_anterior_url, prox_conteudo_url
+
 def remover_acentos(txt):
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
 
 
 class Home(TemplateView):
+    obtemListaConteudoCurso(1)
     template_name = 'index.html'
 
 
@@ -312,20 +363,11 @@ def visualizacaoVideoView(request, id):
     # Registra que o usuário acessou a página do vídeo(caso ainda essa condição não tenha sido registrada)
     if video:
 
+
         try:
             usuario_video = UsuarioVideo.objects.get(video=video, usuario=request.user)
         except:
             usuario_video = UsuarioVideo.objects.create(video=video, usuario=request.user)
-
-        prev_video = Video.objects.filter(unidade=video.unidade, ordem=video.ordem-1)
-
-        next_video = Video.objects.get(unidade=video.unidade, ordem=video.ordem+1)
-
-        if next_video.count() == 0:
-            next_file = Arquivo.objects.filter(unidade=video.unidade).order_by('ordem')[0]
-
-            if next_file == None:
-                next_quiz = Questionario.objects.aggregate(Min('ordem'))
 
     tipo_video = 'arquivo'
     src_api_video = ''
@@ -352,6 +394,13 @@ def visualizacaoVideoView(request, id):
                     tipo_video = 'vimeo'
                     src_api_video = 'https://player.vimeo.com/api/player.js'
 
+
+    conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
+        video.unidade.curso.id,
+        'video',
+        video.id
+    )
+
     return render(
         request,
         'core/visualizacaoVideo.html',
@@ -362,6 +411,8 @@ def visualizacaoVideoView(request, id):
             'tempo_corrente': tempo_corrente,
             'caminho_video': caminho_video,
             'src_api_video': src_api_video,
+            'conteudo_anterior_url': conteudo_anterior_url,
+            'proximo_conteudo_url': proximo_conteudo_url,
         },
     )
 
@@ -411,4 +462,54 @@ def obtemInformacoesVideoUsuarioView(request):
             return JsonResponse({})
     return JsonResponse(
         {"tempo_corrente": usuario_video.tempo_corrente}
+    )
+
+
+@login_required
+def visualizacaoArquivoView(request, id):
+    """
+    View responsável pelo tratamento de apresentação do arquivo selecionado
+    """
+
+    arquivo = get_object_or_404(Arquivo, pk=id)
+
+    conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
+        arquivo.unidade.curso.id,
+        'arquivo',
+        arquivo.id
+    )
+
+    return render(
+        request,
+        'core/visualizacaoArquivo.html',
+        {
+            'arquivo': arquivo,
+            'conteudo_anterior_url': conteudo_anterior_url,
+            'proximo_conteudo_url': proximo_conteudo_url,
+        },
+    )
+
+
+@login_required
+def visualizacaoQuestionarioView(request, id):
+    """
+    View responsável pelo tratamento de apresentação do questionario selecionado
+    """
+
+    questionario = get_object_or_404(Questionario, pk=id)
+
+    conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
+        questionario.unidade.curso.id,
+        'questionario',
+        questionario.id
+    )
+
+    return render(
+        request,
+        'core/visualizacaoQuestionario.html',
+        {
+            'questionario': questionario,
+            'conteudo_anterior_url': conteudo_anterior_url,
+            'proximo_conteudo_url': proximo_conteudo_url,
+        },
     )
