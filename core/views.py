@@ -342,6 +342,10 @@ def conteudoCursoView(request, id):
 
     videos = Video.objects.filter(unidade__in=unidades)
 
+    arquivos = Arquivo.objects.filter(unidade__in=unidades)
+
+    questionarios = Questionario.objects.filter(unidade__in=unidades)
+
     return render(
         request,
         'core/conteudoCurso.html',
@@ -349,6 +353,8 @@ def conteudoCursoView(request, id):
             'curso': curso,
             'unidades': unidades,
             'videos': videos,
+            'arquivos': arquivos,
+            'questionarios': questionarios,
         }
     )
 
@@ -362,7 +368,6 @@ def visualizacaoVideoView(request, id):
 
     # Registra que o usuário acessou a página do vídeo(caso ainda essa condição não tenha sido registrada)
     if video:
-
 
         try:
             usuario_video = UsuarioVideo.objects.get(video=video, usuario=request.user)
@@ -401,9 +406,19 @@ def visualizacaoVideoView(request, id):
         video.id
     )
 
+    if not request.is_ajax():
+        template_name = 'core/visualizacaoVideo.html'
+    else:
+        if tipo_video == 'vimeo':
+            template_name ='vimeo_player.html'
+        elif tipo_video =='youtube':
+            template_name = 'youtube_player.html'
+        else:
+            template_name = 'video_interno_player.html'
+
     return render(
         request,
-        'core/visualizacaoVideo.html',
+        template_name,
         {
             'video': video,
             'usuario_video': usuario_video,
@@ -479,9 +494,14 @@ def visualizacaoArquivoView(request, id):
         arquivo.id
     )
 
+    if not request.is_ajax():
+        template_name = 'core/visualizacaoArquivo.html'
+    else:
+        template_name ='conteudo_arquivo.html'
+
     return render(
         request,
-        'core/visualizacaoArquivo.html',
+        template_name,
         {
             'arquivo': arquivo,
             'conteudo_anterior_url': conteudo_anterior_url,
@@ -496,7 +516,91 @@ def visualizacaoQuestionarioView(request, id):
     View responsável pelo tratamento de apresentação do questionario selecionado
     """
 
+    # Obtém o questionário de acordo com seu ID
     questionario = get_object_or_404(Questionario, pk=id)
+
+    # Obtém a questões associadas ao questionário
+    questoes = Questao.objects.filter(questionario=questionario).order_by('ordem')
+
+    # Obtém as alternativas associadas as questões do questionário
+    alternativas = Alternativa.objects.filter(questao__in=questoes).order_by('ordem')
+
+    refazer = None
+    if request.method == 'POST':
+
+        try:
+            refazer = request.POST['refazer']
+        except:
+            refazer = None
+
+        if refazer == None:
+            numero_respostas_corretas = 0
+            percentual_acertos = 0
+            for chave, valor in request.POST.items():
+
+                if chave == 'csrfmiddlewaretoken' or chave == 'enviar':
+                    continue
+                alternativa_id = request.POST.get(chave)
+
+                alternativa = Alternativa.objects.get(pk=alternativa_id)
+
+                if(alternativa.correta == True):
+                    numero_respostas_corretas = numero_respostas_corretas + 1
+
+                try:
+                    usuario_resposta = UsuarioResposta.objects.get(
+                        questao=alternativa.questao,
+                        usuario=request.user
+                    )
+
+                    usuario_resposta.alternativa = alternativa
+                    usuario_resposta.save()
+
+                except:
+                    usuario_resposta = UsuarioResposta.objects.create(
+                        alternativa=alternativa,
+                        questao=alternativa.questao,
+                        usuario=request.user
+                    )
+
+            percentual_acertos = (numero_respostas_corretas / questoes.count()) * 100
+
+            try:
+                usuario_questionario = UsuarioQuestionario.objects.get(
+                    questionario=questionario,
+                    usuario=request.user,
+                )
+
+                usuario_questionario.percentual_acertos = percentual_acertos
+                usuario_questionario.data_execucao = datetime.now()
+                usuario_questionario.save()
+            except:
+                usuario_questioanrio = UsuarioQuestionario.objects.create(
+                    questionario=questionario,
+                    usuario=request.user,
+                    percentual_acertos=percentual_acertos,
+                    data_execucao=datetime.now()
+                )
+
+
+    # Verifica se o usuário corrente já respondeu ao questionário
+    alternativas_dict = {}
+    for alternativa in alternativas:
+        usuario_respostas = UsuarioResposta.objects.filter(
+            alternativa=alternativa,
+            usuario=request.user
+        )
+
+        if(usuario_respostas.count() > 0 and refazer == None):
+            alternativas_dict[alternativa.id] = True
+        else:
+            alternativas_dict[alternativa.id] = False
+
+    # Verifca se o usuário corrente já respondeu ao questinário
+    usuario_questionario = UsuarioQuestionario.objects.get(
+        questionario=questionario,
+        usuario=request.user,
+    )
 
     conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
         questionario.unidade.curso.id,
@@ -504,12 +608,24 @@ def visualizacaoQuestionarioView(request, id):
         questionario.id
     )
 
+    post_ajax = False
+    if not request.is_ajax():
+        template_name = 'core/visualizacaoQuestionario.html'
+        post_ajax = True
+    else:
+        template_name = 'conteudo_questionario.html'
+
     return render(
         request,
-        'core/visualizacaoQuestionario.html',
+        template_name,
         {
             'questionario': questionario,
+            'questoes': questoes,
+            'alternativas': alternativas,
+            'alternativas_dict': alternativas_dict,
+            'usuario_questionario': usuario_questionario,
             'conteudo_anterior_url': conteudo_anterior_url,
             'proximo_conteudo_url': proximo_conteudo_url,
+            'post_ajax': post_ajax,
         },
     )

@@ -6,32 +6,8 @@
 
 {% block title %} {{video.titulo}} {% endblock %}
 
-
 {% block content %}
 <div class="offset-1 col-10 list-div">
-    <h2>{{video.titulo}}</h2>
-
-
-    <a href="{{ conteudo_anterior_url }}"><span><i class="fas fa-arrow-left"></i></span></a>
-    <a href="{{ proximo_conteudo_url }}"><span><i class="fas fa-arrow-right"></i></span></a>
-
-    {% if tipo_video == 'interno' %}
-        <video id="video_interno"  controls="controls" tabindex="0" >
-          <source src="../media/{{ caminho_video }}" type="video/mp4">
-          <source src="../media/{{ caminho_video }}" type="video/ogg">
-          <source src="../media/{{ caminho_video }}" type="video/webm">
-        Seu browser não suporta o formato para reprodução do vídeo.
-        </video>
-    {% else %}
-
-        <div class="player-container">
-            <iframe class="player-iframe" id="player"
-                    src="{{ caminho_video }}"
-                    gesture="media"  allow="encrypted-media" allowfullscreen>
-            </iframe>
-        </div>
-
-    {% endif %}
 
     {% if tipo_video == 'interno' %}
         {% include  'video_interno_player.html' %}
@@ -44,5 +20,25 @@
     {% if tipo_video == 'vimeo' %}
         {% include  'vimeo_player.html' %}
     {% endif %}
+
 </div>
+
+<script>
+    function atualizaConteudo(url){
+
+        $.ajax(
+        {
+            type:"GET",
+            url: url,
+            data:{
+            },
+            success: function( data )
+            {
+                $(".conteudo-curso-container").replaceWith(data);
+                window.history.pushState({route: url}, "Video", url);
+            }
+         })
+    }
+
+</script>
 {% endblock %}

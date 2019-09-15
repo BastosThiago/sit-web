@@ -1,0 +1,44 @@
+
+<div class=".conteudo-curso-container">
+    <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
+    <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
+
+    <h2>{{questionario.titulo}}</h2>
+
+    <form action="" method="POST">
+    {% csrf_token %}
+
+    {% if usuario_questionario is not none %}
+        <p>Resultado atual</p>
+        <p>Nota: {{ usuario_questionario.percentual_acertos}}</p>
+        <p>Data: {{ usuario_questionario.data_execucao}}</p>
+    {% endif %}
+
+    {% for questao in questoes %}
+    <p><strong>{{questao.ordem}} - {{ questao.enunciado }}</strong></p>
+        <ul>
+        {% for alternativa in alternativas %}
+
+            {% if alternativa.questao.id == questao.id %}
+                <li>
+                   {% for chave, valor in alternativas_dict.items %}
+                       {% if chave == alternativa.id %}
+                            {% if valor == True %}
+                                <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" checked="checked">{{ alternativa.descricao }}</input>
+                            {% else %}
+                                <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}">{{ alternativa.descricao }}</input>
+                            {% endif %}
+                       {% endif %}
+                   {% endfor %}
+                </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% endfor %}
+
+    <input id="refazer" type="button" name="refazer" class="btn btn-success" value="Refazer" hidden="true" onclick="atualizaDados()">
+    <input id="enviar" type="submit" name="enviar" class="btn btn-success" value="Enviar" hidden="true">
+
+
+    </form>
+</div>

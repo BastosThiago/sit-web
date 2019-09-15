@@ -54,7 +54,7 @@ class ArquivoForm(forms.ModelForm):
 
     class Meta:
         model = Arquivo
-        fields = ('titulo', 'unidade', 'arquivo', 'ordem',)
+        fields = ('titulo', 'unidade', 'caminho', 'ordem',)
 
 
 class QuestionarioForm(forms.ModelForm):

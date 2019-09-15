@@ -6,14 +6,30 @@
 
 {% block title %} {{arquivo.titulo}} {% endblock %}
 
-
 {% block content %}
+
 <div class="offset-1 col-10 list-div">
-    <h2>{{arquivo.titulo}}</h2>
 
-
-    <a href="{{ conteudo_anterior_url }}"><span><i class="fas fa-arrow-left"></i></span></a>
-    <a href="{{ proximo_conteudo_url }}"><span><i class="fas fa-arrow-right"></i></span></a>
+    {% include  'conteudo_arquivo.html' %}
 
 </div>
+
+<script>
+    function atualizaConteudo(url){
+
+        $.ajax(
+        {
+            type:"GET",
+            url: url,
+            data:{
+            },
+            success: function( data )
+            {
+                $(".conteudo-curso-container").replaceWith(data);
+                window.history.pushState({route: url}, "Arquivo", url);
+            }
+         })
+    }
+
+</script>
 {% endblock %}

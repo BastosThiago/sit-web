@@ -1,0 +1,10 @@
+<div class="conteudo-curso-container">
+
+    <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
+    <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
+
+    <h2>{{arquivo.titulo}}</h2>
+
+    <iframe src="../media/{{ arquivo.caminho}}" width="100%" height="500px"></iframe>
+
+</div>

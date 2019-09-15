@@ -138,7 +138,7 @@ class Video(models.Model):
 class Arquivo(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    arquivo = models.FileField(upload_to='arquivos')
+    caminho = models.FileField(upload_to='arquivos')
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:

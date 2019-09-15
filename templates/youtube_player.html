@@ -1,88 +1,103 @@
-<script src="http://www.youtube.com/player_api"></script>
-<script>
+<div class="conteudo-curso-container">
 
-    var player;
-    var tempo_corrente = 0;
-    var video_assistido = false;
-    let player_container = document.querySelector(".player-container");
-    let player_frame = player_container.querySelector("#player");
+    <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
+    <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
 
-    //__ Obtém o tempo corrente do video que será exibido
-    $(document).ready(function(){
-        $.ajax(
-        {
-            type:"GET",
-            url: "/obtem-usuario-video",
-            data:{
-                usuario_video_id: {{ usuario_video.id }},
-            },
-            success: function( data )
+    <h2>{{video.titulo}}</h2>
+
+    <div class="player-container">
+        <iframe class="player-iframe" id="player"
+                src="{{ caminho_video }}"
+                allow="encrypted-media" allowfullscreen>
+        </iframe>
+    </div>
+
+    <script src="http://www.youtube.com/player_api"></script>
+    <script>
+
+        var player;
+        var tempo_corrente = 0;
+        var video_assistido = false;
+        let player_container = document.querySelector(".player-container");
+        let player_frame = player_container.querySelector("#player");
+
+        //__ Obtém o tempo corrente do video que será exibido
+        $(document).ready(function(){
+            $.ajax(
             {
-                tempo_corrente = parseInt(data["tempo_corrente"]);
+                type:"GET",
+                url: "/obtem-usuario-video",
+                data:{
+                    usuario_video_id: {{ usuario_video.id }},
+                },
+                success: function( data )
+                {
+                    tempo_corrente = parseInt(data["tempo_corrente"]);
+                }
+             })
+        })
+
+
+        //__ Cria o player especifico do Youtube
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player(player_frame , {
+                events: { 'onReady': onPlayerReady , 'onStateChange': onPlayerStateChange }
+            });
+        }
+
+        //__ Função para atualizar na base de dados via Ajax algumas informações do video
+        function callViewUpdateVideo(){
+            tempo_corrente = player.getCurrentTime()
+            $.ajax(
+            {
+                type:"GET",
+                url: "/atualiza-usuario-video",
+                data:{
+                    usuario_video_id: {{ usuario_video.id }},
+                    tempo_corrente: tempo_corrente,
+                    video_assistido: video_assistido
+                }
+             })
+        }
+
+        //__ Método associado ao carregamento completo do player.
+        //   Aqui é posicionado o video no tempo corrente da sua última execução.
+        function onPlayerReady(event) {
+            player.seekTo(tempo_corrente, true);
+            player.pauseVideo();
+        }
+
+        //__ Método associado a troca de estado do player
+        function onPlayerStateChange(event) {
+
+            //__ Evento de inicio do video
+            if (event.data == YT.PlayerState.PLAYING) {
+                tempo_corrente = player.getCurrentTime()
+                video_assistido = false;
+                player_container.classList.remove("ended");
+                callViewUpdateVideo();
             }
-         })
-    })
 
+            //__ Evento de fim do video
+            if (event.data == YT.PlayerState.ENDED) {
+                tempo_corrente = player.getCurrentTime()
+                video_assistido = true;
+                player_container.classList.add("ended");
+                callViewUpdateVideo()
+            }
+        }
 
-    //__ Cria o player especifico do Youtube
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player(player_frame , {
-            events: { 'onReady': onPlayerReady , 'onStateChange': onPlayerStateChange }
+        player_container.addEventListener("click", function() {
+            let playerState = player.getPlayerState();
+            if (playerState == YT.PlayerState.ENDED) {
+                player.seekTo(0);
+            }
         });
-    }
 
-    //__ Função para atualizar na base de dados via Ajax algumas informações do video
-    function callViewUpdateVideo(){
-        tempo_corrente = player.getCurrentTime()
-        $.ajax(
-        {
-            type:"GET",
-            url: "/atualiza-usuario-video",
-            data:{
-                usuario_video_id: {{ usuario_video.id }},
-                tempo_corrente: tempo_corrente,
-                video_assistido: video_assistido
-            }
-         })
-    }
-
-    //__ Método associado ao carregamento completo do player.
-    //   Aqui é posicionado o video no tempo corrente da sua última execução.
-    function onPlayerReady(event) {
-        player.seekTo(tempo_corrente, true);
-        player.pauseVideo();
-    }
-
-    //__ Método associado a troca de estado do player
-    function onPlayerStateChange(event) {
-
-        //__ Evento de inicio do video
-        if (event.data == YT.PlayerState.PLAYING) {
-            tempo_corrente = player.getCurrentTime()
-            video_assistido = false;
-            player_container.classList.remove("ended");
-            callViewUpdateVideo();
-        }
-
-        //__ Evento de fim do video
-        if (event.data == YT.PlayerState.ENDED) {
-            tempo_corrente = player.getCurrentTime()
-            video_assistido = true;
-            player_container.classList.add("ended");
+        //__ Método executado antes de fechar a página
+        $(window).on("beforeunload", function() {
             callViewUpdateVideo()
-        }
-    }
+        });
 
-    player_container.addEventListener("click", function() {
-        let playerState = player.getPlayerState();
-        if (playerState == YT.PlayerState.ENDED) {
-            player.seekTo(0);
-        }
-    });
-
-    //__ Método executado antes de fechar a página
-    $(window).on("beforeunload", function() {
-        callViewUpdateVideo()
-    });
-
-</script>
+    </script>
+</div>

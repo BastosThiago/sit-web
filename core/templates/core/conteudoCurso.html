@@ -24,7 +24,25 @@
                             {% endfor %}
                         </ul>
                     <li>Arquivos</li>
+                        <ul>
+                            {% for arquivo in arquivos %}
+                                {% if arquivo.unidade.id == unidade.id %}
+                                <li>
+                                    <a href="/visualizacao-arquivo/{{arquivo.id}}">{{ arquivo.titulo }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
                     <li>Questionários</li>
+                        <ul>
+                            {% for questionario in questionarios %}
+                                {% if questionario.unidade.id == unidade.id %}
+                                <li>
+                                    <a href="/visualizacao-questionario/{{questionario.id}}">{{ questionario.titulo }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
                 </ul>
 
             </li>
