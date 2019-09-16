@@ -4,6 +4,8 @@
     <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
 
     <h2>{{video.titulo}}</h2>
+
+    <a href="/download/{{ caminho_video }}"><span><i class="fas fa-download"></i></span></a>
     
     <video id="video_interno"  controls="controls" tabindex="0" >
       <source src="../media/{{ caminho_video }}" type="video/mp4">

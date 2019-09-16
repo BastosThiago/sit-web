@@ -26,78 +26,11 @@
             success: function( data )
             {
                 $(".conteudo-curso-container").replaceWith(data);
-                window.history.pushState({route: url}, "Arquivo", url);
+                window.history.pushState({route: url}, "Questionário", url);
             }
          })
     }
 
-
-    //__ Obtém o tempo corrente do video que será exibido
-    window.onload = function(){
-        var inputs = document.getElementsByClassName("input-radio");
-
-        {% if usuario_questionario is not none %}
-
-            $("#enviar")[0].hidden = true;
-            $("#refazer")[0].hidden = false;
-            for(let i = 0; i < inputs.length; i++){
-                inputs[i].disabled = true;
-            }
-
-        {% else %}
-            $("#enviar")[0].hidden = false;
-            $("#refazer")[0].hidden = true
-            for(let i = 0; i < inputs.length; i++){
-                inputs[i].disabled = false;
-            }
-        {% endif %}
-
-    }
-
-    $('form').submit(function(e){
-        e.preventDefault();
-
-        var $formData = $(this).serialize()
-        var $thisURL = $(this).attr('data-url') || window.location.href // or set your own url
-        $.ajax({
-            method: "POST",
-            url: $thisURL,
-            data: $formData,
-            success: handleFormSuccess,
-            error: handleFormError,
-        })
-
-
-        function handleFormSuccess(data, textStatus, jqXHR){
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
-            $(".conteudo-curso-container").replaceWith(data);
-            var inputs = document.getElementsByClassName("input-radio");
-            for(let i = 0; i < inputs.length; i++){
-                inputs[i].disabled = true;
-            }
-            $("#refazer")[0].hidden = false
-            $("#enviar")[0].hidden = true
-        }
-
-        function handleFormError(jqXHR, textStatus, errorThrown){
-            console.log(jqXHR)
-            console.log(textStatus)
-            console.log(errorThrown)
-        }
-
-    });
-
-    function atualizaDados(){
-        var inputs = document.getElementsByClassName("input-radio");
-        for(let i = 0; i < inputs.length; i++){
-            inputs[i].disabled = false;
-            inputs[i].checked = false;
-        }
-        $("#refazer")[0].hidden = true
-        $("#enviar")[0].hidden = false
-    }
 
 
 </script>

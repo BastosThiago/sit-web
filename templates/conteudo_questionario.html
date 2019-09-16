@@ -1,5 +1,5 @@
 
-<div class=".conteudo-curso-container">
+<div class="conteudo-curso-container">
     <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
     <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
 
@@ -9,9 +9,11 @@
     {% csrf_token %}
 
     {% if usuario_questionario is not none %}
-        <p>Resultado atual</p>
-        <p>Nota: {{ usuario_questionario.percentual_acertos}}</p>
-        <p>Data: {{ usuario_questionario.data_execucao}}</p>
+        <div class="resultado-atual">
+            <p>Resultado atual</p>
+            <p>Nota: {{ usuario_questionario.percentual_acertos}}</p>
+            <p>Data: {{ usuario_questionario.data_execucao}}</p>
+        </div>
     {% endif %}
 
     {% for questao in questoes %}
@@ -41,4 +43,76 @@
 
 
     </form>
+
+    <script>
+
+        //__ Obtém o tempo corrente do video que será exibido
+        $(document).ready(function(){
+            var inputs = document.getElementsByClassName("input-radio");
+
+            {% if usuario_questionario is not none %}
+
+                $("#enviar")[0].hidden = true;
+                $("#refazer")[0].hidden = false;
+                for(let i = 0; i < inputs.length; i++){
+                    inputs[i].disabled = true;
+                }
+
+            {% else %}
+                $("#enviar")[0].hidden = false;
+                $("#refazer")[0].hidden = true
+                for(let i = 0; i < inputs.length; i++){
+                    inputs[i].disabled = false;
+                    inputs[i].checked = false;
+                }
+            {% endif %}
+
+        })
+
+        function atualizaDados(){
+            var inputs = document.getElementsByClassName("input-radio");
+            for(let i = 0; i < inputs.length; i++){
+                inputs[i].disabled = false;
+                inputs[i].checked = false;
+            }
+            $("#refazer")[0].hidden = true
+            $("#enviar")[0].hidden = false
+        }
+
+        $('form').submit(function(e){
+            e.preventDefault();
+
+            var $formData = $(this).serialize()
+            var $thisURL = $(this).attr('data-url') || window.location.href // or set your own url
+            $.ajax({
+                method: "POST",
+                url: $thisURL,
+                data: $formData,
+                success: handleFormSuccess,
+                error: handleFormError,
+            })
+
+
+            function handleFormSuccess(data, textStatus, jqXHR){
+                console.log(data)
+                console.log(textStatus)
+                console.log(jqXHR)
+                $(".conteudo-curso-container").replaceWith(data);
+                var inputs = document.getElementsByClassName("input-radio");
+                for(let i = 0; i < inputs.length; i++){
+                    inputs[i].disabled = true;
+                }
+                $("#refazer")[0].hidden = false
+                $("#enviar")[0].hidden = true
+            }
+
+            function handleFormError(jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+
+        });
+
+    </script>
 </div>

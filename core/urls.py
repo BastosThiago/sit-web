@@ -30,6 +30,9 @@ urlpatterns = [
     path('visualizacao-questionario/<int:id>',  visualizacaoQuestionarioView,                   name='visualizacao-questionario'),
     path('atualiza-usuario-video/',             atualizaVideoUsuarioView,                       name='atualiza-usuario-video'),
     path('obtem-usuario-video/',                obtemInformacoesVideoUsuarioView,               name='obtem-usuario-video'),
+    path('download/arquivos/<str:file_path>',   downloadConteudo, {'diretorio': 'arquivos'},    name='download-arquivos'),
+    path('download/videos/<str:file_path>',     downloadConteudo, {'diretorio': 'videos'},      name='download-videos'),
+
 
     path('cadastros-categorias/',          registrosListView,  {'modelo': Categoria},      name='cadastros-categorias'),
     path('adiciona-categoria/',            novoRegistroView,   {'modelo': Categoria},      name='nova-categoria'),

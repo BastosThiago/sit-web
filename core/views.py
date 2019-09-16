@@ -525,62 +525,55 @@ def visualizacaoQuestionarioView(request, id):
     # Obtém as alternativas associadas as questões do questionário
     alternativas = Alternativa.objects.filter(questao__in=questoes).order_by('ordem')
 
-    refazer = None
     if request.method == 'POST':
 
-        try:
-            refazer = request.POST['refazer']
-        except:
-            refazer = None
+        numero_respostas_corretas = 0
+        percentual_acertos = 0
+        for chave, valor in request.POST.items():
 
-        if refazer == None:
-            numero_respostas_corretas = 0
-            percentual_acertos = 0
-            for chave, valor in request.POST.items():
+            if chave == 'csrfmiddlewaretoken' or chave == 'enviar':
+                continue
+            alternativa_id = request.POST.get(chave)
 
-                if chave == 'csrfmiddlewaretoken' or chave == 'enviar':
-                    continue
-                alternativa_id = request.POST.get(chave)
+            alternativa = Alternativa.objects.get(pk=alternativa_id)
 
-                alternativa = Alternativa.objects.get(pk=alternativa_id)
-
-                if(alternativa.correta == True):
-                    numero_respostas_corretas = numero_respostas_corretas + 1
-
-                try:
-                    usuario_resposta = UsuarioResposta.objects.get(
-                        questao=alternativa.questao,
-                        usuario=request.user
-                    )
-
-                    usuario_resposta.alternativa = alternativa
-                    usuario_resposta.save()
-
-                except:
-                    usuario_resposta = UsuarioResposta.objects.create(
-                        alternativa=alternativa,
-                        questao=alternativa.questao,
-                        usuario=request.user
-                    )
-
-            percentual_acertos = (numero_respostas_corretas / questoes.count()) * 100
+            if(alternativa.correta == True):
+                numero_respostas_corretas = numero_respostas_corretas + 1
 
             try:
-                usuario_questionario = UsuarioQuestionario.objects.get(
-                    questionario=questionario,
-                    usuario=request.user,
+                usuario_resposta = UsuarioResposta.objects.get(
+                    questao=alternativa.questao,
+                    usuario=request.user
                 )
 
-                usuario_questionario.percentual_acertos = percentual_acertos
-                usuario_questionario.data_execucao = datetime.now()
-                usuario_questionario.save()
+                usuario_resposta.alternativa = alternativa
+                usuario_resposta.save()
+
             except:
-                usuario_questioanrio = UsuarioQuestionario.objects.create(
-                    questionario=questionario,
-                    usuario=request.user,
-                    percentual_acertos=percentual_acertos,
-                    data_execucao=datetime.now()
+                usuario_resposta = UsuarioResposta.objects.create(
+                    alternativa=alternativa,
+                    questao=alternativa.questao,
+                    usuario=request.user
                 )
+
+        percentual_acertos = (numero_respostas_corretas / questoes.count()) * 100
+
+        try:
+            usuario_questionario = UsuarioQuestionario.objects.get(
+                questionario=questionario,
+                usuario=request.user,
+            )
+
+            usuario_questionario.percentual_acertos = percentual_acertos
+            usuario_questionario.data_execucao = datetime.now()
+            usuario_questionario.save()
+        except:
+            usuario_questionario = UsuarioQuestionario.objects.create(
+                questionario=questionario,
+                usuario=request.user,
+                percentual_acertos=percentual_acertos,
+                data_execucao=datetime.now()
+            )
 
 
     # Verifica se o usuário corrente já respondeu ao questionário
@@ -591,16 +584,19 @@ def visualizacaoQuestionarioView(request, id):
             usuario=request.user
         )
 
-        if(usuario_respostas.count() > 0 and refazer == None):
+        if(usuario_respostas.count() > 0):
             alternativas_dict[alternativa.id] = True
         else:
             alternativas_dict[alternativa.id] = False
 
     # Verifca se o usuário corrente já respondeu ao questinário
-    usuario_questionario = UsuarioQuestionario.objects.get(
-        questionario=questionario,
-        usuario=request.user,
-    )
+    try:
+        usuario_questionario = UsuarioQuestionario.objects.get(
+            questionario=questionario,
+            usuario=request.user,
+        )
+    except:
+        usuario_questionario = None
 
     conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
         questionario.unidade.curso.id,
@@ -629,3 +625,23 @@ def visualizacaoQuestionarioView(request, id):
             'post_ajax': post_ajax,
         },
     )
+
+
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
+from sistema_treinamentos.settings import MEDIA_ROOT
+
+import os
+
+def downloadConteudo(request, file_path, diretorio):
+    """
+    e.g.: file_path = '/tmp/file.pdf'
+    """
+    try:
+        file_path = f"{MEDIA_ROOT}\\{diretorio}\\{file_path}"
+        wrapper = FileWrapper(open(file_path, 'rb'))
+        response = HttpResponse(wrapper, content_type='application/force-download')
+        response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+        return response
+    except Exception as e:
+        return None
