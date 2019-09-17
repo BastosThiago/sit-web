@@ -1,22 +1,25 @@
+import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import never_cache
-
-from .models import *
-from accounts.models import CustomUser
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
-from .forms import *
 from unicodedata import normalize
 from functools import reduce
 from operator import or_
 from django.db.models import Q, Min, Max
-
-
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
 from datetime import datetime
 
+from sistema_treinamentos.settings import MEDIA_ROOT
+from .forms import *
+from .models import *
+#from accounts.models import CustomUser
+
+# Dicionário que relaciona o modelo com seu form
 forms = {
     'categoria': CategoriaForm,
     'curso': CursoForm,
@@ -31,81 +34,135 @@ forms = {
 }
 
 
+def usuario_requisicao_aluno(request):
+    """
+      Função auxiliar que retorna se o usuário de uma requisição é do perfl ALUNO
+    """
+    if request.user.perfil == request.user.ALUNO:
+        return True
+    return False
+
+
 def obtemListaConteudoCurso(course_id):
-
+    """
+      Função auxiliar monta uma lista contendo dicionários que indicam
+      todo o conteúdo de um curso
+    """
     lista = []
-    curso = Curso.objects.get(pk=course_id)
 
-    unidades = Unidade.objects.filter(curso=curso)
+    try:
+        # Obtém o curso de acordo com o ID fornecido
+        curso = Curso.objects.get(pk=course_id)
 
-    for unidade in unidades:
+        # Obtém as unidades associadas aos cursos
+        unidades = Unidade.objects.filter(curso=curso)
 
-        videos = Video.objects.filter(unidade=unidade).order_by('ordem')
-        for video in videos:
-            lista.append(dict({video.id: 'video'}))
+        # Para cada unidade do curso, obtém os conteúdos(videos, arquivos ou questionários)
+        # e os insere na lista
+        for unidade in unidades:
 
-        arquivos = Arquivo.objects.filter(unidade=unidade).order_by('ordem')
-        for arquivo in arquivos:
-            lista.append(dict({arquivo.id: 'arquivo'}))
+            videos = Video.objects.filter(unidade=unidade).order_by('ordem')
+            for video in videos:
+                lista.append(dict({video.id: 'video'}))
 
-        questionarios = Questionario.objects.filter(unidade=unidade).order_by('ordem')
-        for questionario in questionarios:
-            lista.append(dict({questionario.id: 'questionario'}))
+            arquivos = Arquivo.objects.filter(unidade=unidade).order_by('ordem')
+            for arquivo in arquivos:
+                lista.append(dict({arquivo.id: 'arquivo'}))
 
+            questionarios = Questionario.objects.filter(unidade=unidade).order_by('ordem')
+            for questionario in questionarios:
+                lista.append(dict({questionario.id: 'questionario'}))
+    except:
+        lista = []
     return lista
 
 
-def geraLinksConteudosCurso(curso_id, conteudo_nome, conteudo_id):
+def obtemLinksConteudosCurso(curso_id, conteudo_nome, conteudo_id):
+    """
+      Função auxiliar que obtém o link do conteúdo anterior e do próximo
+      conteúdo de um curso dado o curso e o conteúdo atual selecionado
+    """
 
-    lista_conteudo_curso = obtemListaConteudoCurso(curso_id)
+    try:
+        # Obtém a lista completa de conteúdos do curso de acordo com o ID fornecido
+        lista_conteudo_curso = obtemListaConteudoCurso(curso_id)
 
-    indice = lista_conteudo_curso.index(dict({conteudo_id: conteudo_nome}))
+        # Obtém o indice atual da lista de acordo com o conteúdo fornecido
+        indice = lista_conteudo_curso.index(dict({conteudo_id: conteudo_nome}))
 
-    # Caso tenha encontrado o item na lista
-    if indice >= 0:
-        [[conteudo_id, conteudo_nome]] = lista_conteudo_curso[indice].items()
+        # Caso tenha encontrado o item na lista, obtém o link para o conteúdo anterior
+        # e para o próximo conteúdo
+        if indice >= 0:
+            [[conteudo_id, conteudo_nome]] = lista_conteudo_curso[indice].items()
 
-        if indice - 1 >= 0:
-            conteudo_anterior = lista_conteudo_curso[indice - 1]
-            [[conteudo_anterior_id, conteudo_anterior_nome]] = lista_conteudo_curso[indice - 1].items()
-            conteudo_anterior_url = f"/visualizacao-{conteudo_anterior_nome}/{conteudo_anterior_id}"
-        else:
-            conteudo_anterior_url = ''
+            if indice - 1 >= 0:
+                conteudo_anterior = lista_conteudo_curso[indice - 1]
+                [[conteudo_anterior_id, conteudo_anterior_nome]] = lista_conteudo_curso[indice - 1].items()
+                conteudo_anterior_url = f"/visualizacao-{conteudo_anterior_nome}/{conteudo_anterior_id}"
+            else:
+                conteudo_anterior_url = ''
 
-        if indice + 1 < len(lista_conteudo_curso):
-            proximo_conteudo = lista_conteudo_curso[indice + 1]
-            [[prox_conteudo_id, prox_conteudo_nome]] = lista_conteudo_curso[indice + 1].items()
-            prox_conteudo_url = f"/visualizacao-{prox_conteudo_nome}/{prox_conteudo_id}"
-        else:
-            prox_conteudo_url = ''
+            if indice + 1 < len(lista_conteudo_curso):
+                proximo_conteudo = lista_conteudo_curso[indice + 1]
+                [[prox_conteudo_id, prox_conteudo_nome]] = lista_conteudo_curso[indice + 1].items()
+                prox_conteudo_url = f"/visualizacao-{prox_conteudo_nome}/{prox_conteudo_id}"
+            else:
+                prox_conteudo_url = ''
+    except:
+        conteudo_anterior_url = ''
+        prox_conteudo_url = ''
 
     return conteudo_anterior_url, prox_conteudo_url
 
+
 def remover_acentos(txt):
+    """
+      Função auxiliar para remover caracteres especiais de uma string
+    """
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
 
 
+@login_required
 class Home(TemplateView):
-    obtemListaConteudoCurso(1)
+    """
+      Classe responsável por fornecer o template da página inicial
+    """
+    #user = CustomUser.objects.get(pk=3)
+    #curso = Curso.objects.get(pk=1)
+    #Curso.objects.obtem_unidades_curso(curso)
+    #Curso.objects.obtem_videos_curso(curso)
+    #Curso.objects.obtem_questionarios_curso(curso)
+    #Curso.objects.obtem_videos_assistindos_por_usuario(curso, user)
+    #Curso.objects.obtem_questionarios_respondidos_por_usuario(curso, user)
+    #Curso.objects.obtem_percentual_andamento_por_usuario(curso, user)
+    #Curso.objects.obtem_percentual_acertos_por_usuario(curso, user)
     template_name = 'index.html'
 
 
 @login_required
 def registrosListView(request, modelo):
     """
-    View responsável pelo tratamento de obtenção da lista de registros associados ao modelo fornecido
+    View responsável pelo tratamento de obtenção da lista de registros associados
+    ao modelo fornecido
     """
 
+    # Obtém o título a ser apresentado na página com base no nome do modelo
     tituloPagina = modelo._meta.verbose_name_plural
+
+    # Obtém o texto a ser atribuido no link
     nomeLink = remover_acentos(modelo._meta.verbose_name.lower())
+
 
     search = request.GET.get('search')
 
+    # Verifica se na requisição de GET foi passado o parametro de pesquisa.
+    # Caso sim, verifica o texto pesquisado nas informações do modelo
     if search:
         search_fields = modelo.CustomMeta.search_fields
         filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
         objetos = modelo.objects.filter(filtro)
 
+    # Caso não, obtém a lista de todos os objetos
     else:
         listaObjetos = modelo.objects.all().order_by(modelo.CustomMeta.ordering_field)
 
@@ -132,14 +189,21 @@ def novoRegistroView(request, modelo):
     View responsável pelo tratamento de adição de um novo registro associado ao modelo fornecido
     """
 
+    # Obtém os nomes associado ao modelo da requisição
     nomeModelo = modelo._meta.verbose_name
     nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
+    # Monta o título a ser apresentado na página
     tituloPagina = f"Novo registro de {nomeModelo}"
+
+    # Monta a informação do link de redirecionamento
     nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
+    # Obtém o form associado ao modelo
     formModelo = forms[remover_acentos(nomeModelo.lower())]
 
+    # Caso o método HTTP associado a requisição seja POST
+    # Exibe o formulário com os dados já existentes, senão, um em branco
     if request.method == 'POST':
         form = formModelo(request.POST, request.FILES or None)
 
@@ -168,12 +232,15 @@ def editaRegistroView(request, id, modelo):
     View responsável pelo tratamento de edição de um registro associado ao modelo fornecido
     """
 
+    # Obtém os nomes associado ao modelo da requisição
     nomeModelo = modelo._meta.verbose_name
     nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
+    # Monta o título a ser apresentado na página
     tituloPagina = f"Edição de registro de {nomeModelo}"
     nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
+    # Obtém o form associado ao modelo
     formModelo = forms[remover_acentos(nomeModelo.lower())]
 
     objeto = get_object_or_404(modelo, pk=id)
@@ -333,7 +400,7 @@ def inscricaoCursoView(request):
 @login_required
 def conteudoCursoView(request, id):
     """
-    View responsável pelo tratamento de apresentação do conteúdo do curso selecioando
+    View responsável pelo tratamento de apresentação do conteúdo do curso selecionado
     """
 
     curso = get_object_or_404(Curso, pk=id)
@@ -346,6 +413,15 @@ def conteudoCursoView(request, id):
 
     questionarios = Questionario.objects.filter(unidade__in=unidades)
 
+    # Verifica se o usuário da requisição é do perfil ALUNO
+    inscricao = None
+    curso_concluido = False
+    if usuario_requisicao_aluno(request):
+        inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
+        if inscricao.situacao != "EM ANDAMENTO":
+            curso_concluido = True
+
+
     return render(
         request,
         'core/conteudoCurso.html',
@@ -355,6 +431,8 @@ def conteudoCursoView(request, id):
             'videos': videos,
             'arquivos': arquivos,
             'questionarios': questionarios,
+            'inscricao': inscricao,
+            'curso_concluido': curso_concluido,
         }
     )
 
@@ -400,7 +478,7 @@ def visualizacaoVideoView(request, id):
                     src_api_video = 'https://player.vimeo.com/api/player.js'
 
 
-    conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
+    conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         video.unidade.curso.id,
         'video',
         video.id
@@ -432,6 +510,36 @@ def visualizacaoVideoView(request, id):
     )
 
 
+def atualizaAndamentoCurso(curso, usuario):
+
+    percentual_andamento= Curso.objects.obtem_percentual_andamento_por_usuario(
+        curso,
+        usuario
+    )
+
+    percentual_acertos = Curso.objects.obtem_percentual_acertos_por_usuario(
+        curso,
+        usuario
+    )
+
+    inscricao_usuario = Inscricao.objects.get(
+        usuario=usuario,
+        curso=curso
+    )
+
+    inscricao_usuario.percentual_andamento = percentual_andamento
+    inscricao_usuario.percentual_acertos = percentual_acertos
+
+    if percentual_andamento >= 100:
+        inscricao_usuario.data_conclusao = datetime.now()
+        if percentual_acertos >= 70:
+            inscricao_usuario.situacao = 'APROVADO'
+        else:
+            inscricao_usuario.situacao = 'REPROVADO'
+
+    inscricao_usuario.save()
+
+
 @login_required
 @never_cache
 def atualizaVideoUsuarioView(request):
@@ -454,6 +562,8 @@ def atualizaVideoUsuarioView(request):
                 usuario_video.assistido = True
                 usuario_video.data_assistido = datetime.now()
             usuario_video.save()
+
+            atualizaAndamentoCurso(usuario_video.video.unidade.curso)
         except:
             return resposta
     return resposta
@@ -488,7 +598,7 @@ def visualizacaoArquivoView(request, id):
 
     arquivo = get_object_or_404(Arquivo, pk=id)
 
-    conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
+    conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         arquivo.unidade.curso.id,
         'arquivo',
         arquivo.id
@@ -575,6 +685,7 @@ def visualizacaoQuestionarioView(request, id):
                 data_execucao=datetime.now()
             )
 
+        atualizaAndamentoCurso(questionario.unidade.curso, request.user)
 
     # Verifica se o usuário corrente já respondeu ao questionário
     alternativas_dict = {}
@@ -598,7 +709,7 @@ def visualizacaoQuestionarioView(request, id):
     except:
         usuario_questionario = None
 
-    conteudo_anterior_url, proximo_conteudo_url = geraLinksConteudosCurso(
+    conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         questionario.unidade.curso.id,
         'questionario',
         questionario.id
@@ -627,12 +738,6 @@ def visualizacaoQuestionarioView(request, id):
     )
 
 
-from django.http import HttpResponse
-from wsgiref.util import FileWrapper
-from sistema_treinamentos.settings import MEDIA_ROOT
-
-import os
-
 def downloadConteudo(request, file_path, diretorio):
     """
     e.g.: file_path = '/tmp/file.pdf'
@@ -645,3 +750,12 @@ def downloadConteudo(request, file_path, diretorio):
         return response
     except Exception as e:
         return None
+
+
+def obtemCertificado(request, curso_id):
+    """
+
+    """
+
+    inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
+

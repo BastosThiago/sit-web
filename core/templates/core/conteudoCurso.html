@@ -6,6 +6,30 @@
 <div class="offset-1 col-10 list-div">
     <h2>Conteúdo {{curso.titulo}}</h2>
 
+    {% if inscricao %}
+        <div class="info-inscricao-curso">
+            <p>
+               Inscricao: {{ inscricao.data_inscricao }}
+            </p>
+            <p>
+               Andamento: {{ inscricao.percentual_andamento }} %
+            </p>
+            <p>
+               Acertos: {{ inscricao.percentual_acertos }} %
+            </p>
+            <p>
+               Situação: {{ inscricao.situacao }}
+            </p>
+        </div>
+
+    {% endif %}
+
+    {% if curso_concluido %}
+        <div class="botao-certificado">
+            <a href="/certificado/{{ curso.id }}">Certificado<span><i class="fas fa-download"></i></span></a>
+        </div>
+    {% endif %}
+
     <ul>
 
         {% for unidade in unidades %}

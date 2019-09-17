@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from sistema_treinamentos.settings import AUTH_USER_MODEL
 
 from .fields import OrderField
@@ -19,7 +20,91 @@ class Categoria(models.Model):
         search_fields = ['titulo',]
 
 
+class CursoManager(models.Manager):
+    """
+
+    """
+
+    def obtem_unidades_curso(self, curso):
+        """
+
+        """
+        unidades_curso = Unidade.objects.filter(
+            curso=curso
+        )
+
+        return unidades_curso
+
+    def obtem_videos_curso(self, curso):
+        """
+
+        """
+        unidades_curso = self.obtem_unidades_curso(curso)
+
+        videos_curso = Video.objects.filter(
+            unidade__in=unidades_curso
+        )
+
+        return videos_curso
+
+    def obtem_questionarios_curso(self, curso):
+        unidades_curso = self.obtem_unidades_curso(curso)
+
+        questionarios_curso = Questionario.objects.filter(
+            unidade__in=unidades_curso
+        )
+
+        return questionarios_curso
+
+    def obtem_videos_assistindos_por_usuario(self, curso, usuario):
+        videos_assistindos = UsuarioVideo.objects.filter(
+            usuario=usuario,
+            video__unidade__curso=curso
+        )
+        return videos_assistindos
+
+    def obtem_questionarios_respondidos_por_usuario(self, curso, usuario):
+        questionarios_respondidos = UsuarioQuestionario.objects.filter(
+            usuario=usuario,
+            questionario__unidade__curso=curso
+        )
+        return questionarios_respondidos
+
+    def obtem_percentual_andamento_por_usuario(self, curso, usuario):
+        total_videos_curso = self.obtem_videos_curso(curso).count()
+        total_questionarios_curso = self.obtem_questionarios_curso(curso).count()
+
+        total_videos_assistidos = self.obtem_videos_assistindos_por_usuario(
+            curso,
+            usuario
+        ).count()
+
+        total_questionarios_respondidos = self.obtem_questionarios_respondidos_por_usuario(
+            curso,
+            usuario
+        ).count()
+
+        total_conteudo = total_videos_curso + total_questionarios_curso
+        total_conteudo_realizado = total_videos_assistidos + total_questionarios_respondidos
+
+        percentual_andamento = (total_conteudo_realizado / total_conteudo) * 100
+
+        return percentual_andamento
+
+    def obtem_percentual_acertos_por_usuario(self, curso, usuario):
+        questionarios_respondidos = self.obtem_questionarios_respondidos_por_usuario(
+            curso,
+            usuario
+        )
+
+        percentual_acertos = (questionarios_respondidos.aggregate(Avg('percentual_acertos')))['percentual_acertos__avg']
+
+        return percentual_acertos
+
 class Curso(models.Model):
+
+    objects = CursoManager()
+
     titulo = models.CharField(unique=True, max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -52,6 +137,7 @@ class Inscricao(models.Model):
     situacao = models.CharField(max_length=12, choices=SITUACOES, default='EM ANDAMENTO')
     obteve_certificado = models.BooleanField(default=False)
     data_inscricao = models.DateTimeField(auto_now_add=True)
+    data_conclusao = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Inscrição do usuário {self.usuario}"
