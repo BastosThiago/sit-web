@@ -13,11 +13,14 @@ from django.db.models import Q, Min, Max
 from django.http import HttpResponse
 from wsgiref.util import FileWrapper
 from datetime import datetime
+from django.utils import timezone
+
 
 from sistema_treinamentos.settings import MEDIA_ROOT
 from .forms import *
 from .models import *
-#from accounts.models import CustomUser
+from .render import render_to_pdf
+from accounts.models import CustomUser
 
 # Dicionário que relaciona o modelo com seu form
 forms = {
@@ -751,17 +754,25 @@ def downloadConteudo(request, file_path, diretorio):
         return None
 
 
-
-from django.utils import timezone
-from .render import Render
-
 def obtemCertificado(request, curso_id):
 
+    usuario = CustomUser.objects.get(pk=request.user.id)
     inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
-    today = timezone.now()
-    params = {
-        'today': today,
+
+    contexto = {
+        'usuario': usuario,
         'inscricao': inscricao,
         'request': request
     }
-    return Render.render('core/certificado_conclusao.html', params)
+    pdf = render_to_pdf('core/certificado_conclusao.html', contexto)
+
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        nome_arquivo = "certificado.pdf"
+        content = "inline; filename='%s'" % (nome_arquivo)
+        download = request.GET.get("download")
+        if download:
+            content = "attachment; filename='%s'" % (nome_arquivo)
+        response['Content-Disposition'] = content
+        return response
+    return HttpResponse("Erro ao gerar do certificado.", status=400)
