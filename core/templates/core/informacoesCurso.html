@@ -18,6 +18,7 @@
      <p>
         Descrição: {{curso.descriação}}
     </p>
+
     <ul class="itens-lista">
 
         {% for unidade in unidades %}
@@ -36,7 +37,7 @@
     {% if exibe_botao_inscricao %}
         <a class="botao_inscricao" id="add-link" href="#" data-curso_id="{{ curso.id }}">
         <div class="col-4 add-div">
-            <i class="fas fa-plus"></i> Adicionar
+            <i class="fas fa-plus"></i> Inscrever-se
         </div>
     {% endif %}
 
@@ -64,6 +65,7 @@
             success: function( data )
             {
                 $( '#message' ).text(data);
+                window.location = '/conteudo-curso/1';
             }
          })
     });

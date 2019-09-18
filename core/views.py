@@ -356,7 +356,7 @@ def informacoesCursoView(request, id):
         inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
 
         if(inscricao.count() == 0):
-            exibe_botao_inscriacao = True
+            exibe_botao_inscricao = True
         else:
             exibe_botao_conteudo = True
 
@@ -386,7 +386,7 @@ def inscricaoCursoView(request):
 
             inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
 
-            if(inscricao):
+            if(inscricao.count() == 0):
                 Inscricao.objects.create(curso=curso, usuario=request.user)
                 resposta = "Inscrição realizada com sucesso."
             else:
