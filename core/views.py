@@ -122,7 +122,6 @@ def remover_acentos(txt):
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
 
 
-@login_required
 class Home(TemplateView):
     """
       Classe responsável por fornecer o template da página inicial
@@ -752,10 +751,17 @@ def downloadConteudo(request, file_path, diretorio):
         return None
 
 
-def obtemCertificado(request, curso_id):
-    """
 
-    """
+from django.utils import timezone
+from .render import Render
+
+def obtemCertificado(request, curso_id):
 
     inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
-
+    today = timezone.now()
+    params = {
+        'today': today,
+        'inscricao': inscricao,
+        'request': request
+    }
+    return Render.render('core/certificado_conclusao.html', params)
