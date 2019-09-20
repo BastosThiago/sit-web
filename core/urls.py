@@ -33,7 +33,8 @@ urlpatterns = [
     path('download/arquivos/<str:file_path>',   downloadConteudo, {'diretorio': 'arquivos'},    name='download-arquivos'),
     path('download/videos/<str:file_path>',     downloadConteudo, {'diretorio': 'videos'},      name='download-videos'),
     path('certificado/<int:curso_id>',          obtemCertificado,                               name='obtemCertificado'),
-
+    path('relatorio-acompanhamento/',           relatorioAcompanhamentoView,                    name='relatorio-acompanhamento'),
+    path('relatorio-usuario/',                  relatorioUsuarioView,                           name='relatorio-usuario'),
 
     path('cadastros-categorias/',          registrosListView,  {'modelo': Categoria},      name='cadastros-categorias'),
     path('adiciona-categoria/',            novoRegistroView,   {'modelo': Categoria},      name='nova-categoria'),

@@ -776,3 +776,66 @@ def obtemCertificado(request, curso_id):
         response['Content-Disposition'] = content
         return response
     return HttpResponse("Erro ao gerar do certificado.", status=400)
+
+
+def relatorioAcompanhamentoView(request):
+
+    usuarios = CustomUser.objects.filter(perfil=1).order_by('username')
+
+    usuario = None
+    inscricoes = None
+    usuario_id = request.GET.get('usuario')
+
+    if usuario_id:
+        try:
+            usuario = CustomUser.objects.get(pk=usuario_id)
+            inscricoes = Inscricao.objects.filter(usuario=usuario)
+        except:
+            usuario = None
+
+
+    if request.is_ajax():
+        return render(
+            request,
+            'core/conteudo-relatorio.html',
+            {
+                'usuario': usuario,
+                'inscricoes': inscricoes,
+            }
+        )
+    else:
+        return render(
+            request,
+            'core/relatorio-acompanhamento.html',
+            {
+                'usuarios': usuarios,
+                'usuario': usuario,
+                'inscricoes': inscricoes,
+            }
+        )
+
+
+def relatorioUsuarioView(request):
+
+    if request.method == 'GET':
+        try:
+            usuario_id = request.GET['usuario_id']
+
+            usuario = CustomUser.objects.get(pk=usuario_id)
+            inscricoes = Inscricao.objects.filter(usuario=usuario)
+
+
+        except:
+            return JsonResponse({})
+
+    return render(
+        request,
+        'core/conteudo-relatorio.html',
+        {
+            'usuario': usuario,
+            'inscricoes': inscricoes,
+        }
+    )
+
+
+

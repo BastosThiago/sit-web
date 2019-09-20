@@ -37,12 +37,14 @@
                     <a class="nav-link" href="/accounts/login">Entrar</a>
                 </li>
               {% endif %}
-              <li class="nav-item">
-                <a class="nav-link" href="#">Sobre nós</a>
-              </li>
               {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="/accounts/logout">Sair</a>
+                </li>
+              {% endif %}
+              {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <p>{{ user.username }}</p>
                 </li>
               {% endif %}
             </ul>

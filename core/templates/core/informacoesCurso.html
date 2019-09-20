@@ -64,8 +64,10 @@
             },
             success: function( data )
             {
-                $( '#message' ).text(data);
                 window.location = '/conteudo-curso/1';
+            },
+            error: function(data){
+                $( '#message' ).text(data);
             }
          })
     });

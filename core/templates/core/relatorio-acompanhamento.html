@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}Relatório acompanhamento{%endblock %}
+
+{% block content %}
+
+    <ul>
+        {% for usuario in usuarios %}
+            <li>
+                <p>{{ usuario.get_full_name }}</p>
+            </li>
+        {% endfor %}
+
+        {% for inscricao in inscricoes %}
+            <li>
+                <p>{{ inscricao.usuario.get_full_name }}</p>
+            </li>
+        {% endfor %}
+
+        <select id="select-alunos" name="alunos">
+        {% for usuario in usuarios %}
+            <option value="{{ usuario.id }}">{{ usuario.get_full_name }}</option>
+        {% endfor %}
+        </select>
+
+        <select name="inscricoes">
+        {% for inscricao in inscricoes %}
+            <option value="{{ inscricao.curso.id }}">{{ inscricao.curso.titulo }}</option>
+        {% endfor %}
+        </select>
+    </ul>
+
+    {% include  'core/conteudo-relatorio.html' %}
+
+    <script>
+        function geraRelatorio(){
+            var opcao_selecionada = $('#select-alunos').children("option:selected").val();
+
+            $.ajax(
+            {
+                type:"GET",
+                url: '/relatorio-usuario',
+                data:{
+                    'usuario_id': opcao_selecionada,
+                },
+                success: function( data )
+                {
+                    $(".conteudo-relatorio-container").replaceWith(data);
+                    //window.history.pushState({route: url}, "Arquivo", url);
+                    window.location.href = '/relatorio-acompanhamento/?usuario=' + opcao_selecionada;
+                }
+             })
+        }
+
+    </script>
+    <p><span><i class="fas fa-arrow-right" onclick="geraRelatorio()"></i></span></p>
+{% endblock %}

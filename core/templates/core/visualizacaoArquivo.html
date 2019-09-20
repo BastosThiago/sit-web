@@ -8,28 +8,28 @@
 
 {% block content %}
 
-<div class="offset-1 col-10 list-div">
+    <div class="offset-1 col-10 list-div">
 
-    {% include  'conteudo_arquivo.html' %}
+        {% include  'conteudo_arquivo.html' %}
 
-</div>
+    </div>
 
-<script>
-    function atualizaConteudo(url){
+    <script>
+        function atualizaConteudo(url){
 
-        $.ajax(
-        {
-            type:"GET",
-            url: url,
-            data:{
-            },
-            success: function( data )
+            $.ajax(
             {
-                $(".conteudo-curso-container").replaceWith(data);
-                window.history.pushState({route: url}, "Arquivo", url);
-            }
-         })
-    }
+                type:"GET",
+                url: url,
+                data:{
+                },
+                success: function( data )
+                {
+                    $(".conteudo-curso-container").replaceWith(data);
+                    window.history.pushState({route: url}, "Arquivo", url);
+                }
+             })
+        }
 
-</script>
+    </script>
 {% endblock %}
