@@ -130,7 +130,7 @@ class Home(TemplateView):
       Classe responsável por fornecer o template da página inicial
     """
     #user = CustomUser.objects.get(pk=3)
-    #curso = Curso.objects.get(pk=1)
+    curso = Curso.objects.get(pk=1)
     #Curso.objects.obtem_unidades_curso(curso)
     #Curso.objects.obtem_videos_curso(curso)
     #Curso.objects.obtem_questionarios_curso(curso)
@@ -138,6 +138,7 @@ class Home(TemplateView):
     #Curso.objects.obtem_questionarios_respondidos_por_usuario(curso, user)
     #Curso.objects.obtem_percentual_andamento_por_usuario(curso, user)
     #Curso.objects.obtem_percentual_acertos_por_usuario(curso, user)
+    #curso.obtem_nota_media_curso()
     template_name = 'index.html'
 
 
@@ -343,22 +344,44 @@ def informacoesCursoView(request, id):
     View responsável pelo tratamento de apresentação das informações de um curso
     """
 
+    # Obtém o curso associado a requisição
     curso = get_object_or_404(Curso, pk=id)
 
+    # Obtém a lista de unidades associadas ao curso
     unidades = Unidade.objects.filter(curso=curso)
 
-    avaliacoes = Avaliacao.objects.filter(curso=curso)
+    # Obtém as avaliações associadas ao curso
+    avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
+
+    # Obtém a nota média das avaliações associadas a curso(caso exista alguma)
+    nota_media_curso = "SEM NOTA"
+    if avaliacoes.count() > 0:
+        nota_media_curso = curso.obtem_nota_media_curso()
+        nota_media_curso = "{:.2f}".format(nota_media_curso)
 
     exibe_botao_inscricao = False
-    exibe_botao_conteudo  = False
+    exibe_botao_conteudo = False
+    avaliacao_usuario = None
 
+    # Caso o usuário seja do pefil ALUNO
     if request.user.perfil == request.user.ALUNO:
+
+        # Verifica se o usuário está inscrito no curso ou não
         inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
 
         if(inscricao.count() == 0):
             exibe_botao_inscricao = True
         else:
             exibe_botao_conteudo = True
+
+        # Verifica se o usuário da requisição já avaliou o curso acessado
+        try:
+            avaliacao_usuario = Avaliacao.objects.get(
+                curso=curso,
+                usuario=request.user
+            )
+        except:
+            avaliacao_usuario = None
 
     return render(
         request,
@@ -367,6 +390,8 @@ def informacoesCursoView(request, id):
             'curso': curso,
             'unidades': unidades,
             'avaliacoes': avaliacoes,
+            'nota_media_curso': nota_media_curso,
+            'avaliacao_usuario': avaliacao_usuario,
             'exibe_botao_inscricao': exibe_botao_inscricao,
             'exibe_botao_conteudo': exibe_botao_conteudo,
         }
@@ -398,6 +423,59 @@ def inscricaoCursoView(request):
     else:
         return HttpResponse(resposta)
 
+
+@login_required
+def avaliacaoCursoView(request, id):
+    """
+    View responsável pelo tratamento de avaliacao de um curso
+    """
+
+    curso = Curso.objects.get(pk=id)
+
+    inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
+
+    # Obtém as avaliações associadas ao curso
+    avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
+
+    avaliacao_usuario = None
+    if request.method == 'POST':
+
+        nota = int(request.POST.get('nota'))
+        comentario = request.POST.get('comentario')
+
+        try:
+            avaliacao_usuario = Avaliacao.objects.get(
+                curso=inscricao.curso,
+                usuario=request.user
+            )
+
+            avaliacao_usuario.nota = nota
+            avaliacao_usuario.comentario = comentario
+            avaliacao_usuario.save()
+
+        except:
+            avaliacao_usuario = Avaliacao.objects.create(
+                curso=inscricao.curso,
+                usuario=request.user,
+                nota=nota,
+                comentario=comentario,
+                data_avaliacao=datetime.now()
+            )
+
+    nota_media_curso = curso.obtem_nota_media_curso()
+
+    nota_media_curso = "{:.2f}".format(nota_media_curso)
+
+    return render(
+        request,
+        'core/avaliacao-conteudo.html',
+        {
+            'avaliacao_usuario': avaliacao_usuario,
+            'avaliacoes': avaliacoes,
+            'curso': curso,
+            'nota_media_curso': nota_media_curso,
+        },
+    )
 
 @login_required
 def conteudoCursoView(request, id):
@@ -769,10 +847,10 @@ def obtemCertificado(request, curso_id):
     if pdf:
         response = HttpResponse(pdf, content_type='application/pdf')
         nome_arquivo = "certificado.pdf"
-        content = "inline; filename='%s'" % (nome_arquivo)
+        content = "inline; filename=%s" % (nome_arquivo)
         download = request.GET.get("download")
         if download:
-            content = "attachment; filename='%s'" % (nome_arquivo)
+            content = "attachment; filename=%s" % (nome_arquivo)
         response['Content-Disposition'] = content
         return response
     return HttpResponse("Erro ao gerar do certificado.", status=400)
@@ -801,6 +879,7 @@ def relatorioAcompanhamentoView(request):
             {
                 'usuario': usuario,
                 'inscricoes': inscricoes,
+                'arquivo': False,
             }
         )
     else:
@@ -811,6 +890,7 @@ def relatorioAcompanhamentoView(request):
                 'usuarios': usuarios,
                 'usuario': usuario,
                 'inscricoes': inscricoes,
+                'arquivo': False,
             }
         )
 
@@ -834,8 +914,33 @@ def relatorioUsuarioView(request):
         {
             'usuario': usuario,
             'inscricoes': inscricoes,
+            'arquivo': False,
         }
     )
 
+
+def obtemRelatorio(request, usuario_id):
+
+    usuario = CustomUser.objects.get(pk=usuario_id)
+    inscricoes = Inscricao.objects.filter(usuario=usuario)
+
+    contexto = {
+        'usuario': usuario,
+        'inscricoes': inscricoes,
+        'arquivo': True,
+        'request': request
+    }
+    pdf = render_to_pdf('core/conteudo-relatorio.html', contexto)
+
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        nome_arquivo = "relatorio.pdf"
+        content = "inline; filename=%s" % (nome_arquivo)
+        download = request.GET.get("download")
+        if download:
+            content = "attachment; filename=%s" % (nome_arquivo)
+        response['Content-Disposition'] = content
+        return response
+    return HttpResponse("Erro ao gerar do relatório.", status=400)
 
 

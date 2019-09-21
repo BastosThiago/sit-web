@@ -6,6 +6,8 @@
 <div class="offset-1 col-10 list-div">
     <h2>{{curso.titulo}}</h2>
 
+    </br>
+    <h3>Informações sobre o curso</h3>
     <p>
         {{curso.categoria.titulo}}
     </p>
@@ -19,6 +21,9 @@
         Descrição: {{curso.descriação}}
     </p>
 
+    </br>
+
+    <h3>Unidades do curso</h3>
     <ul class="itens-lista">
 
         {% for unidade in unidades %}
@@ -26,13 +31,13 @@
                 <p>{{unidade.titulo}}</p>
             </li>
         {% endfor %}
-
-        {% for avaliacao in avaliacoes %}
-            <li>
-                <p>{{avaliacao.comentario}}</p>
-            </li>
-        {% endfor %}
     </ul>
+
+    </br>
+
+
+    {% include  'core/avaliacao-conteudo.html' %}
+
 
     {% if exibe_botao_inscricao %}
         <a class="botao_inscricao" id="add-link" href="#" data-curso_id="{{ curso.id }}">

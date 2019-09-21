@@ -83,7 +83,7 @@
             e.preventDefault();
 
             var $formData = $(this).serialize()
-            var $thisURL = $(this).attr('data-url') || window.location.href // or set your own url
+            var $thisURL = $(this).attr('data-url') || window.location.href
             $.ajax({
                 method: "POST",
                 url: $thisURL,

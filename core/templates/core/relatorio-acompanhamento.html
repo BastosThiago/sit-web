@@ -6,31 +6,17 @@
 
 {% block content %}
 
-    <ul>
-        {% for usuario in usuarios %}
-            <li>
-                <p>{{ usuario.get_full_name }}</p>
-            </li>
-        {% endfor %}
 
-        {% for inscricao in inscricoes %}
-            <li>
-                <p>{{ inscricao.usuario.get_full_name }}</p>
-            </li>
-        {% endfor %}
+    <select id="select-alunos" name="alunos">
+    {% for user in usuarios %}
+        {% if usuario != None and usuario.id == user.id %}
+            <option value="{{ user.id }}" selected="selected">{{ user.get_full_name }}</option>
+        {% else %}
+            <option value="{{ user.id }}">{{ user.get_full_name }}</option>
+        {% endif %}
+    {% endfor %}
+    </select>
 
-        <select id="select-alunos" name="alunos">
-        {% for usuario in usuarios %}
-            <option value="{{ usuario.id }}">{{ usuario.get_full_name }}</option>
-        {% endfor %}
-        </select>
-
-        <select name="inscricoes">
-        {% for inscricao in inscricoes %}
-            <option value="{{ inscricao.curso.id }}">{{ inscricao.curso.titulo }}</option>
-        {% endfor %}
-        </select>
-    </ul>
 
     {% include  'core/conteudo-relatorio.html' %}
 
@@ -48,8 +34,9 @@
                 success: function( data )
                 {
                     $(".conteudo-relatorio-container").replaceWith(data);
-                    //window.history.pushState({route: url}, "Arquivo", url);
-                    window.location.href = '/relatorio-acompanhamento/?usuario=' + opcao_selecionada;
+                    let url_aux = '/relatorio-acompanhamento/?usuario=' + opcao_selecionada;
+                    window.history.pushState({route: url_aux}, "Relatório", url_aux);
+                    //window.location.href = '/relatorio-acompanhamento/?usuario=' + opcao_selecionada;
                 }
              })
         }

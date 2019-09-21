@@ -101,6 +101,7 @@ class CursoManager(models.Manager):
 
         return percentual_acertos
 
+
 class Curso(models.Model):
 
     objects = CursoManager()
@@ -116,13 +117,21 @@ class Curso(models.Model):
         verbose_name = "Curso"
         verbose_name_plural = "Cursos"
 
-    def __str__(self):
-        return self.titulo
-
     class CustomMeta:
         ordering_field = 'titulo'
         search_fields = ['titulo', 'categoria__titulo', 'usuario__username', 'palavras_chaves', 'descricao']
 
+    def __str__(self):
+        return self.titulo
+
+    def obtem_nota_media_curso(self):
+        nota_media_curso = Avaliacao.objects.filter(
+            curso=self
+        ).aggregate(
+            Avg('nota')
+        )['nota__avg']
+
+        return nota_media_curso
 
 class Inscricao(models.Model):
     SITUACOES = [
