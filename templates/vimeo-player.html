@@ -15,12 +15,12 @@
     <script src="https://player.vimeo.com/api/player.js"></script>
     <script>
 
-        var iframe = document.querySelector('#player');
-        var player = new Vimeo.Player(iframe);
-        var tempo_corrente = 0;
+        var iframe          = document.querySelector('#player');
+        var player          = new Vimeo.Player(iframe);
+        var tempo_corrente  = 0;
         var video_assistido = false;
 
-        //__ Obtém o tempo corrente do video que será exibido
+        //__ Obtém o tempo corrente do video da página
         $(document).ready(function(){
             $.ajax(
             {
@@ -34,7 +34,7 @@
                     tempo_corrente = parseInt(data["tempo_corrente"]);
                     player.setCurrentTime(tempo_corrente)
                 }
-             })
+            })
         })
 
         //__ Função para atualizar na base de dados via Ajax algumas informações do video
@@ -48,24 +48,22 @@
                     tempo_corrente: tempo_corrente,
                     video_assistido: video_assistido
                 }
-             })
+            })
         }
 
+        //__ Função para obter o tempo corrente do video da página
         function getCurrentTime(){
-          player.getCurrentTime().then(function(seconds) {
-              tempo_corrente = seconds;
-          })
+            player.getCurrentTime().then(function(seconds) {
+                tempo_corrente = seconds;
+            })
         }
 
         //__ Evento de inicio do video
         player.on('play', function() {
-            //alert('You have played the video')
             video_assistido = false;
             player_container.classList.remove("ended");
             callViewUpdateVideo()
             setInterval (getCurrentTime, 2000);
-
-
         });
 
         //__ Evento de fim do video
@@ -75,11 +73,12 @@
             callViewUpdateVideo()
         });
 
+        //__ Evento de quando o player está pronto
         player.ready().then(function() {
             player.setCurrentTime(tempo_corrente)
         });
 
-
+        //__ Método executado antes de fechar a página
         $(window).on("beforeunload", function(e) {
             callViewUpdateVideo()
         })

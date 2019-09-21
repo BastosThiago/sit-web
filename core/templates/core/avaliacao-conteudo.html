@@ -12,13 +12,17 @@
 
     </br>
     {% if avaliacao_usuario != None %}
+
         <h3>Minha avaliação</h3>
+
         <p>
             Nota: {{ avaliacao_usuario.nota }}
         </p>
+
         <p>
             Comentario: {{ avaliacao_usuario.comentario }}
         </p>
+
         <input id="refazer" type="button" name="refazer" class="btn btn-success" value="Refazer" onclick="atualizaDados()">
 
     {% else %}
@@ -49,18 +53,21 @@
     {% endif %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script type="text/javascript">
-         $('form').submit(function(e){
-            e.preventDefault();
 
-            var $formData = $(this).serialize()
-            var $thisURL = "/avaliacao-curso/{{ curso.id }}"
-            $.ajax({
-                method: "POST",
-                url: $thisURL,
-                data: $formData,
-                success: handleFormSuccess,
-                error: handleFormError,
-            })
+            //__ Tratamento para envio de informações ao backend via AJAX
+            $('form').submit(function(e){
+                e.preventDefault();
+
+                var $formData = $(this).serialize()
+                var $thisURL = "/avaliacao-curso/{{ curso.id }}"
+                $.ajax({
+                    method: "POST",
+                    url: $thisURL,
+                    data: $formData,
+                    success: handleFormSuccess,
+                    error: handleFormError,
+                })
+
                 function handleFormSuccess(data, textStatus, jqXHR){
                     console.log(data)
                     console.log(textStatus)
@@ -74,18 +81,18 @@
                     console.log(textStatus)
                     console.log(errorThrown)
                 }
-
-          })
-
-        function atualizaDados(){
-            var $thisURL = "/avaliacao-curso/{{ curso.id }}"
-            $.ajax({
-                method: "GET",
-                url: $thisURL,
-                data: {},
-                success: handleFormSuccess,
-                error: handleFormError,
             })
+
+            //__ Atualiza algumas informações da página
+            function atualizaDados(){
+                var $thisURL = "/avaliacao-curso/{{ curso.id }}"
+                $.ajax({
+                    method: "GET",
+                    url: $thisURL,
+                    data: {},
+                    success: handleFormSuccess,
+                    error: handleFormError,
+                })
                 function handleFormSuccess(data, textStatus, jqXHR){
                     console.log(data)
                     console.log(textStatus)
@@ -98,9 +105,6 @@
                     console.log(textStatus)
                     console.log(errorThrown)
                 }
-
-          }
-
-
+              }
     </script>
 </div>

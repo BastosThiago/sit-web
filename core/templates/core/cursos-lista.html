@@ -4,7 +4,9 @@
 
 {% block content %}
 <div class="offset-1 col-10 list-div">
+
     <h2>Lista de Cursos</h2>
+
     <div class="col-12 search-div">
         <form method="GET" id="search-form">
             <input class="form-control" type="text" id="search" name="search"
@@ -35,7 +37,6 @@
                 <a href="informacoes-curso/{{ objeto.id }}"><span><i class="fas fa-arrow-right"></i></span></a>
             </li>
         {% endfor %}
-
     </ul>
 
     <div class="pagination">

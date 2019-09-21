@@ -1,47 +1,46 @@
 
 <div class="conteudo-curso-container">
+
     <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
     <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
 
     <h2>{{questionario.titulo}}</h2>
 
     <form action="" method="POST">
-    {% csrf_token %}
+        {% csrf_token %}
 
-    {% if usuario_questionario is not none %}
-        <div class="resultado-atual">
-            <p>Resultado atual</p>
-            <p>Nota: {{ usuario_questionario.percentual_acertos}}</p>
-            <p>Data: {{ usuario_questionario.data_execucao}}</p>
-        </div>
-    {% endif %}
+        {% if usuario_questionario is not none %}
+            <div class="resultado-atual">
+                <p>Resultado atual</p>
+                <p>Nota: {{ usuario_questionario.percentual_acertos}}</p>
+                <p>Data: {{ usuario_questionario.data_execucao}}</p>
+            </div>
+        {% endif %}
 
-    {% for questao in questoes %}
-    <p><strong>{{questao.ordem}} - {{ questao.enunciado }}</strong></p>
-        <ul>
-        {% for alternativa in alternativas %}
+        {% for questao in questoes %}
+        <p><strong>{{questao.ordem}} - {{ questao.enunciado }}</strong></p>
+            <ul>
+            {% for alternativa in alternativas %}
 
-            {% if alternativa.questao.id == questao.id %}
-                <li>
-                   {% for chave, valor in alternativas_dict.items %}
-                       {% if chave == alternativa.id %}
-                            {% if valor == True %}
-                                <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" checked="checked">{{ alternativa.descricao }}</input>
-                            {% else %}
-                                <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}">{{ alternativa.descricao }}</input>
-                            {% endif %}
-                       {% endif %}
-                   {% endfor %}
-                </li>
-            {% endif %}
+                {% if alternativa.questao.id == questao.id %}
+                    <li>
+                       {% for chave, valor in alternativas_dict.items %}
+                           {% if chave == alternativa.id %}
+                                {% if valor == True %}
+                                    <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" checked="checked">{{ alternativa.descricao }}</input>
+                                {% else %}
+                                    <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}">{{ alternativa.descricao }}</input>
+                                {% endif %}
+                           {% endif %}
+                       {% endfor %}
+                    </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
         {% endfor %}
-        </ul>
-    {% endfor %}
 
-    <input id="refazer" type="button" name="refazer" class="btn btn-success" value="Refazer" hidden="true" onclick="atualizaDados()">
-    <input id="enviar" type="submit" name="enviar" class="btn btn-success" value="Enviar" hidden="true">
-
-
+        <input id="refazer" type="button" name="refazer" class="btn btn-success" value="Refazer" hidden="true" onclick="atualizaDados()">
+        <input id="enviar" type="submit" name="enviar" class="btn btn-success" value="Enviar" hidden="true">
     </form>
 
     <script>
@@ -49,7 +48,6 @@
         //__ Obtém o tempo corrente do video que será exibido
         $(document).ready(function(){
             var inputs = document.getElementsByClassName("input-radio");
-
             {% if usuario_questionario is not none %}
 
                 $("#enviar")[0].hidden = true;
@@ -66,9 +64,9 @@
                     inputs[i].checked = false;
                 }
             {% endif %}
-
         })
 
+        //__ Atualiza algumas informações na página
         function atualizaDados(){
             var inputs = document.getElementsByClassName("input-radio");
             for(let i = 0; i < inputs.length; i++){
@@ -79,6 +77,7 @@
             $("#enviar")[0].hidden = false
         }
 
+        //__ Tratamento para envio de informações ao backend via AJAX
         $('form').submit(function(e){
             e.preventDefault();
 
@@ -91,7 +90,6 @@
                 success: handleFormSuccess,
                 error: handleFormError,
             })
-
 
             function handleFormSuccess(data, textStatus, jqXHR){
                 console.log(data)
@@ -111,7 +109,6 @@
                 console.log(textStatus)
                 console.log(errorThrown)
             }
-
         });
 
     </script>

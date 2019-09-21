@@ -177,7 +177,7 @@ def registrosListView(request, modelo):
 
     return render(
         request,
-        'core/listaRegistro.html',
+        'core/registros-lista.html',
         {
             'objetos': objetos,
             'tituloPagina': tituloPagina,
@@ -221,7 +221,7 @@ def novoRegistroView(request, modelo):
 
     return render(
         request,
-        'core/adicionaRegistro.html',
+        'core/registro-adiciona.html',
         {
             'form': form,
             'tituloPagina': tituloPagina
@@ -261,7 +261,7 @@ def editaRegistroView(request, id, modelo):
         else:
             return render(
                 request,
-                'core/editaRegistro.html',
+                'core/registro-edicao.html',
                 {
                     'form': form,
                     'tituloPagina': tituloPagina
@@ -270,7 +270,7 @@ def editaRegistroView(request, id, modelo):
     else:
         return render(
             request,
-            'core/editaRegistro.html',
+            'core/registro-edicao.html',
             {
                 'form': form,
                 'tituloPagina': tituloPagina
@@ -331,7 +331,7 @@ def cursosListView(request):
 
     return render(
         request,
-        'core/listaCursos.html',
+        'core/cursos-lista.html',
         {
             'objetos': cursos,
         }
@@ -385,7 +385,7 @@ def informacoesCursoView(request, id):
 
     return render(
         request,
-        'core/informacoesCurso.html',
+        'core/curso-informacoes.html',
         {
             'curso': curso,
             'unidades': unidades,
@@ -504,7 +504,7 @@ def conteudoCursoView(request, id):
 
     return render(
         request,
-        'core/conteudoCurso.html',
+        'core/curso-conteudo.html',
         {
             'curso': curso,
             'unidades': unidades,
@@ -565,14 +565,14 @@ def visualizacaoVideoView(request, id):
     )
 
     if not request.is_ajax():
-        template_name = 'core/visualizacaoVideo.html'
+        template_name = 'core/video-visualizacao.html'
     else:
         if tipo_video == 'vimeo':
-            template_name ='vimeo_player.html'
+            template_name ='vimeo-player.html'
         elif tipo_video =='youtube':
-            template_name = 'youtube_player.html'
+            template_name = 'youtube-player.html'
         else:
-            template_name = 'video_interno_player.html'
+            template_name = 'video-interno-player.html'
 
     return render(
         request,
@@ -685,9 +685,9 @@ def visualizacaoArquivoView(request, id):
     )
 
     if not request.is_ajax():
-        template_name = 'core/visualizacaoArquivo.html'
+        template_name = 'core/arquivo-visualizacao.html'
     else:
-        template_name ='conteudo_arquivo.html'
+        template_name ='core/arquivo-conteudo.html'
 
     return render(
         request,
@@ -797,10 +797,10 @@ def visualizacaoQuestionarioView(request, id):
 
     post_ajax = False
     if not request.is_ajax():
-        template_name = 'core/visualizacaoQuestionario.html'
+        template_name = 'core/questionario-visualizacao.html'
         post_ajax = True
     else:
-        template_name = 'conteudo_questionario.html'
+        template_name = 'core/questionario-conteudo.html'
 
     return render(
         request,
@@ -842,7 +842,7 @@ def obtemCertificado(request, curso_id):
         'inscricao': inscricao,
         'request': request
     }
-    pdf = render_to_pdf('core/certificado_conclusao.html', contexto)
+    pdf = render_to_pdf('core/certificado-conclusao.html', contexto)
 
     if pdf:
         response = HttpResponse(pdf, content_type='application/pdf')
@@ -875,7 +875,7 @@ def relatorioAcompanhamentoView(request):
     if request.is_ajax():
         return render(
             request,
-            'core/conteudo-relatorio.html',
+            'core/relatorio-conteudo.html',
             {
                 'usuario': usuario,
                 'inscricoes': inscricoes,
@@ -910,7 +910,7 @@ def relatorioUsuarioView(request):
 
     return render(
         request,
-        'core/conteudo-relatorio.html',
+        'core/relatorio-conteudo.html',
         {
             'usuario': usuario,
             'inscricoes': inscricoes,
@@ -930,7 +930,7 @@ def obtemRelatorio(request, usuario_id):
         'arquivo': True,
         'request': request
     }
-    pdf = render_to_pdf('core/conteudo-relatorio.html', contexto)
+    pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
 
     if pdf:
         response = HttpResponse(pdf, content_type='application/pdf')

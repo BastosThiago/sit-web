@@ -7,6 +7,7 @@
     <h2>{{curso.titulo}}</h2>
 
     </br>
+
     <h3>Informações sobre o curso</h3>
     <p>
         {{curso.categoria.titulo}}
@@ -35,9 +36,7 @@
 
     </br>
 
-
     {% include  'core/avaliacao-conteudo.html' %}
-
 
     {% if exibe_botao_inscricao %}
         <a class="botao_inscricao" id="add-link" href="#" data-curso_id="{{ curso.id }}">
@@ -56,27 +55,26 @@
     <p id="message"></p>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-        <script type="text/javascript">
+    <script type="text/javascript">
         $('.botao_inscricao').click(function(){
-        var curso_id;
-        curso_id = $(this).attr("data-curso_id");
-        $.ajax(
-        {
-            type:"GET",
-            url: "/inscricao-curso",
-            data:{
-                     curso_id: curso_id
-            },
-            success: function( data )
+            var curso_id;
+            curso_id = $(this).attr("data-curso_id");
+            $.ajax(
             {
-                window.location = '/conteudo-curso/1';
-            },
-            error: function(data){
-                $( '#message' ).text(data);
-            }
-         })
-    });
+                type:"GET",
+                url: "/inscricao-curso",
+                data:{
+                         curso_id: curso_id
+                },
+                success: function( data )
+                {
+                    window.location = '/conteudo-curso/1';
+                },
+                error: function(data){
+                    $( '#message' ).text(data);
+                }
+            })
+        });
     </script>
-
 </div>
 {% endblock %}

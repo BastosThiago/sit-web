@@ -8,21 +8,21 @@
     <a href="/download/{{ caminho_video }}"><span><i class="fas fa-download"></i></span></a>
     
     <video id="video_interno"  controls="controls" tabindex="0" >
-      <source src="../media/{{ caminho_video }}" type="video/mp4">
-      <source src="../media/{{ caminho_video }}" type="video/ogg">
-      <source src="../media/{{ caminho_video }}" type="video/webm">
+        <source src="../media/{{ caminho_video }}" type="video/mp4">
+        <source src="../media/{{ caminho_video }}" type="video/ogg">
+        <source src="../media/{{ caminho_video }}" type="video/webm">
     Seu browser não suporta o formato para reprodução do vídeo.
     </video>
 
     <script type='text/javascript'>
 
-        var tempo_corrente = 0;
+        var tempo_corrente  = 0;
         var video_assistido = false;
 
-        //__ Associ
+        //__ Associa o evento de término ao video
         document.getElementById('video_interno').addEventListener('ended',fimDoVideo,false);
 
-        //__ Obtém o tempo corrente do video que será exibido
+        //__ Obtém o tempo corrente do video da página
         $(document).ready(function(){
             $.ajax(
             {
@@ -36,7 +36,7 @@
                     tempo_corrente = parseInt(data["tempo_corrente"]);
                     document.getElementById('video_interno').currentTime = tempo_corrente;
                 }
-             })
+            })
         })
 
         //__ Função para atualizar na base de dados via Ajax algumas informações do video
@@ -51,7 +51,7 @@
                     tempo_corrente: tempo_corrente,
                     video_assistido: video_assistido
                 }
-             })
+            })
         }
 
         //__ Evento de inicio do video
@@ -66,6 +66,7 @@
             callViewUpdateVideo();
         }
 
+        //__ Método executado antes de fechar a página
         $(window).on("beforeunload", function() {
             callViewUpdateVideo();
         })

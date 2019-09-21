@@ -16,44 +16,44 @@
 <body>
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="/">Sistema Institucional de Treinamentos</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Cursos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/accounts/edit/{{ user.id }}">Minha conta</a>
-                </li>
-              {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/accounts/login">Entrar</a>
-                </li>
-              {% endif %}
-              {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/accounts/logout">Sair</a>
-                </li>
-              {% endif %}
-              {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <p>{{ user.username }}</p>
-                </li>
-              {% endif %}
-            </ul>
-          </div>
+            <a class="navbar-brand" href="/">Sistema Institucional de Treinamentos</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                  {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Cursos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/edit/{{ user.id }}">Minha conta</a>
+                    </li>
+                  {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/login">Entrar</a>
+                    </li>
+                  {% endif %}
+                  {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/logout">Sair</a>
+                    </li>
+                  {% endif %}
+                  {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <p>{{ user.username }}</p>
+                    </li>
+                  {% endif %}
+                </ul>
+            </div>
         </nav>
 
         {% block content %}{% endblock %}
         <footer>
-          <p>Sistema Institucional de Treinamentos</p>
+            <p>Sistema Institucional de Treinamentos</p>
         </footer>
     </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>

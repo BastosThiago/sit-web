@@ -7,23 +7,25 @@
 {% block title %} {{video.titulo}} {% endblock %}
 
 {% block content %}
+
 <div class="offset-1 col-10 list-div">
 
     {% if tipo_video == 'interno' %}
-        {% include  'video_interno_player.html' %}
+        {% include  'video-interno-player.html' %}
     {% endif %}
 
     {% if tipo_video == 'youtube' %}
-        {% include  'youtube_player.html' %}
+        {% include  'youtube-player.html' %}
     {% endif %}
 
     {% if tipo_video == 'vimeo' %}
-        {% include  'vimeo_player.html' %}
+        {% include  'vimeo-player.html' %}
     {% endif %}
 
 </div>
 
 <script>
+    //__ Função para atualizar algumas informações na página
     function atualizaConteudo(url){
 
         $.ajax(
@@ -37,7 +39,7 @@
                 $(".conteudo-curso-container").replaceWith(data);
                 window.history.pushState({route: url}, "Video", url);
             }
-         })
+        })
     }
 
 </script>

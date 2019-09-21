@@ -16,10 +16,11 @@
     <script>
 
         var player;
-        var tempo_corrente = 0;
-        var video_assistido = false;
+        var tempo_corrente   = 0;
+        var video_assistido  = false;
         let player_container = document.querySelector(".player-container");
-        let player_frame = player_container.querySelector("#player");
+        let player_frame     = player_container.querySelector("#player");
+
 
         //__ Obtém o tempo corrente do video que será exibido
         $(document).ready(function(){
@@ -34,9 +35,8 @@
                 {
                     tempo_corrente = parseInt(data["tempo_corrente"]);
                 }
-             })
+            })
         })
-
 
         //__ Cria o player especifico do Youtube
         function onYouTubeIframeAPIReady() {
@@ -57,7 +57,7 @@
                     tempo_corrente: tempo_corrente,
                     video_assistido: video_assistido
                 }
-             })
+            })
         }
 
         //__ Método associado ao carregamento completo do player.

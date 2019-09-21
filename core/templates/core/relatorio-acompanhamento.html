@@ -1,26 +1,23 @@
 {% extends 'base.html' %}
 
-
-
 {% block title %}Relatório acompanhamento{%endblock %}
 
 {% block content %}
 
-
     <select id="select-alunos" name="alunos">
-    {% for user in usuarios %}
-        {% if usuario != None and usuario.id == user.id %}
-            <option value="{{ user.id }}" selected="selected">{{ user.get_full_name }}</option>
-        {% else %}
-            <option value="{{ user.id }}">{{ user.get_full_name }}</option>
-        {% endif %}
-    {% endfor %}
+        {% for user in usuarios %}
+            {% if usuario != None and usuario.id == user.id %}
+                <option value="{{ user.id }}" selected="selected">{{ user.get_full_name }}</option>
+            {% else %}
+                <option value="{{ user.id }}">{{ user.get_full_name }}</option>
+            {% endif %}
+        {% endfor %}
     </select>
-
 
     {% include  'core/conteudo-relatorio.html' %}
 
     <script>
+        //__ Função responsável por obter os dados do relatório via AJAX
         function geraRelatorio(){
             var opcao_selecionada = $('#select-alunos').children("option:selected").val();
 
@@ -38,9 +35,8 @@
                     window.history.pushState({route: url_aux}, "Relatório", url_aux);
                     //window.location.href = '/relatorio-acompanhamento/?usuario=' + opcao_selecionada;
                 }
-             })
+            })
         }
-
     </script>
     <p><span><i class="fas fa-arrow-right" onclick="geraRelatorio()"></i></span></p>
 {% endblock %}

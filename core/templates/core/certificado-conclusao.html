@@ -60,27 +60,27 @@
   </head>
   <body>
     <div class="borda-externa">
-      <div class="borda-interna">
-        <span class="titulo">Certificado de Participação</span>
-          <br><br>
-          <span class="texto-certificamos"><i>Certificamos que</i></span>
-          <br><br>
-          <span class="nome-aluno"><b>{{ usuario.username }}</b></span>
-          <br/><br/>
-          <span class="curso-completo"><i>completou todo o conteúdo didático do curso</i></span>
-          <br/><br/>
-          <span class="nome-curso">{{ inscricao.curso.titulo }}</span>
-          <br/><br/>
-          <span class="texto-nota">com um aproveitamento de <b>{{ inscricao.percentual_acertos }}</b></span>
-          <br/><br/><br/><br/>
-          <span class="texto-data">
-              <i>com início em {{ inscricao.data_inscricao | date:"d/m/Y" }}</i>
-          </span>
-          <span class="texto-data">
-              <i>e concluído em {{ inscricao.data_conclusao | date:"d/m/Y" }}</i>
-          </span>
-          <br>
-      </div>
+        <div class="borda-interna">
+            <span class="titulo">Certificado de Participação</span>
+            <br><br>
+            <span class="texto-certificamos"><i>Certificamos que</i></span>
+            <br><br>
+            <span class="nome-aluno"><b>{{ usuario.username }}</b></span>
+            <br/><br/>
+            <span class="curso-completo"><i>completou todo o conteúdo didático do curso</i></span>
+            <br/><br/>
+            <span class="nome-curso">{{ inscricao.curso.titulo }}</span>
+            <br/><br/>
+            <span class="texto-nota">com um aproveitamento de <b>{{ inscricao.percentual_acertos }}</b></span>
+            <br/><br/><br/><br/>
+            <span class="texto-data">
+                <i>com início em {{ inscricao.data_inscricao | date:"d/m/Y" }}</i>
+            </span>
+            <span class="texto-data">
+                <i>e concluído em {{ inscricao.data_conclusao | date:"d/m/Y" }}</i>
+            </span>
+            <br>
+        </div>
     </div>
   </body>
 </html>
