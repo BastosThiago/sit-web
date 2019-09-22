@@ -155,8 +155,11 @@ def registrosListView(request, modelo):
     # Obtém o texto a ser atribuido no link
     nomeLink = remover_acentos(modelo._meta.verbose_name.lower())
 
-
-    search = request.GET.get('search')
+    # Verifica se algum filtro foi passado para obtenção dos registros
+    try:
+        search = request.GET.get('search')
+    except:
+        search = None
 
     # Verifica se na requisição de GET foi passado o parametro de pesquisa.
     # Caso sim, verifica o texto pesquisado nas informações do modelo
@@ -246,13 +249,18 @@ def editaRegistroView(request, id, modelo):
     # Obtém o form associado ao modelo
     formModelo = forms[remover_acentos(nomeModelo.lower())]
 
+    # Obtém o objeto de acordo com seu ID
     objeto = get_object_or_404(modelo, pk=id)
 
+    #Obtém o form associado ao objeto
     form = formModelo(instance=objeto)
 
+    # Caso o método HTTP da requsição seja de POST, cria o form com os dados recebidos
     if request.method == 'POST':
         form = formModelo(request.POST, instance=objeto)
 
+        # Caso o preenchimento do formulário seja válido, salva o objeto e
+        # redireciona para a listagem de registros
         if(form.is_valid()):
             objeto.save()
             return redirect(
@@ -287,14 +295,24 @@ def removeRegistroView(request, id, modelo):
     nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
     nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
+    # Obtém o objeto a ser removido e em caso de sucesso, o remove
     objeto = get_object_or_404(modelo, pk=id)
-    objeto.delete()
 
-    messages.info(
-        request,
-        'Registro removido com sucesso'
-    )
+    try:
+        objeto.delete()
+        # Indica mensagem de sucesso na removação
+        messages.info(
+            request,
+            'Registro removido com sucesso'
+        )
+    except:
+        # Indica mensagem de sucesso na removação
+        messages.info(
+            request,
+            'Falha ao remover o registro'
+        )
 
+    # Redireciona o usuário para a página da lista de registros
     return redirect(
         nomeLinkRedirecionamento
     )
@@ -308,13 +326,20 @@ def cursosListView(request):
 
     # Verifica o perfil do usuário para retornar a lista de cursos
     cursos = None
-    if request.user.perfil == request.user.ALUNO:
+
+    # Para usuários de perfil ALUNO, exibe todos os cursos com o status de PUBLICADOS.
+    # Se não, retorna apenas os cursos criados pelo usuário corrente
+    if request.user.tem_perfil_aluno():
         cursos = Curso.objects.filter(publicado=True).order_by('titulo')
     else:
         cursos = Curso.objects.filter(usuario=request.user).order_by('titulo')
 
     if cursos:
-        search = request.GET.get('search')
+
+        try:
+            search = request.GET.get('search')
+        except:
+            search = None
 
         if search:
             search_fields = Curso.CustomMeta.search_fields
@@ -343,57 +368,76 @@ def informacoesCursoView(request, id):
     """
     View responsável pelo tratamento de apresentação das informações de um curso
     """
-
-    # Obtém o curso associado a requisição
-    curso = get_object_or_404(Curso, pk=id)
-
-    # Obtém a lista de unidades associadas ao curso
-    unidades = Unidade.objects.filter(curso=curso)
-
-    # Obtém as avaliações associadas ao curso
-    avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
-
-    # Obtém a nota média das avaliações associadas a curso(caso exista alguma)
-    nota_media_curso = "SEM NOTA"
-    if avaliacoes.count() > 0:
-        nota_media_curso = curso.obtem_nota_media_curso()
-        nota_media_curso = "{:.2f}".format(nota_media_curso)
-
     exibe_botao_inscricao = False
     exibe_botao_conteudo = False
+    perfil_aluno = False
     avaliacao_usuario = None
 
-    # Caso o usuário seja do pefil ALUNO
-    if request.user.perfil == request.user.ALUNO:
+    # Obtém o curso associado a requisição e verifica o perfil de usuário
+    # para validar o curso a ser obtido
+    if request.user.tem_perfil_aluno():
+        curso = get_object_or_404(Curso, pk=id, publicado=True)
+    else:
+        curso = get_object_or_404(Curso, pk=id, usuario=request.user)
 
-        # Verifica se o usuário está inscrito no curso ou não
-        inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+    # Verifica se o curso tem algum conteúdo
+    curso_sem_conteudo = False
+    if curso.tem_conteudo():
 
-        if(inscricao.count() == 0):
-            exibe_botao_inscricao = True
-        else:
-            exibe_botao_conteudo = True
+        # Obtém a lista de unidades associadas ao curso
+        unidades = Unidade.objects.filter(curso=curso)
 
-        # Verifica se o usuário da requisição já avaliou o curso acessado
-        try:
-            avaliacao_usuario = Avaliacao.objects.get(
-                curso=curso,
-                usuario=request.user
-            )
-        except:
-            avaliacao_usuario = None
+        # Obtém as avaliações associadas ao curso
+        avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
+
+        # Obtém a nota média das avaliações associadas a curso(caso exista alguma)
+        nota_media_curso = "SEM NOTA"
+        if avaliacoes.count() > 0:
+            nota_media_curso = curso.obtem_nota_media()
+            nota_media_curso = "{:.2f}".format(nota_media_curso)
+
+        #verifica se o curso possui alguma unidade cadastrada
+        if unidades.count() > 0:
+
+            # Caso o usuário seja do pefil ALUNO
+            if request.user.tem_perfil_aluno():
+
+                perfil_aluno = True
+
+                # Verifica se o usuário já está inscrito no curso acessado
+                inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+
+                if(inscricao.count() == 0):
+                    exibe_botao_inscricao = True
+                else:
+                    exibe_botao_conteudo = True
+
+                # Verifica se o usuário da requisição já avaliou o curso acessado
+                try:
+                    avaliacao_usuario = Avaliacao.objects.get(
+                        curso=curso,
+                        usuario=request.user
+                    )
+                except:
+                    avaliacao_usuario = None
+            else:
+                exibe_botao_conteudo = True
+    else:
+        curso_sem_conteudo = True
 
     return render(
         request,
         'core/curso-informacoes.html',
         {
             'curso': curso,
+            'curso_sem_conteudo': curso_sem_conteudo,
             'unidades': unidades,
             'avaliacoes': avaliacoes,
             'nota_media_curso': nota_media_curso,
             'avaliacao_usuario': avaliacao_usuario,
             'exibe_botao_inscricao': exibe_botao_inscricao,
             'exibe_botao_conteudo': exibe_botao_conteudo,
+            'perfil_aluno': perfil_aluno
         }
     )
 
@@ -403,25 +447,30 @@ def inscricaoCursoView(request):
     """
     View responsável pelo tratamento de inscrição de um usuário no curso selecionado
     """
-    resposta = "Falha ao realizar inscrição."
-    if request.method == 'GET':
-        try:
-            curso_id = request.GET['curso_id']
-            curso = Curso.objects.get(pk=curso_id)
+    # Caso o usuário seja do pefil ALUNO
+    if request.user.tem_perfil_aluno():
+        resposta = "Falha ao realizar a inscrição."
+        if request.method == 'GET':
+            try:
+                curso_id = request.GET['curso_id']
 
-            inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+                curso = Curso.objects.get(pk=curso_id)
 
-            if(inscricao.count() == 0):
-                Inscricao.objects.create(curso=curso, usuario=request.user)
-                resposta = "Inscrição realizada com sucesso."
-            else:
-                resposta ="Inscrição já realizada."
+                inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
 
-            return HttpResponse(resposta)
-        except:
+                if(inscricao.count() == 0):
+                    Inscricao.objects.create(curso=curso, usuario=request.user)
+                    resposta = "Inscrição realizada com sucesso."
+                else:
+                    resposta ="Inscrição já realizada."
+
+                return HttpResponse(resposta)
+            except:
+                return HttpResponse(resposta)
+        else:
             return HttpResponse(resposta)
     else:
-        return HttpResponse(resposta)
+        return HttpResponse("Usuário sem permissão para se inscrever em cursos.")
 
 
 @login_required
@@ -430,41 +479,52 @@ def avaliacaoCursoView(request, id):
     View responsável pelo tratamento de avaliacao de um curso
     """
 
-    curso = Curso.objects.get(pk=id)
-
-    inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
-
-    # Obtém as avaliações associadas ao curso
-    avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
-
-    avaliacao_usuario = None
-    if request.method == 'POST':
-
-        nota = int(request.POST.get('nota'))
-        comentario = request.POST.get('comentario')
+    # Permite a avaliação de um curso apenas para usuário com perfil ALUNO
+    if request.user.tem_perfil_aluno():
 
         try:
-            avaliacao_usuario = Avaliacao.objects.get(
-                curso=inscricao.curso,
-                usuario=request.user
-            )
+            curso = Curso.objects.get(pk=id)
 
-            avaliacao_usuario.nota = nota
-            avaliacao_usuario.comentario = comentario
-            avaliacao_usuario.save()
+            inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
 
+            # Obtém as avaliações associadas ao curso
+            avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
+
+            avaliacao_usuario = None
+
+            # Caso a requisição seja uma POST, atualiza a avaliação ou cria uma
+            # nova caso não exista
+            if request.method == 'POST':
+
+                nota = int(request.POST.get('nota'))
+                comentario = request.POST.get('comentario')
+
+                try:
+                    avaliacao_usuario = Avaliacao.objects.get(
+                        curso=inscricao.curso,
+                        usuario=request.user
+                    )
+
+                    avaliacao_usuario.nota = nota
+                    avaliacao_usuario.comentario = comentario
+                    avaliacao_usuario.save()
+
+                except:
+                    avaliacao_usuario = Avaliacao.objects.create(
+                        curso=inscricao.curso,
+                        usuario=request.user,
+                        nota=nota,
+                        comentario=comentario,
+                        data_avaliacao=datetime.now()
+                    )
+
+            # Obtém a nota média de avaliação do curso
+            nota_media_curso = curso.obtem_nota_media()
+            nota_media_curso = "{:.2f}".format(nota_media_curso)
         except:
-            avaliacao_usuario = Avaliacao.objects.create(
-                curso=inscricao.curso,
-                usuario=request.user,
-                nota=nota,
-                comentario=comentario,
-                data_avaliacao=datetime.now()
-            )
-
-    nota_media_curso = curso.obtem_nota_media_curso()
-
-    nota_media_curso = "{:.2f}".format(nota_media_curso)
+            curso = None
+            inscricao = None
+            avaliacoes = None
 
     return render(
         request,
@@ -477,30 +537,39 @@ def avaliacaoCursoView(request, id):
         },
     )
 
+
 @login_required
 def conteudoCursoView(request, id):
     """
     View responsável pelo tratamento de apresentação do conteúdo do curso selecionado
     """
 
-    curso = get_object_or_404(Curso, pk=id)
+    curso = None
+    perfil_aluno = False
 
-    unidades = Unidade.objects.filter(curso=curso)
+    # Verifica o perfil do usuário para obter o curso associado ao ID da requisição
+    if request.user.tem_perfil_aluno():
+        perfil_aluno = True
+        curso = get_object_or_404(Curso, pk=id, publicado=True)
+    else:
+        curso = Curso.objects.get(pk=id, usuario=request.user)
 
-    videos = Video.objects.filter(unidade__in=unidades)
+    if curso:
+        unidades = Unidade.objects.filter(curso=curso)
 
-    arquivos = Arquivo.objects.filter(unidade__in=unidades)
+        videos = Video.objects.filter(unidade__in=unidades)
 
-    questionarios = Questionario.objects.filter(unidade__in=unidades)
+        arquivos = Arquivo.objects.filter(unidade__in=unidades)
 
-    # Verifica se o usuário da requisição é do perfil ALUNO
+        questionarios = Questionario.objects.filter(unidade__in=unidades)
+
+    # Verifica se o usuário da requisição é de perfil ALUNO
     inscricao = None
     curso_concluido = False
-    if usuario_requisicao_aluno(request):
+    if request.user.tem_perfil_aluno():
         inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
         if inscricao.situacao != "EM ANDAMENTO":
             curso_concluido = True
-
 
     return render(
         request,
@@ -513,10 +582,13 @@ def conteudoCursoView(request, id):
             'questionarios': questionarios,
             'inscricao': inscricao,
             'curso_concluido': curso_concluido,
+            'perfil_aluno': perfil_aluno,
         }
     )
 
+
 @login_required
+@never_cache
 def visualizacaoVideoView(request, id):
     """
     View responsável pelo tratamento de apresentação do vídeo selecionado
@@ -524,25 +596,30 @@ def visualizacaoVideoView(request, id):
 
     video = get_object_or_404(Video, pk=id)
 
-    # Registra que o usuário acessou a página do vídeo(caso ainda essa condição não tenha sido registrada)
-    if video:
-
-        try:
-            usuario_video = UsuarioVideo.objects.get(video=video, usuario=request.user)
-        except:
-            usuario_video = UsuarioVideo.objects.create(video=video, usuario=request.user)
-
-    tipo_video = 'arquivo'
+    tipo_video = ''
     src_api_video = ''
     tempo_corrente = 0
+    caminho_video = ''
 
+    # Registra que o usuário acessou a página do vídeo(apenas para usuários de perfil ALUNO)
+    if request.user.tem_perfil_aluno():
+        if video:
 
-    if usuario_video:
-        tempo_corrente = usuario_video.tempo_corrente
-        if usuario_video.assistido == True:
-            tempo_corrente = 0
+            try:
+                usuario_video = UsuarioVideo.objects.get(
+                    video=video,
+                    usuario=request.user
+                )
+            except:
+                usuario_video = UsuarioVideo.objects.create(
+                    video=video,
+                    usuario=request.user
+                )
 
-    if video:
+        if usuario_video:
+            tempo_corrente = usuario_video.tempo_corrente
+            if usuario_video.assistido == True:
+                tempo_corrente = 0
 
         if video.video_interno:
             caminho_video = video.path
@@ -558,12 +635,52 @@ def visualizacaoVideoView(request, id):
                     src_api_video = 'https://player.vimeo.com/api/player.js'
 
 
+    # Obtém as URLs associadas aos conteúdos anterior e próximo do video acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         video.unidade.curso.id,
         'video',
         video.id
     )
 
+    lista_conteudo_curso = obtemListaConteudoCurso(video.unidade.curso.id)
+
+    # Obtém o indice atual da lista de acordo com o conteúdo fornecido
+    indice = lista_conteudo_curso.index(dict({video.id: 'video'}))
+
+    conteudo_anterior_id = 0
+    if indice - 1 >= 0:
+        [[conteudo_anterior_id, conteudo_anterior_nome]] = lista_conteudo_curso[indice - 1].items()
+        if conteudo_anterior_nome != 'video':
+            conteudo_anterior_id = 0
+
+    usuario_video_anterior = None
+    usuario_video_anterior_id = 0
+    if conteudo_anterior_id > 0:
+        try:
+            video_aux = Video.objects.get(pk=conteudo_anterior_id)
+            usuario_video_anterior = UsuarioVideo.objects.get(video=video_aux, usuario=request.user)
+            usuario_video_anterior_id = usuario_video_anterior.id
+        except:
+            usuario_video_anterior = None
+            usuario_video_anterior_id = 0
+
+    proximo_conteudo_id = 0
+    if indice + 1 < len(lista_conteudo_curso):
+        [[proximo_conteudo_id, prox_conteudo_nome]] = lista_conteudo_curso[indice + 1].items()
+        if prox_conteudo_nome != 'video':
+            proximo_conteudo_id = 0
+
+    usuario_video_proximo = None
+    usuario_video_proximo_id = 0
+    if proximo_conteudo_id > 0:
+        try:
+            usuario_video_proximo = UsuarioVideo.objects.get(video_id=proximo_conteudo_id, usuario=request.user)
+            usuario_video_proximo_id = usuario_video_proximo.id
+        except:
+            usuario_video_proximo = None
+            usuario_video_proximo_id = 0
+
+    # Caso a requisição não seja via AJAX
     if not request.is_ajax():
         template_name = 'core/video-visualizacao.html'
     else:
@@ -586,38 +703,47 @@ def visualizacaoVideoView(request, id):
             'src_api_video': src_api_video,
             'conteudo_anterior_url': conteudo_anterior_url,
             'proximo_conteudo_url': proximo_conteudo_url,
+            'usuario_video_anterior_id': usuario_video_anterior_id,
+            'usuario_video_proximo_id': usuario_video_proximo_id,
         },
     )
 
-
+@never_cache
 def atualizaAndamentoCurso(curso, usuario):
+    """
+    View responsável por atualizar o percentual da andamento do curso para um dado usuário
+    """
 
-    percentual_andamento= Curso.objects.obtem_percentual_andamento_por_usuario(
-        curso,
-        usuario
-    )
+    if usuario.tem_perfil_aluno():
+        try:
+            percentual_andamento= Curso.objects.obtem_percentual_andamento_por_usuario(
+                curso,
+                usuario
+            )
 
-    percentual_acertos = Curso.objects.obtem_percentual_acertos_por_usuario(
-        curso,
-        usuario
-    )
+            percentual_acertos = Curso.objects.obtem_percentual_acertos_por_usuario(
+                curso,
+                usuario
+            )
 
-    inscricao_usuario = Inscricao.objects.get(
-        usuario=usuario,
-        curso=curso
-    )
+            inscricao_usuario = Inscricao.objects.get(
+                usuario=usuario,
+                curso=curso
+            )
 
-    inscricao_usuario.percentual_andamento = percentual_andamento
-    inscricao_usuario.percentual_acertos = percentual_acertos
+            inscricao_usuario.percentual_andamento = percentual_andamento
+            inscricao_usuario.percentual_acertos = percentual_acertos
 
-    if percentual_andamento >= 100:
-        inscricao_usuario.data_conclusao = datetime.now()
-        if percentual_acertos >= 70:
-            inscricao_usuario.situacao = 'APROVADO'
-        else:
-            inscricao_usuario.situacao = 'REPROVADO'
+            if percentual_andamento >= 100:
+                inscricao_usuario.data_conclusao = datetime.now()
+                if percentual_acertos >= 70:
+                    inscricao_usuario.situacao = 'APROVADO'
+                else:
+                    inscricao_usuario.situacao = 'REPROVADO'
 
-    inscricao_usuario.save()
+            inscricao_usuario.save()
+        except:
+         return None
 
 
 @login_required
@@ -628,46 +754,47 @@ def atualizaVideoUsuarioView(request):
     """
     resposta = HttpResponse('SUCESSO')
     resposta.status_code = 200
-    if request.method == 'GET':
-        try:
-            usuario_video_id = request.GET['usuario_video_id']
-            tempo_corrente = request.GET['tempo_corrente']
-            video_assistido = request.GET['video_assistido']
+    if request.user.tem_perfil_aluno():
+        if request.method == 'GET':
+            try:
+                usuario_video_id = request.GET['usuario_video_id']
+                tempo_corrente = request.GET['tempo_corrente']
+                video_assistido = request.GET['video_assistido']
 
-            usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
-            usuario_video.tempo_corrente = tempo_corrente
-            assistido = bool(video_assistido)
-            if(video_assistido == 'true'):
+                usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
+                usuario_video.tempo_corrente = tempo_corrente
+                assistido = bool(video_assistido)
+                if(video_assistido == 'true'):
 
-                usuario_video.assistido = True
-                usuario_video.data_assistido = datetime.now()
-            usuario_video.save()
+                    usuario_video.assistido = True
+                    usuario_video.data_assistido = datetime.now()
+                usuario_video.save()
 
-            atualizaAndamentoCurso(usuario_video.video.unidade.curso)
-        except:
-            return resposta
+                atualizaAndamentoCurso(usuario_video.video.unidade.curso)
+            except:
+                return resposta
     return resposta
-
 
 
 @login_required
 @never_cache
 def obtemInformacoesVideoUsuarioView(request):
     """
-    View responsável pelo tratamento de atualização das informações dos videos acessados pelo usuário
+    View responsável pelo tratamento de obter informações de um video
     """
     resposta = HttpResponse('SUCESSO')
-    if request.method == 'GET':
-        try:
-            usuario_video_id = request.GET['usuario_video_id']
+    if request.user.tem_perfil_aluno():
+        if request.method == 'GET':
+            try:
+                usuario_video_id = request.GET['usuario_video_id']
 
-            usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
+                usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
 
-        except:
-            return JsonResponse({})
-    return JsonResponse(
-        {"tempo_corrente": usuario_video.tempo_corrente}
-    )
+            except:
+                return JsonResponse({})
+        return JsonResponse(
+            {"tempo_corrente": usuario_video.tempo_corrente}
+        )
 
 
 @login_required
@@ -676,8 +803,10 @@ def visualizacaoArquivoView(request, id):
     View responsável pelo tratamento de apresentação do arquivo selecionado
     """
 
+    # Obtém o arquivo de acordo com o ID recebido
     arquivo = get_object_or_404(Arquivo, pk=id)
 
+    # Obtém as URLs do próximo e do conteúdo anterior ao arquivo acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         arquivo.unidade.curso.id,
         'arquivo',
@@ -715,86 +844,106 @@ def visualizacaoQuestionarioView(request, id):
     # Obtém as alternativas associadas as questões do questionário
     alternativas = Alternativa.objects.filter(questao__in=questoes).order_by('ordem')
 
-    if request.method == 'POST':
+    # Caso o usuário da requisição seja do perfil ALUNO, realiza tratamentos
+    # para registrar respostas
+    if request.user.tem_perfil_aluno():
+        if request.method == 'POST':
 
-        numero_respostas_corretas = 0
-        percentual_acertos = 0
-        for chave, valor in request.POST.items():
+            numero_respostas_corretas = 0
+            percentual_acertos = 0
 
-            if chave == 'csrfmiddlewaretoken' or chave == 'enviar':
-                continue
-            alternativa_id = request.POST.get(chave)
+            # Obtém a resposta para cada pergunta do questionário
+            for chave, valor in request.POST.items():
 
-            alternativa = Alternativa.objects.get(pk=alternativa_id)
+                if chave == 'csrfmiddlewaretoken' or chave == 'enviar':
+                    continue
 
-            if(alternativa.correta == True):
-                numero_respostas_corretas = numero_respostas_corretas + 1
+                try:
+                    # Obtém o ID da alternativa respondida
+                    alternativa_id = request.POST.get(chave)
 
+                    # Obtém a alternativa respondida
+                    alternativa = Alternativa.objects.get(pk=alternativa_id)
+
+                    # Verifica se a alternativa respondida é a correta, para então
+                    # contabilizar o percentual de acertos no questionário
+                    if(alternativa.correta == True):
+                        numero_respostas_corretas = numero_respostas_corretas + 1
+
+                    # Registra a resposta do usuário
+                    try:
+                        usuario_resposta = UsuarioResposta.objects.get(
+                            questao=alternativa.questao,
+                            usuario=request.user
+                        )
+
+                        usuario_resposta.alternativa = alternativa
+                        usuario_resposta.save()
+
+                    except:
+                        usuario_resposta = UsuarioResposta.objects.create(
+                            alternativa=alternativa,
+                            questao=alternativa.questao,
+                            usuario=request.user
+                        )
+                except:
+                    return None
+
+            # Cálcula o percentual de acertos no questionário
+            percentual_acertos = (numero_respostas_corretas / questoes.count()) * 100
+
+            # Armazena o resultado total do questionário
             try:
-                usuario_resposta = UsuarioResposta.objects.get(
-                    questao=alternativa.questao,
-                    usuario=request.user
+                usuario_questionario = UsuarioQuestionario.objects.get(
+                    questionario=questionario,
+                    usuario=request.user,
                 )
 
-                usuario_resposta.alternativa = alternativa
-                usuario_resposta.save()
-
+                usuario_questionario.percentual_acertos = percentual_acertos
+                usuario_questionario.data_execucao = datetime.now()
+                usuario_questionario.save()
             except:
-                usuario_resposta = UsuarioResposta.objects.create(
-                    alternativa=alternativa,
-                    questao=alternativa.questao,
-                    usuario=request.user
+                usuario_questionario = UsuarioQuestionario.objects.create(
+                    questionario=questionario,
+                    usuario=request.user,
+                    percentual_acertos=percentual_acertos,
+                    data_execucao=datetime.now()
                 )
 
-        percentual_acertos = (numero_respostas_corretas / questoes.count()) * 100
+            # Atualiza as informações de andamento do curso para o usuário
+            atualizaAndamentoCurso(questionario.unidade.curso, request.user)
 
+        # Verifica se o usuário da requisição já respondeu ao questionário anteriormente.
+        # Se sim, obtém as respostas para cada questão
+        alternativas_dict = {}
+        for alternativa in alternativas:
+            usuario_respostas = UsuarioResposta.objects.filter(
+                alternativa=alternativa,
+                usuario=request.user
+            )
+
+            if(usuario_respostas.count() > 0):
+                alternativas_dict[alternativa.id] = True
+            else:
+                alternativas_dict[alternativa.id] = False
+
+        # Obtém o último resultado do usuário no questionário
         try:
             usuario_questionario = UsuarioQuestionario.objects.get(
                 questionario=questionario,
                 usuario=request.user,
             )
-
-            usuario_questionario.percentual_acertos = percentual_acertos
-            usuario_questionario.data_execucao = datetime.now()
-            usuario_questionario.save()
         except:
-            usuario_questionario = UsuarioQuestionario.objects.create(
-                questionario=questionario,
-                usuario=request.user,
-                percentual_acertos=percentual_acertos,
-                data_execucao=datetime.now()
-            )
+            usuario_questionario = None
 
-        atualizaAndamentoCurso(questionario.unidade.curso, request.user)
-
-    # Verifica se o usuário corrente já respondeu ao questionário
-    alternativas_dict = {}
-    for alternativa in alternativas:
-        usuario_respostas = UsuarioResposta.objects.filter(
-            alternativa=alternativa,
-            usuario=request.user
-        )
-
-        if(usuario_respostas.count() > 0):
-            alternativas_dict[alternativa.id] = True
-        else:
-            alternativas_dict[alternativa.id] = False
-
-    # Verifca se o usuário corrente já respondeu ao questinário
-    try:
-        usuario_questionario = UsuarioQuestionario.objects.get(
-            questionario=questionario,
-            usuario=request.user,
-        )
-    except:
-        usuario_questionario = None
-
+    # Obtém as URLs do próximo e do conteúdo anterior ao questionário acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         questionario.unidade.curso.id,
         'questionario',
         questionario.id
     )
 
+    # Caso o requsição não seja via AJAX
     post_ajax = False
     if not request.is_ajax():
         template_name = 'core/questionario-visualizacao.html'
@@ -820,7 +969,7 @@ def visualizacaoQuestionarioView(request, id):
 
 def downloadConteudo(request, file_path, diretorio):
     """
-    e.g.: file_path = '/tmp/file.pdf'
+      View responsável por permitir o download de algum conteúdo do curso
     """
     try:
         file_path = f"{MEDIA_ROOT}\\{diretorio}\\{file_path}"
@@ -833,31 +982,41 @@ def downloadConteudo(request, file_path, diretorio):
 
 
 def obtemCertificado(request, curso_id):
+    """
+      View responsável por gerar um certificado de participação ao usuário
+    """
+    try:
+        usuario = CustomUser.objects.get(pk=request.user.id)
+        inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
 
-    usuario = CustomUser.objects.get(pk=request.user.id)
-    inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
+        contexto = {
+            'usuario': usuario,
+            'inscricao': inscricao,
+            'request': request
+        }
+        pdf = render_to_pdf('core/certificado-conclusao.html', contexto)
 
-    contexto = {
-        'usuario': usuario,
-        'inscricao': inscricao,
-        'request': request
-    }
-    pdf = render_to_pdf('core/certificado-conclusao.html', contexto)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            nome_arquivo = "certificado.pdf"
+            content = "inline; filename=%s" % (nome_arquivo)
+            download = request.GET.get("download")
+            if download:
+                content = "attachment; filename=%s" % (nome_arquivo)
+            response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Erro ao gerar do certificado.", status=400)
 
-    if pdf:
-        response = HttpResponse(pdf, content_type='application/pdf')
-        nome_arquivo = "certificado.pdf"
-        content = "inline; filename=%s" % (nome_arquivo)
-        download = request.GET.get("download")
-        if download:
-            content = "attachment; filename=%s" % (nome_arquivo)
-        response['Content-Disposition'] = content
-        return response
-    return HttpResponse("Erro ao gerar do certificado.", status=400)
+    except:
+      return HttpResponse("Erro ao gerar do certificado.", status=400)
 
 
 def relatorioAcompanhamentoView(request):
+    """
+      View responsável por configurar um relatório de acompanhamento de um aluno
+    """
 
+    # Obtém todos os usuários de pefil ALUNO
     usuarios = CustomUser.objects.filter(perfil=1).order_by('username')
 
     usuario = None
@@ -896,14 +1055,15 @@ def relatorioAcompanhamentoView(request):
 
 
 def relatorioUsuarioView(request):
-
+    """
+      View responsável por gerar um relatório de acompanhamento de um aluno
+    """
     if request.method == 'GET':
         try:
             usuario_id = request.GET['usuario_id']
 
             usuario = CustomUser.objects.get(pk=usuario_id)
             inscricoes = Inscricao.objects.filter(usuario=usuario)
-
 
         except:
             return JsonResponse({})
@@ -920,27 +1080,33 @@ def relatorioUsuarioView(request):
 
 
 def obtemRelatorio(request, usuario_id):
+    """
+      View responsável por gerar um arquivo PDF do relatório de acompanhamento
+    """
+    try:
+        usuario = CustomUser.objects.get(pk=usuario_id)
+        inscricoes = Inscricao.objects.filter(usuario=usuario)
 
-    usuario = CustomUser.objects.get(pk=usuario_id)
-    inscricoes = Inscricao.objects.filter(usuario=usuario)
+        contexto = {
+            'usuario': usuario,
+            'inscricoes': inscricoes,
+            'arquivo': True,
+            'request': request
+        }
+        pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
 
-    contexto = {
-        'usuario': usuario,
-        'inscricoes': inscricoes,
-        'arquivo': True,
-        'request': request
-    }
-    pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            nome_arquivo = "relatorio.pdf"
+            content = "inline; filename=%s" % (nome_arquivo)
+            download = request.GET.get("download")
+            if download:
+                content = "attachment; filename=%s" % (nome_arquivo)
+            response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Erro ao gerar do relatório.", status=400)
+    except:
+        return HttpResponse("Erro ao gerar do relatório.", status=400)
 
-    if pdf:
-        response = HttpResponse(pdf, content_type='application/pdf')
-        nome_arquivo = "relatorio.pdf"
-        content = "inline; filename=%s" % (nome_arquivo)
-        download = request.GET.get("download")
-        if download:
-            content = "attachment; filename=%s" % (nome_arquivo)
-        response['Content-Disposition'] = content
-        return response
-    return HttpResponse("Erro ao gerar do relatório.", status=400)
 
 

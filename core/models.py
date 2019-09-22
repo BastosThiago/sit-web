@@ -124,14 +124,46 @@ class Curso(models.Model):
     def __str__(self):
         return self.titulo
 
-    def obtem_nota_media_curso(self):
-        nota_media_curso = Avaliacao.objects.filter(
+    def obtem_nota_media(self):
+        """
+            Método para obter a nota média das avaliações de um curso
+        """
+        nota_media_curso = "SEM NOTA"
+        avaliacoes = Avaliacao.objects.filter(
             curso=self
-        ).aggregate(
-            Avg('nota')
-        )['nota__avg']
+        )
+
+        if avaliacoes.count() > 0:
+            nota_media_curso = avaliacoes.aggregate(
+                Avg('nota')
+            )['nota__avg']
 
         return nota_media_curso
+
+    def tem_conteudo(self):
+        """
+            Método que verifica se um curso tem algum conteúdo(videos, arquivos, ou questionários)
+        """
+        unidades = Unidade.objects.filter(curso=self)
+
+        if unidades.count() > 0:
+            videos = Video.objects.filter(unidade__in=unidades)
+
+            if videos.count() > 0:
+                return True
+            else:
+                arquivos = Arquivo.objects.flter(unidade__in=unidades)
+                if arquivos.count() > 0:
+                    return True
+                else:
+                    questionarios = Questionario.objects.filter(unidade__in=unidades)
+                    if questionarios.count() > 0:
+                        return True
+                    else:
+                        return False
+        else:
+            return False
+
 
 class Inscricao(models.Model):
     SITUACOES = [
@@ -258,13 +290,13 @@ class UsuarioVideo(models.Model):
     tempo_corrente = models.DecimalField(max_digits=10, decimal_places=0, default=0)
     assistido = models.BooleanField(default=False)
     data_assistido = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.usuario} - {self.video}"
+    assistido_denovo = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Vídeos"
 
+    def __str__(self):
+        return f"{self.usuario} - {self.video}"
 
 class Questionario(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
