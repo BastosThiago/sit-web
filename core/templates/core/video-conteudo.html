@@ -5,35 +5,181 @@
 {% block title %} {{video.titulo}} {% endblock %}
 
 {% block content %}
-    <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
+    <p>
+        <span>
+            <i id="botao-anterior" class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i>
+        </span>
+    </p>
 
-    <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
+    <p>
+        <span>
+            <i id="botao-proximo" class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i>
+        </span>
+    </p>
 
 
-    <div id="player-container">
+    <div class="player-container" id="player-container">
 
     </div>
 
+
+    <script src="https://player.vimeo.com/api/player.js"></script>
     <script id="script-video">
 
         var player_youtube;
+        var player_vimeo;
         var youtube_video_link = ""
         var youtube_video_tempo_corrente = 0;
+        var tempo_corrente_video = 0;
+        var video_corrente_assistido = false;
+        var usuario_video_corrente_id = 0;
+        var tipo_video_corrente = "";
+
+        function criaVideoYoutube(caminho_video, tempo_corrente) {
+
+            var tag = document.createElement('script');
+            tag.src = "http://www.youtube.com/player_api";
+            tag.id  = "src-video";
+            var current_script_tag = document.getElementById('script-video');
+            current_script_tag.parentNode.insertBefore(tag, current_script_tag);
+
+            let flag = false
+
+            if(youtube_video_link != ""){
+              flag = true
+            }
+
+            youtube_video_link = caminho_video;
+            youtube_video_tempo_corrente = tempo_corrente;
+            if(flag == true){
+              onYouTubePlayerAPIReady();
+            }
+
+        }
+
+        function criaVideoVimeo(caminho_video, tempo_corrente) {
+
+            $('#player-container').append(
+                '<iframe class="player-iframe" id="media-player" src="' + caminho_video + '" allowfullscreen></iframe>'
+            );
+
+            var iframe   = document.querySelector('#media-player');
+            player_vimeo = new Vimeo.Player(iframe);
+
+            player_vimeo.ready().then(playerVimeoVideoCarregado);
+            player_vimeo.on('play', playVimeoVideo);
+            player_vimeo.on('ended', fimVimeoVideo);
+        }
+
+        //__ Função para atualizar na base de dados via Ajax algumas informações do video
+        function atualizaTempoCorrenteVideo(usuario_video_corrente_id){
+            if(tipo_video_corrente == 'youtube') {
+                tempo_corrente_video = player_youtube.getCurrentTime();
+            }
+            $.ajax(
+            {
+                type:"GET",
+                url: "/atualiza-usuario-video",
+                data:{
+                    usuario_video_id: usuario_video_corrente_id,
+                    tempo_corrente: tempo_corrente_video,
+                    video_assistido: video_corrente_assistido
+                }
+            })
+        }
+
+
+        //__ Obtém o tempo corrente do video que será exibido
+        $(document).ready(function(){
+            console.log("Onready");
+
+            usuario_video_corrente_id = {{ usuario_video.id }};
+            tipo_video_corrente = '{{ tipo_video }}';
+            tempo_corrente_video = {{ tempo_corrente }};
+
+            if('{{ tipo_video }}' == 'youtube') {
+                criaVideoYoutube('{{ caminho_video }}', {{ tempo_corrente }})
+            }
+            else {
+                criaVideoVimeo('{{ caminho_video }}', {{tempo_corrente }})
+            }
+
+        })
+
+
         function onYouTubePlayerAPIReady() {
 
             $('#player-container').append(
-                '<div id="media"><iframe width="400" height="400" src="' + youtube_video_link + '?enablejsapi=1" allowfullscreen id="media-player"></iframe></div>'
+                '<iframe class="player-iframe" id="media-player" src="' + youtube_video_link + '?enablejsapi=1" allowfullscreen"></iframe>'
             );
 
             player_youtube = new YT.Player('media-player' , {
-                events: { 'onReady': onPlayerReady }
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
             });
         };
+
 
         function onPlayerReady(event) {
             player_youtube.seekTo(youtube_video_tempo_corrente);
             player_youtube.pauseVideo();
         }
+
+
+        //__ Método associado a troca de estado do player
+        function onPlayerStateChange(event) {
+
+            //__ Evento de inicio do video
+            if (event.data == YT.PlayerState.PLAYING) {
+                tempo_corrente_video = player_youtube.getCurrentTime()
+                video_corrente_assistido = false;
+                //player_container.classList.remove("ended");
+                atualizaTempoCorrenteVideo(usuario_video_corrente_id);
+            }
+
+            //__ Evento de fim do video
+            if (event.data == YT.PlayerState.ENDED) {
+                tempo_corrente_video = player_youtube.getCurrentTime()
+                video_corrente_assistido = true;
+                //player_container.classList.add("ended");
+                atualizaTempoCorrenteVideo(usuario_video_corrente_id);
+            }
+        }
+
+        //__ Função para obter o tempo corrente de um video do Vimeo
+        function obtemTempoCorrenteVideoVimeo(){
+            player_vimeo.getCurrentTime().then(function(segundos) {
+                tempo_corrente_video = segundos;
+            })
+        }
+
+
+        //__ Registra evento de PLAY do Vimeo
+        function playVimeoVideo() {
+            video_corrente_assistido = false;
+            //player_container.classList.remove("ended");
+            atualizaTempoCorrenteVideo(usuario_video_corrente_id);
+            setInterval(obtemTempoCorrenteVideoVimeo, 2000);
+        }
+
+
+        //__ Registra evento de ENDED do Vimeo
+        function fimVimeoVideo() {
+            video_corrente_assistido = false;
+            //player_container.classList.remove("ended");
+            atualizaTempoCorrenteVideo(usuario_video_corrente_id);
+        }
+
+
+        //__ Registra evento de player do Vimeo pronto
+        function playerVimeoVideoCarregado() {
+            player_vimeo.setCurrentTime(tempo_corrente_video);
+        }
+
+
+        //__ Método executado antes de fechar a página
+        $(window).on("beforeunload", function() {
+            atualizaTempoCorrenteVideo(usuario_video_corrente_id)
+        });
 
         function atualizaConteudo(url){
 
@@ -45,28 +191,28 @@
                 },
                 success: function( data )
                 {
-                    //$(".conteudo-curso-container").replaceWith(data);
+
+                    atualizaTempoCorrenteVideo(usuario_video_corrente_id);
+
                     window.history.pushState({route: url}, "Video", url);
+
                     $("#src-video").remove();
-                    $("#media").remove();
-                    var tag = document.createElement('script');
-                    tag.src = "http://www.youtube.com/player_api";
-                    tag.id  = "src-video";
-                    //var firstScriptTag = document.getElementsByTagName('script')[2];
-                    var firstScriptTag = document.getElementById('script-video');
-                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                    $("#media-player").remove();
 
-                    let flag = false
+                    tempo_corrente_video = data['tempo_corrente']
+                    tipo_video_corrente  = data['tipo_video']
 
-                    if(youtube_video_link != ""){
-                      flag = true
+                    if(data['tipo_video'] == 'youtube'){
+                        criaVideoYoutube(data['caminho_video'], tempo_corrente_video)
                     }
-                    youtube_video_link = data['caminho_video'];
-                    youtube_video_tempo_corrente = data['tempo_corrente'];
-                    if(flag == true){
-                      onYouTubePlayerAPIReady();
+                    else {
+                        criaVideoVimeo(data['caminho_video'], tempo_corrente_video)
                     }
 
+                    usuario_video_corrente_id = data['usuario_video_id']
+
+                    $('#botao-anterior').attr('onclick', "atualizaConteudo('" + data['conteudo_anterior_url'] + "')")
+                    $('#botao-proximo').attr('onclick', "atualizaConteudo('" + data['proximo_conteudo_url'] + "')")
 
                 }
             })

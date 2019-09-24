@@ -683,9 +683,14 @@ def visualizacaoVideoView(request, id):
     # Caso a requisição não seja via AJAX
     if request.is_ajax():
         return JsonResponse(
-            {'caminho_video': caminho_video,
-             'tempo_corrente': usuario_video.tempo_corrente,
-             'tipo_video': tipo_video}
+            {
+                'caminho_video': caminho_video,
+                'tempo_corrente': usuario_video.tempo_corrente,
+                'tipo_video': tipo_video,
+                'conteudo_anterior_url': conteudo_anterior_url,
+                'proximo_conteudo_url': proximo_conteudo_url,
+                'usuario_video_id': usuario_video.id
+            }
         )
     else:
         return render(
