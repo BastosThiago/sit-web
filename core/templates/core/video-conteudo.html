@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} {{video.titulo}} {% endblock %}
+
+{% block content %}
+    <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
+
+    <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
+
+
+    <div id="player-container">
+
+    </div>
+
+    <script id="script-video">
+
+        var player_youtube;
+        var youtube_video_link = ""
+        var youtube_video_tempo_corrente = 0;
+        function onYouTubePlayerAPIReady() {
+
+            $('#player-container').append(
+                '<div id="media"><iframe width="400" height="400" src="' + youtube_video_link + '?enablejsapi=1" allowfullscreen id="media-player"></iframe></div>'
+            );
+
+            player_youtube = new YT.Player('media-player' , {
+                events: { 'onReady': onPlayerReady }
+            });
+        };
+
+        function onPlayerReady(event) {
+            player_youtube.seekTo(youtube_video_tempo_corrente);
+            player_youtube.pauseVideo();
+        }
+
+        function atualizaConteudo(url){
+
+            $.ajax(
+            {
+                type:"GET",
+                url: url,
+                data:{
+                },
+                success: function( data )
+                {
+                    //$(".conteudo-curso-container").replaceWith(data);
+                    window.history.pushState({route: url}, "Video", url);
+                    $("#src-video").remove();
+                    $("#media").remove();
+                    var tag = document.createElement('script');
+                    tag.src = "http://www.youtube.com/player_api";
+                    tag.id  = "src-video";
+                    //var firstScriptTag = document.getElementsByTagName('script')[2];
+                    var firstScriptTag = document.getElementById('script-video');
+                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                    let flag = false
+
+                    if(youtube_video_link != ""){
+                      flag = true
+                    }
+                    youtube_video_link = data['caminho_video'];
+                    youtube_video_tempo_corrente = data['tempo_corrente'];
+                    if(flag == true){
+                      onYouTubePlayerAPIReady();
+                    }
+
+
+                }
+            })
+        }
+
+    </script>
+{% endblock %}

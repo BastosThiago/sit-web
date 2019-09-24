@@ -681,32 +681,29 @@ def visualizacaoVideoView(request, id):
             usuario_video_proximo_id = 0
 
     # Caso a requisição não seja via AJAX
-    if not request.is_ajax():
-        template_name = 'core/video-visualizacao.html'
+    if request.is_ajax():
+        return JsonResponse(
+            {'caminho_video': caminho_video,
+             'tempo_corrente': usuario_video.tempo_corrente,
+             'tipo_video': tipo_video}
+        )
     else:
-        if tipo_video == 'vimeo':
-            template_name ='vimeo-player.html'
-        elif tipo_video =='youtube':
-            template_name = 'youtube-player.html'
-        else:
-            template_name = 'video-interno-player.html'
-
-    return render(
-        request,
-        template_name,
-        {
-            'video': video,
-            'usuario_video': usuario_video,
-            'tipo_video': tipo_video,
-            'tempo_corrente': tempo_corrente,
-            'caminho_video': caminho_video,
-            'src_api_video': src_api_video,
-            'conteudo_anterior_url': conteudo_anterior_url,
-            'proximo_conteudo_url': proximo_conteudo_url,
-            'usuario_video_anterior_id': usuario_video_anterior_id,
-            'usuario_video_proximo_id': usuario_video_proximo_id,
-        },
-    )
+        return render(
+            request,
+            'core/video-conteudo.html',
+            {
+                'video': video,
+                'usuario_video': usuario_video,
+                'tipo_video': tipo_video,
+                'tempo_corrente': tempo_corrente,
+                'caminho_video': caminho_video,
+                'src_api_video': src_api_video,
+                'conteudo_anterior_url': conteudo_anterior_url,
+                'proximo_conteudo_url': proximo_conteudo_url,
+                'usuario_video_anterior_id': usuario_video_anterior_id,
+                'usuario_video_proximo_id': usuario_video_proximo_id,
+            },
+        )
 
 @never_cache
 def atualizaAndamentoCurso(curso, usuario):
