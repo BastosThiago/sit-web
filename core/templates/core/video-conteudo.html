@@ -71,10 +71,33 @@
             player_vimeo.on('ended', fimVimeoVideo);
         }
 
+
+        function criaVideoInterno(caminho_video, tempo_corrente) {
+
+            $('#player-container').append(
+                `
+                    <video id="video_interno"  controls="controls" tabindex="0" >
+                        <source src="../media/${caminho_video}" type="video/mp4">
+                        <source src="../media/${caminho_video}" type="video/ogg">
+                        <source src="../media/${caminho_video}" type="video/webm">
+                    Seu browser não suporta o formato para reprodução do vídeo.
+                    </video>
+                `
+            );
+
+            document.getElementById('video_interno').addEventListener('ended', fimVideoInterno, false);
+            document.getElementById('video_interno').addEventListener('play', playVideoInterno, false);
+            document.getElementById('video_interno').currentTime = tempo_corrente;
+        }
+
+
         //__ Função para atualizar na base de dados via Ajax algumas informações do video
         function atualizaTempoCorrenteVideo(usuario_video_corrente_id){
             if(tipo_video_corrente == 'youtube') {
                 tempo_corrente_video = player_youtube.getCurrentTime();
+            }
+            if(tipo_video_corrente == 'interno') {
+                tempo_corrente_video = $('#video_interno')[0].currentTime;
             }
             $.ajax(
             {
@@ -100,8 +123,13 @@
             if('{{ tipo_video }}' == 'youtube') {
                 criaVideoYoutube('{{ caminho_video }}', {{ tempo_corrente }})
             }
-            else {
+
+            if('{{ tipo_video }}' == 'vimeo') {
                 criaVideoVimeo('{{ caminho_video }}', {{tempo_corrente }})
+            }
+
+            if('{{ tipo_video }}' == 'interno') {
+                criaVideoInterno('{{ caminho_video }}', {{tempo_corrente }})
             }
 
         })
@@ -176,6 +204,18 @@
         }
 
 
+        //__ Função para evento de PLAY em um video interno
+        function playVideoInterno(){
+            atualizaTempoCorrenteVideo(usuario_video_corrente_id);
+        }
+
+
+        //__ Função para evento de FIM em um video interno
+        function fimVideoInterno(){
+            video_corrente_assistido = false;
+        }
+
+
         //__ Método executado antes de fechar a página
         $(window).on("beforeunload", function() {
             atualizaTempoCorrenteVideo(usuario_video_corrente_id)
@@ -198,6 +238,7 @@
 
                     $("#src-video").remove();
                     $("#media-player").remove();
+                    $("#video_interno").remove();
 
                     tempo_corrente_video = data['tempo_corrente']
                     tipo_video_corrente  = data['tipo_video']
@@ -205,8 +246,13 @@
                     if(data['tipo_video'] == 'youtube'){
                         criaVideoYoutube(data['caminho_video'], tempo_corrente_video)
                     }
-                    else {
+
+                    if(data['tipo_video'] == 'vimeo'){
                         criaVideoVimeo(data['caminho_video'], tempo_corrente_video)
+                    }
+
+                    if(data['tipo_video'] == 'interno'){
+                        criaVideoInterno(data['caminho_video'], tempo_corrente_video)
                     }
 
                     usuario_video_corrente_id = data['usuario_video_id']

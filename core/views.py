@@ -622,7 +622,7 @@ def visualizacaoVideoView(request, id):
                 tempo_corrente = 0
 
         if video.video_interno:
-            caminho_video = video.path
+            caminho_video = video.path.name
             tipo_video = 'interno'
         else:
             caminho_video = video.url
