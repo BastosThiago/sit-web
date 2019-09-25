@@ -6,81 +6,86 @@
 <div class="offset-1 col-10 list-div">
     <h2>Conteúdo {{curso.titulo}}</h2>
 
-    {% if inscricao %}
-        <div class="info-inscricao-curso">
-            <p>
-               Inscricao: {{ inscricao.data_inscricao }}
-            </p>
+    {% if perfil_aluno == True and inscricao == None %}
+        <p>Para acessar o conteúdo de um curso, é necessário realizar a inscrição</p>
+    {% else %}
 
-            <p>
-               Andamento: {{ inscricao.percentual_andamento }} %
-            </p>
+        {% if inscricao %}
+            <div class="info-inscricao-curso">
+                <p>
+                   Inscricao: {{ inscricao.data_inscricao }}
+                </p>
 
-            <p>
-               Acertos: {{ inscricao.percentual_acertos }} %
-            </p>
+                <p>
+                   Andamento: {{ inscricao.percentual_andamento }} %
+                </p>
 
-            <p>
-               Situação: {{ inscricao.situacao }}
-            </p>
-        </div>
+                <p>
+                   Acertos: {{ inscricao.percentual_acertos }} %
+                </p>
 
+                <p>
+                   Situação: {{ inscricao.situacao }}
+                </p>
+            </div>
+
+        {% endif %}
+
+        {% if curso_concluido %}
+
+            <div class="botao-certificado">
+                <a href="/certificado/{{ curso.id }}">Visualizar certificado<span><i class="fas fa-download"></i></span></a>
+            </div>
+            <div class="botao-certificado">
+                <a href="/certificado/{{ curso.id }}?download=download">Baixar certificado<span><i class="fas fa-download"></i></span></a>
+            </div>
+
+        {% endif %}
+
+        <ul>
+
+            {% for unidade in unidades %}
+                <li>
+
+                    <p>{{unidade.titulo}}</p>
+                    <ul>
+
+                        <li>Vídeos</li>
+                            <ul>
+                                {% for video in videos %}
+                                    {% if video.unidade.id == unidade.id %}
+                                    <li>
+                                        <a href="/visualizacao-video/{{video.id}}">{{ video.titulo }}</a>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+
+                        <li>Arquivos</li>
+                            <ul>
+                                {% for arquivo in arquivos %}
+                                    {% if arquivo.unidade.id == unidade.id %}
+                                    <li>
+                                        <a href="/visualizacao-arquivo/{{arquivo.id}}">{{ arquivo.titulo }}</a>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+
+                        <li>Questionários</li>
+                            <ul>
+                                {% for questionario in questionarios %}
+                                    {% if questionario.unidade.id == unidade.id %}
+                                    <li>
+                                        <a href="/visualizacao-questionario/{{questionario.id}}">{{ questionario.titulo }}</a>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
     {% endif %}
-
-    {% if curso_concluido %}
-
-        <div class="botao-certificado">
-            <a href="/certificado/{{ curso.id }}">Visualizar certificado<span><i class="fas fa-download"></i></span></a>
-        </div>
-        <div class="botao-certificado">
-            <a href="/certificado/{{ curso.id }}?download=download">Baixar certificado<span><i class="fas fa-download"></i></span></a>
-        </div>
-
-    {% endif %}
-
-    <ul>
-
-        {% for unidade in unidades %}
-            <li>
-
-                <p>{{unidade.titulo}}</p>
-                <ul>
-
-                    <li>Vídeos</li>
-                        <ul>
-                            {% for video in videos %}
-                                {% if video.unidade.id == unidade.id %}
-                                <li>
-                                    <a href="/visualizacao-video/{{video.id}}">{{ video.titulo }}</a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-
-                    <li>Arquivos</li>
-                        <ul>
-                            {% for arquivo in arquivos %}
-                                {% if arquivo.unidade.id == unidade.id %}
-                                <li>
-                                    <a href="/visualizacao-arquivo/{{arquivo.id}}">{{ arquivo.titulo }}</a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-
-                    <li>Questionários</li>
-                        <ul>
-                            {% for questionario in questionarios %}
-                                {% if questionario.unidade.id == unidade.id %}
-                                <li>
-                                    <a href="/visualizacao-questionario/{{questionario.id}}">{{ questionario.titulo }}</a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
 </div>
 {% endblock %}

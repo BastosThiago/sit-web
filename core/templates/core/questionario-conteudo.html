@@ -1,8 +1,17 @@
 
 <div class="conteudo-curso-container">
 
-    <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
-    <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
+    <p id="botao-anterior-container">
+        <span>
+            <i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i>
+        </span>
+    </p>
+
+    <p id="botao-proximo-container">
+        <span>
+            <i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i>
+        </span>
+    </p>
 
     <h2>{{questionario.titulo}}</h2>
 
@@ -64,6 +73,20 @@
                     inputs[i].checked = false;
                 }
             {% endif %}
+
+            if('{{ conteudo_anterior_url }}' != '') {
+                $('#botao-anterior-container')[0].hidden = false;
+            }
+            else {
+                $('#botao-anterior-container')[0].hidden = true;
+            }
+
+            if('{{ proximo_conteudo_url }}' != '') {
+                $('#botao-proximo-container')[0].hidden = false;
+            }
+            else {
+                $('#botao-proximo-container')[0].hidden = true;
+            }
         })
 
         //__ Atualiza algumas informações na página

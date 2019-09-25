@@ -290,7 +290,6 @@ class UsuarioVideo(models.Model):
     tempo_corrente = models.DecimalField(max_digits=10, decimal_places=0, default=0)
     assistido = models.BooleanField(default=False)
     data_assistido = models.DateTimeField(null=True, blank=True)
-    assistido_denovo = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Vídeos"

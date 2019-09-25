@@ -552,8 +552,12 @@ def conteudoCursoView(request, id):
         perfil_aluno = True
         curso = get_object_or_404(Curso, pk=id, publicado=True)
     else:
-        curso = Curso.objects.get(pk=id, usuario=request.user)
+        try:
+            curso = Curso.objects.get(pk=id, usuario=request.user)
+        except:
+            curso = None
 
+    # Caso tenha obtido o curso com sucesso, obtém seus conteúdos
     if curso:
         unidades = Unidade.objects.filter(curso=curso)
 
@@ -563,13 +567,17 @@ def conteudoCursoView(request, id):
 
         questionarios = Questionario.objects.filter(unidade__in=unidades)
 
-    # Verifica se o usuário da requisição é de perfil ALUNO
-    inscricao = None
-    curso_concluido = False
-    if request.user.tem_perfil_aluno():
-        inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
-        if inscricao.situacao != "EM ANDAMENTO":
-            curso_concluido = True
+        # Verifica se o usuário da requisição é de perfil ALUNO e caso seja
+        # obtém a inscrição do usuário curso
+        inscricao = None
+        curso_concluido = False
+        if perfil_aluno:
+            try:
+                inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
+                if inscricao.situacao != "EM ANDAMENTO":
+                    curso_concluido = True
+            except:
+                inscricao = None
 
     return render(
         request,
@@ -594,10 +602,10 @@ def visualizacaoVideoView(request, id):
     View responsável pelo tratamento de apresentação do vídeo selecionado
     """
 
+    # Obtém video associado ao ID fornecido
     video = get_object_or_404(Video, pk=id)
 
     tipo_video = ''
-    src_api_video = ''
     tempo_corrente = 0
     caminho_video = ''
 
@@ -605,6 +613,7 @@ def visualizacaoVideoView(request, id):
     if request.user.tem_perfil_aluno():
         if video:
 
+            # Tenta obter ou cria a associação entre usuário e video
             try:
                 usuario_video = UsuarioVideo.objects.get(
                     video=video,
@@ -616,24 +625,21 @@ def visualizacaoVideoView(request, id):
                     usuario=request.user
                 )
 
+        # Obtém as informações da associação entre usuário e video
         if usuario_video:
             tempo_corrente = usuario_video.tempo_corrente
-            if usuario_video.assistido == True:
-                tempo_corrente = 0
 
-        if video.video_interno:
-            caminho_video = video.path.name
-            tipo_video = 'interno'
+    # Verifica o tipo de video para que o frontend possa realizar o tratamento adequado
+    if video.video_interno:
+        caminho_video = video.path.name
+        tipo_video = 'interno'
+    else:
+        caminho_video = video.url
+        if 'https://www.youtube.com/embed/' in caminho_video:
+            tipo_video = 'youtube'
         else:
-            caminho_video = video.url
-            if 'https://www.youtube.com/embed/' in caminho_video:
-                tipo_video = 'youtube'
-                src_api_video = 'http://www.youtube.com/player_api'
-            else:
-                if 'https://player.vimeo.com/' in caminho_video:
-                    tipo_video = 'vimeo'
-                    src_api_video = 'https://player.vimeo.com/api/player.js'
-
+            if 'https://player.vimeo.com/' in caminho_video:
+                tipo_video = 'vimeo'
 
     # Obtém as URLs associadas aos conteúdos anterior e próximo do video acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
@@ -685,7 +691,17 @@ def visualizacaoVideoView(request, id):
             usuario_video_proximo = None
             usuario_video_proximo_id = 0
 
-    # Caso a requisição não seja via AJAX
+
+    # Caso tenha obtido as informações de associação entre usuário e video
+    data_acesso = None
+    data_assistido = None
+    assistido = None
+    if usuario_video != None:
+        data_acesso = usuario_video.data_acesso
+        data_assistido = usuario_video.data_assistido
+        assistido = usuario_video.assistido
+
+    # Caso a requisição seja via AJAX de uma página de video
     if request.is_ajax() and request.GET['origem'] == 'video':
         return JsonResponse(
             {
@@ -696,7 +712,10 @@ def visualizacaoVideoView(request, id):
                 'proximo_conteudo_url': proximo_conteudo_url,
                 'conteudo_anterior_nome': conteudo_anterior_nome,
                 'prox_conteudo_nome': prox_conteudo_nome,
-                'usuario_video_id': usuario_video.id
+                'usuario_video_id': usuario_video.id,
+                'data_acesso': data_acesso,
+                'data_assistido': data_assistido,
+                'assistido': assistido
             }
         )
     else:
@@ -712,15 +731,18 @@ def visualizacaoVideoView(request, id):
                 'tipo_video': tipo_video,
                 'tempo_corrente': tempo_corrente,
                 'caminho_video': caminho_video,
-                'src_api_video': src_api_video,
                 'conteudo_anterior_url': conteudo_anterior_url,
                 'proximo_conteudo_url': proximo_conteudo_url,
                 'conteudo_anterior_nome': conteudo_anterior_nome,
                 'prox_conteudo_nome': prox_conteudo_nome,
                 'usuario_video_anterior_id': usuario_video_anterior_id,
                 'usuario_video_proximo_id': usuario_video_proximo_id,
+                'data_acesso': data_acesso,
+                'data_assistido': data_assistido,
+                'assistido': assistido,
             },
         )
+
 
 @never_cache
 def atualizaAndamentoCurso(curso, usuario):
@@ -728,18 +750,23 @@ def atualizaAndamentoCurso(curso, usuario):
     View responsável por atualizar o percentual da andamento do curso para um dado usuário
     """
 
+    # Caso o usuário tenha perfil de ALUNO
     if usuario.tem_perfil_aluno():
         try:
+
+            # Obtém o percentual de andamento do usuário no curso
             percentual_andamento= Curso.objects.obtem_percentual_andamento_por_usuario(
                 curso,
                 usuario
             )
 
+            # Obtém o percentual de acertos do usuário no curso
             percentual_acertos = Curso.objects.obtem_percentual_acertos_por_usuario(
                 curso,
                 usuario
             )
 
+            # Obtém a inscrição do usuário do curso
             inscricao_usuario = Inscricao.objects.get(
                 usuario=usuario,
                 curso=curso
@@ -748,6 +775,7 @@ def atualizaAndamentoCurso(curso, usuario):
             inscricao_usuario.percentual_andamento = percentual_andamento
             inscricao_usuario.percentual_acertos = percentual_acertos
 
+            # Atualiza a situação do usuário no curso
             if percentual_andamento >= 100:
                 inscricao_usuario.data_conclusao = datetime.now()
                 if percentual_acertos >= 70:
@@ -768,9 +796,14 @@ def atualizaVideoUsuarioView(request):
     """
     resposta = HttpResponse('SUCESSO')
     resposta.status_code = 200
+
+    # Caso o usuário tenha perfil de ALUNO
     if request.user.tem_perfil_aluno():
         if request.method == 'GET':
             try:
+
+                # Obtém as informações da requisição para serem atualizadas
+                # na associado do usuário com o video
                 usuario_video_id = request.GET['usuario_video_id']
                 tempo_corrente = request.GET['tempo_corrente']
                 video_assistido = request.GET['video_assistido']
@@ -796,7 +829,8 @@ def obtemInformacoesVideoUsuarioView(request):
     """
     View responsável pelo tratamento de obter informações de um video
     """
-    resposta = HttpResponse('SUCESSO')
+
+    # Caso o usuário tenha perfil de ALUNO
     if request.user.tem_perfil_aluno():
         if request.method == 'GET':
             try:
@@ -858,9 +892,16 @@ def visualizacaoQuestionarioView(request, id):
     # Obtém as alternativas associadas as questões do questionário
     alternativas = Alternativa.objects.filter(questao__in=questoes).order_by('ordem')
 
+    # Verifica se não existem questões no questionário
+    questionario_sem_questoes = False
+    if questoes.count() == 0:
+        questionario_sem_questoes = True
+
     # Caso o usuário da requisição seja do perfil ALUNO, realiza tratamentos
     # para registrar respostas
+    perfil_aluno = False
     if request.user.tem_perfil_aluno():
+        perfil_aluno = True
         if request.method == 'POST':
 
             numero_respostas_corretas = 0
@@ -976,7 +1017,9 @@ def visualizacaoQuestionarioView(request, id):
             'usuario_questionario': usuario_questionario,
             'conteudo_anterior_url': conteudo_anterior_url,
             'proximo_conteudo_url': proximo_conteudo_url,
+            'questionario_sem_questoes': questionario_sem_questoes,
             'post_ajax': post_ajax,
+            'perfil_aluno': perfil_aluno,
         },
     )
 
@@ -1000,26 +1043,34 @@ def obtemCertificado(request, curso_id):
       View responsável por gerar um certificado de participação ao usuário
     """
     try:
+        # Obtém o usuário associado a requisição
         usuario = CustomUser.objects.get(pk=request.user.id)
-        inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
 
-        contexto = {
-            'usuario': usuario,
-            'inscricao': inscricao,
-            'request': request
-        }
-        pdf = render_to_pdf('core/certificado-conclusao.html', contexto)
+        if usuario.tem_perfil_aluno():
 
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
-            nome_arquivo = "certificado.pdf"
-            content = "inline; filename=%s" % (nome_arquivo)
-            download = request.GET.get("download")
-            if download:
-                content = "attachment; filename=%s" % (nome_arquivo)
-            response['Content-Disposition'] = content
-            return response
-        return HttpResponse("Erro ao gerar do certificado.", status=400)
+            # Obtém a inscrição do usuário no curso
+            inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
+
+            contexto = {
+                'usuario': usuario,
+                'inscricao': inscricao,
+                'request': request
+            }
+
+            pdf = render_to_pdf('core/certificado-conclusao.html', contexto)
+
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                nome_arquivo = "certificado.pdf"
+                content = "inline; filename=%s" % (nome_arquivo)
+                download = request.GET.get("download")
+                if download:
+                    content = "attachment; filename=%s" % (nome_arquivo)
+                response['Content-Disposition'] = content
+                return response
+            return HttpResponse("Erro ao gerar do certificado.", status=400)
+        else:
+            return HttpResponse("Usuário sem permissão para gerar certificado.", status=400)
 
     except:
       return HttpResponse("Erro ao gerar do certificado.", status=400)
@@ -1037,6 +1088,7 @@ def relatorioAcompanhamentoView(request):
     inscricoes = None
     usuario_id = request.GET.get('usuario')
 
+    # Obtém o ID do usuário para então obter suas inscrições nos cursos
     if usuario_id:
         try:
             usuario = CustomUser.objects.get(pk=usuario_id)

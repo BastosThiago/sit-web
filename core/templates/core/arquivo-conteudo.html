@@ -1,7 +1,16 @@
 <div class="conteudo-curso-container">
 
-    <p><span><i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i></span></p>
-    <p><span><i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i></span></p>
+    <p id="botao-anterior-container">
+        <span>
+            <i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i>
+        </span>
+    </p>
+
+    <p id="botao-proximo-container">
+        <span>
+            <i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i>
+        </span>
+    </p>
 
     <h2>{{arquivo.titulo}}</h2>
 
@@ -10,6 +19,24 @@
     <iframe src="../media/{{ arquivo.caminho}}" width="100%" height="500px"></iframe>
 
     <script>
+
+        $(document).ready(function(){
+
+            if('{{ conteudo_anterior_url }}' != '') {
+                $('#botao-anterior-container')[0].hidden = false;
+            }
+            else {
+                $('#botao-anterior-container')[0].hidden = true;
+            }
+
+            if('{{ proximo_conteudo_url }}' != '') {
+                $('#botao-proximo-container')[0].hidden = false;
+            }
+            else {
+                $('#botao-proximo-container')[0].hidden = true;
+            }
+        })
+
         function atualizaConteudo(url){
 
             $.ajax(
@@ -22,6 +49,8 @@
                 success: function( data )
                 {
                     $(".conteudo-curso-container").replaceWith(data);
+
+
                     window.history.pushState({route: url}, "Arquivo", url);
                 }
             })
