@@ -131,11 +131,11 @@ class Home(TemplateView):
     """
     #user = CustomUser.objects.get(pk=3)
     curso = Curso.objects.get(pk=1)
-    #Curso.objects.obtem_unidades_curso(curso)
-    #Curso.objects.obtem_videos_curso(curso)
-    #Curso.objects.obtem_questionarios_curso(curso)
-    #Curso.objects.obtem_videos_assistindos_por_usuario(curso, user)
-    #Curso.objects.obtem_questionarios_respondidos_por_usuario(curso, user)
+    #Curso.obtem_unidades(curso)
+    #Curso.obtem_videos(curso)
+    #Curso.obtem_questionarios(curso)
+    #UsuarioVideo.objects.obtem_videos_assistindos_por_usuario(curso, user)
+    #UsuarioQuestionario.objects.obtem_questionarios_respondidos_por_usuario(curso, user)
     #Curso.objects.obtem_percentual_andamento_por_usuario(curso, user)
     #Curso.objects.obtem_percentual_acertos_por_usuario(curso, user)
     #curso.obtem_nota_media_curso()
@@ -744,25 +744,24 @@ def visualizacaoVideoView(request, id):
         )
 
 
-@never_cache
+
 def atualizaAndamentoCurso(curso, usuario):
     """
     View responsável por atualizar o percentual da andamento do curso para um dado usuário
     """
 
     # Caso o usuário tenha perfil de ALUNO
+
     if usuario.tem_perfil_aluno():
         try:
 
             # Obtém o percentual de andamento do usuário no curso
-            percentual_andamento= Curso.objects.obtem_percentual_andamento_por_usuario(
-                curso,
+            percentual_andamento= curso.obtem_percentual_andamento_por_usuario(
                 usuario
             )
 
             # Obtém o percentual de acertos do usuário no curso
-            percentual_acertos = Curso.objects.obtem_percentual_acertos_por_usuario(
-                curso,
+            percentual_acertos = curso.obtem_percentual_acertos_por_usuario(
                 usuario
             )
 
@@ -784,6 +783,7 @@ def atualizaAndamentoCurso(curso, usuario):
                     inscricao_usuario.situacao = 'REPROVADO'
 
             inscricao_usuario.save()
+
         except:
          return None
 

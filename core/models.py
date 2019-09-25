@@ -3,9 +3,13 @@ from django.db.models import Avg
 from sistema_treinamentos.settings import AUTH_USER_MODEL
 
 from .fields import OrderField
+from .managers import UsuarioVideoManager, UsuarioQuestionarioManager
 
 
 class Categoria(models.Model):
+    """
+        Modelo de Categorias para um curso
+    """
     titulo = models.CharField(max_length=200)
 
     class Meta:
@@ -20,92 +24,10 @@ class Categoria(models.Model):
         search_fields = ['titulo',]
 
 
-class CursoManager(models.Manager):
-    """
-
-    """
-
-    def obtem_unidades_curso(self, curso):
-        """
-
-        """
-        unidades_curso = Unidade.objects.filter(
-            curso=curso
-        )
-
-        return unidades_curso
-
-    def obtem_videos_curso(self, curso):
-        """
-
-        """
-        unidades_curso = self.obtem_unidades_curso(curso)
-
-        videos_curso = Video.objects.filter(
-            unidade__in=unidades_curso
-        )
-
-        return videos_curso
-
-    def obtem_questionarios_curso(self, curso):
-        unidades_curso = self.obtem_unidades_curso(curso)
-
-        questionarios_curso = Questionario.objects.filter(
-            unidade__in=unidades_curso
-        )
-
-        return questionarios_curso
-
-    def obtem_videos_assistindos_por_usuario(self, curso, usuario):
-        videos_assistindos = UsuarioVideo.objects.filter(
-            usuario=usuario,
-            video__unidade__curso=curso
-        )
-        return videos_assistindos
-
-    def obtem_questionarios_respondidos_por_usuario(self, curso, usuario):
-        questionarios_respondidos = UsuarioQuestionario.objects.filter(
-            usuario=usuario,
-            questionario__unidade__curso=curso
-        )
-        return questionarios_respondidos
-
-    def obtem_percentual_andamento_por_usuario(self, curso, usuario):
-        total_videos_curso = self.obtem_videos_curso(curso).count()
-        total_questionarios_curso = self.obtem_questionarios_curso(curso).count()
-
-        total_videos_assistidos = self.obtem_videos_assistindos_por_usuario(
-            curso,
-            usuario
-        ).count()
-
-        total_questionarios_respondidos = self.obtem_questionarios_respondidos_por_usuario(
-            curso,
-            usuario
-        ).count()
-
-        total_conteudo = total_videos_curso + total_questionarios_curso
-        total_conteudo_realizado = total_videos_assistidos + total_questionarios_respondidos
-
-        percentual_andamento = (total_conteudo_realizado / total_conteudo) * 100
-
-        return percentual_andamento
-
-    def obtem_percentual_acertos_por_usuario(self, curso, usuario):
-        questionarios_respondidos = self.obtem_questionarios_respondidos_por_usuario(
-            curso,
-            usuario
-        )
-
-        percentual_acertos = (questionarios_respondidos.aggregate(Avg('percentual_acertos')))['percentual_acertos__avg']
-
-        return percentual_acertos
-
-
 class Curso(models.Model):
-
-    objects = CursoManager()
-
+    """
+        Modelo de Curso
+    """
     titulo = models.CharField(unique=True, max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -165,7 +87,88 @@ class Curso(models.Model):
             return False
 
 
+    def obtem_unidades(self):
+        """
+            Método para obter todas as unidades cadastradas para um curso
+        """
+        unidades_curso = Unidade.objects.filter(
+            curso=self
+        )
+
+        return unidades_curso
+
+    def obtem_videos(self):
+        """
+            Método para obter todos os vídeos cadastrados para um curso
+        """
+        unidades_curso = self.obtem_unidades()
+
+        videos_curso = Video.objects.filter(
+            unidade__in=unidades_curso
+        )
+
+        return videos_curso
+
+    def obtem_questionarios(self):
+        """
+            Método para obter todos os questionários cadastrados para um curso
+        """
+        unidades_curso = self.obtem_unidades()
+
+        questionarios_curso = Questionario.objects.filter(
+            unidade__in=unidades_curso
+        )
+
+        return questionarios_curso
+
+
+    def obtem_percentual_andamento_por_usuario(self, usuario):
+        """
+            Método para obter o percentual de andamento nos conteúdos de um curso
+        """
+        try:
+            total_videos_curso = self.obtem_videos().count()
+            total_questionarios_curso = self.obtem_questionarios().count()
+
+            total_videos_assistidos = UsuarioVideo.objects.obtem_videos_assistindos_por_usuario(
+                self,
+                usuario
+            ).count()
+
+            total_questionarios_respondidos = UsuarioQuestionario.objects.obtem_questionarios_respondidos_por_usuario(
+                self,
+                usuario
+            ).count()
+
+            total_conteudo = total_videos_curso + total_questionarios_curso
+            total_conteudo_realizado = total_videos_assistidos + total_questionarios_respondidos
+
+            percentual_andamento = (total_conteudo_realizado / total_conteudo) * 100
+
+            return percentual_andamento
+        except:
+            return 0
+
+    def obtem_percentual_acertos_por_usuario(self, usuario):
+        """
+            Método para obter o percentual de acertos nos questionários de um curso
+        """
+        try:
+            questionarios_respondidos = UsuarioQuestionario.objects.obtem_questionarios_respondidos_por_usuario(
+                self,
+                usuario
+            )
+
+            percentual_acertos = (questionarios_respondidos.aggregate(Avg('percentual_acertos')))['percentual_acertos__avg']
+
+            return percentual_acertos
+        except:
+            return 0
+
 class Inscricao(models.Model):
+    """
+        Modelo associado as inscrições de usuários nos cursos
+    """
     SITUACOES = [
         ('EM ANDAMENTO', 'EM ANDAMENTO'),
         ('APROVADO', 'APROVADO'),
@@ -194,6 +197,9 @@ class Inscricao(models.Model):
 
 
 class Avaliacao(models.Model):
+    """
+        Modelo associado as avaliações de um curso realizadas pelos usuários
+    """
     NOTAS = [
         (1, '1'),
         (2, '2'),
@@ -222,6 +228,9 @@ class Avaliacao(models.Model):
 
 
 class Unidade(models.Model):
+    """
+        Modelo associado as unidades de um curso
+    """
     titulo = models.CharField(unique=True, max_length=200)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['curso'])
@@ -241,6 +250,9 @@ class Unidade(models.Model):
 
 
 class Video(models.Model):
+    """
+        Modelo associado aos vídeos de um curso
+    """
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     video_interno = models.BooleanField(default=False)
@@ -263,6 +275,9 @@ class Video(models.Model):
 
 
 class Arquivo(models.Model):
+    """
+        Modelo associado aos arquivos(materiais didáticos) de um curso
+    """
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     caminho = models.FileField(upload_to='arquivos')
@@ -283,6 +298,11 @@ class Arquivo(models.Model):
 
 
 class UsuarioVideo(models.Model):
+    """
+        Modelo associado a relação entre os usuários e videos
+    """
+    objects = UsuarioVideoManager()
+
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     acessado = models.BooleanField(default=True)
@@ -297,7 +317,11 @@ class UsuarioVideo(models.Model):
     def __str__(self):
         return f"{self.usuario} - {self.video}"
 
+
 class Questionario(models.Model):
+    """
+        Modelo associado aos questionários de um curso
+    """
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['unidade'])
@@ -317,6 +341,11 @@ class Questionario(models.Model):
 
 
 class UsuarioQuestionario(models.Model):
+    """
+        Modelo associado a relação entre os usuários e questionários
+    """
+    objects = UsuarioQuestionarioManager()
+
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1)
@@ -330,6 +359,9 @@ class UsuarioQuestionario(models.Model):
 
 
 class Questao(models.Model):
+    """
+        Modelo associado as questões de questionários de um curso
+    """
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     enunciado = models.TextField()
     ordem = OrderField(blank=True, for_fields=['questionario'])
@@ -349,6 +381,9 @@ class Questao(models.Model):
 
 
 class Alternativa(models.Model):
+    """
+        Modelo associado as alternativas de questões de questionários de um curso
+    """
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
     descricao = models.TextField()
     ordem = OrderField(blank=True, for_fields=['questao'])
@@ -367,7 +402,11 @@ class Alternativa(models.Model):
         ordering_field = 'ordem'
         search_fields = ['descricao', 'questao__enunciado']
 
+
 class UsuarioResposta(models.Model):
+    """
+        Modelo associado as respostas dos usuários para as questões
+    """
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
     alternativa = models.ForeignKey(Alternativa, on_delete=models.CASCADE)
