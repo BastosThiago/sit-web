@@ -14,22 +14,4 @@
 
     </div>
 
-    <script>
-        //__ Atualiza algumas informações na página
-        function atualizaConteudo(url){
-
-            $.ajax(
-            {
-                type:"GET",
-                url: url,
-                data:{
-                },
-                success: function( data )
-                {
-                    $(".conteudo-curso-container").replaceWith(data);
-                    window.history.pushState({route: url}, "Questionário", url);
-                }
-            })
-        }
-    </script>
 {% endblock %}

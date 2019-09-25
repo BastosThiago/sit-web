@@ -1,22 +1,17 @@
-{% extends 'base.html' %}
 
-{% load static %}
+<div class="conteudo-curso-container">
 
-{% block title %} {{video.titulo}} {% endblock %}
-
-{% block content %}
-    <p>
+    <p id="botao-anterior-container">
         <span>
-            <i id="botao-anterior" class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i>
+            <i id="botao-anterior" class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}', -1)"></i>
         </span>
     </p>
 
-    <p>
+    <p id="botao-proximo-container">
         <span>
-            <i id="botao-proximo" class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i>
+            <i id="botao-proximo" class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}', 1)"></i>
         </span>
     </p>
-
 
     <div class="player-container" id="player-container">
 
@@ -34,6 +29,8 @@
         var video_corrente_assistido = false;
         var usuario_video_corrente_id = 0;
         var tipo_video_corrente = "";
+        var conteudo_anterior_nome = "";
+        var prox_conteudo_nome = "";
 
         function criaVideoYoutube(caminho_video, tempo_corrente) {
 
@@ -117,8 +114,10 @@
             console.log("Onready");
 
             usuario_video_corrente_id = {{ usuario_video.id }};
-            tipo_video_corrente = '{{ tipo_video }}';
-            tempo_corrente_video = {{ tempo_corrente }};
+            tipo_video_corrente       = '{{ tipo_video }}';
+            tempo_corrente_video      = {{ tempo_corrente }};
+            conteudo_anterior_nome    = '{{ conteudo_anterior_nome }}';
+            prox_conteudo_nome        = '{{ prox_conteudo_nome }}';
 
             if('{{ tipo_video }}' == 'youtube') {
                 criaVideoYoutube('{{ caminho_video }}', {{ tempo_corrente }})
@@ -131,6 +130,21 @@
             if('{{ tipo_video }}' == 'interno') {
                 criaVideoInterno('{{ caminho_video }}', {{tempo_corrente }})
             }
+
+            if('{{ conteudo_anterior_url }}' != '') {
+                $('#botao-anterior-container')[0].hidden = false;
+            }
+            else {
+                $('#botao-anterior-container')[0].hidden = true;
+            }
+
+            if('{{ proximo_conteudo_url }}' != '') {
+                $('#botao-proximo-container')[0].hidden = false;
+            }
+            else {
+                $('#botao-proximo-container')[0].hidden = true;
+            }
+
 
         })
 
@@ -221,48 +235,71 @@
             atualizaTempoCorrenteVideo(usuario_video_corrente_id)
         });
 
-        function atualizaConteudo(url){
+        function atualizaConteudo(url, sentido){
 
             $.ajax(
             {
                 type:"GET",
                 url: url,
                 data:{
+                    'origem': 'video'
                 },
                 success: function( data )
                 {
 
                     atualizaTempoCorrenteVideo(usuario_video_corrente_id);
 
+                    if(
+                        (sentido == -1 && conteudo_anterior_nome =='video') ||
+                        (sentido == 1  && prox_conteudo_nome =='video')
+                    ) {
+                        $("#src-video").remove();
+                        $("#media-player").remove();
+                        $("#video_interno").remove();
+
+                        tempo_corrente_video = data['tempo_corrente']
+                        tipo_video_corrente  = data['tipo_video']
+
+                        if(data['tipo_video'] == 'youtube'){
+                            criaVideoYoutube(data['caminho_video'], tempo_corrente_video)
+                        }
+
+                        if(data['tipo_video'] == 'vimeo'){
+                            criaVideoVimeo(data['caminho_video'], tempo_corrente_video)
+                        }
+
+                        if(data['tipo_video'] == 'interno'){
+                            criaVideoInterno(data['caminho_video'], tempo_corrente_video)
+                        }
+
+                        usuario_video_corrente_id = data['usuario_video_id']
+                        conteudo_anterior_nome    = data['conteudo_anterior_nome'];
+                        prox_conteudo_nome        = data['prox_conteudo_nome'];
+
+                        if(data['conteudo_anterior_url'] != '') {
+                            $('#botao-anterior').attr('onclick', "atualizaConteudo('" + data['conteudo_anterior_url'] + "', -1)")
+                            $('#botao-anterior-container')[0].hidden = false;
+                        }
+                        else {
+                            $('#botao-anterior-container')[0].hidden = true;
+                        }
+
+                        if(data['proximo_conteudo_url'] != '') {
+                            $('#botao-proximo').attr('onclick', "atualizaConteudo('" + data['proximo_conteudo_url'] + "', 1)")
+                            $('#botao-proximo-container')[0].hidden = false;
+                        }
+                        else {
+                            $('#botao-proximo-container')[0].hidden = true;
+                        }
+                    }
+                    else {
+                        $(".conteudo-curso-container").replaceWith(data);
+                    }
+
                     window.history.pushState({route: url}, "Video", url);
-
-                    $("#src-video").remove();
-                    $("#media-player").remove();
-                    $("#video_interno").remove();
-
-                    tempo_corrente_video = data['tempo_corrente']
-                    tipo_video_corrente  = data['tipo_video']
-
-                    if(data['tipo_video'] == 'youtube'){
-                        criaVideoYoutube(data['caminho_video'], tempo_corrente_video)
-                    }
-
-                    if(data['tipo_video'] == 'vimeo'){
-                        criaVideoVimeo(data['caminho_video'], tempo_corrente_video)
-                    }
-
-                    if(data['tipo_video'] == 'interno'){
-                        criaVideoInterno(data['caminho_video'], tempo_corrente_video)
-                    }
-
-                    usuario_video_corrente_id = data['usuario_video_id']
-
-                    $('#botao-anterior').attr('onclick', "atualizaConteudo('" + data['conteudo_anterior_url'] + "')")
-                    $('#botao-proximo').attr('onclick', "atualizaConteudo('" + data['proximo_conteudo_url'] + "')")
-
                 }
             })
         }
 
     </script>
-{% endblock %}
+</div>

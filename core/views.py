@@ -642,12 +642,15 @@ def visualizacaoVideoView(request, id):
         video.id
     )
 
+    # Obtém a lista de conteúdo do curso
     lista_conteudo_curso = obtemListaConteudoCurso(video.unidade.curso.id)
 
     # Obtém o indice atual da lista de acordo com o conteúdo fornecido
     indice = lista_conteudo_curso.index(dict({video.id: 'video'}))
 
+    # Obtém o ID do conteúdo anterior ao atual
     conteudo_anterior_id = 0
+    conteudo_anterior_nome = ""
     if indice - 1 >= 0:
         [[conteudo_anterior_id, conteudo_anterior_nome]] = lista_conteudo_curso[indice - 1].items()
         if conteudo_anterior_nome != 'video':
@@ -664,7 +667,9 @@ def visualizacaoVideoView(request, id):
             usuario_video_anterior = None
             usuario_video_anterior_id = 0
 
+    # Obtém o ID do próximo conteúdo ao atual
     proximo_conteudo_id = 0
+    prox_conteudo_nome = ""
     if indice + 1 < len(lista_conteudo_curso):
         [[proximo_conteudo_id, prox_conteudo_nome]] = lista_conteudo_curso[indice + 1].items()
         if prox_conteudo_nome != 'video':
@@ -681,7 +686,7 @@ def visualizacaoVideoView(request, id):
             usuario_video_proximo_id = 0
 
     # Caso a requisição não seja via AJAX
-    if request.is_ajax():
+    if request.is_ajax() and request.GET['origem'] == 'video':
         return JsonResponse(
             {
                 'caminho_video': caminho_video,
@@ -689,13 +694,18 @@ def visualizacaoVideoView(request, id):
                 'tipo_video': tipo_video,
                 'conteudo_anterior_url': conteudo_anterior_url,
                 'proximo_conteudo_url': proximo_conteudo_url,
+                'conteudo_anterior_nome': conteudo_anterior_nome,
+                'prox_conteudo_nome': prox_conteudo_nome,
                 'usuario_video_id': usuario_video.id
             }
         )
     else:
+        nome_template = 'core/video-visualizacao.html'
+        if request.is_ajax():
+            nome_template = 'core/video-conteudo.html'
         return render(
             request,
-            'core/video-conteudo.html',
+            nome_template,
             {
                 'video': video,
                 'usuario_video': usuario_video,
@@ -705,6 +715,8 @@ def visualizacaoVideoView(request, id):
                 'src_api_video': src_api_video,
                 'conteudo_anterior_url': conteudo_anterior_url,
                 'proximo_conteudo_url': proximo_conteudo_url,
+                'conteudo_anterior_nome': conteudo_anterior_nome,
+                'prox_conteudo_nome': prox_conteudo_nome,
                 'usuario_video_anterior_id': usuario_video_anterior_id,
                 'usuario_video_proximo_id': usuario_video_proximo_id,
             },
