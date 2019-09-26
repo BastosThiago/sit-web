@@ -328,11 +328,16 @@ def cursosListView(request):
     cursos = None
 
     # Para usuários de perfil ALUNO, exibe todos os cursos com o status de PUBLICADOS.
-    # Se não, retorna apenas os cursos criados pelo usuário corrente
     if request.user.tem_perfil_aluno():
         cursos = Curso.objects.filter(publicado=True).order_by('titulo')
     else:
-        cursos = Curso.objects.filter(usuario=request.user).order_by('titulo')
+        # Caso o usuário seja do perfil de INSTRUTOR, retorna apenas a lista dos cursos
+        # por ele criado
+        if request.user.tem_perfil_instrutor():
+            cursos = Curso.objects.filter(usuario=request.user).order_by('titulo')
+        else:
+            # Caso o usuário seja admistrador, retorna a lista de todos os dados
+            cursos = Curso.objects.all().order_by('titulo')
 
     if cursos:
 
@@ -382,7 +387,10 @@ def informacoesCursoView(request, id):
     if request.user.tem_perfil_aluno():
         curso = get_object_or_404(Curso, pk=id, publicado=True)
     else:
-        curso = get_object_or_404(Curso, pk=id, usuario=request.user)
+        if request.user.tem_perfil_instrutor():
+            curso = get_object_or_404(Curso, pk=id, usuario=request.user)
+        else:
+            curso = get_object_or_404(Curso, pk=id)
 
     # Verifica se o curso tem algum conteúdo
     if curso.tem_conteudo():
@@ -708,15 +716,17 @@ def visualizacaoVideoView(request, id):
         data_assistido = usuario_video.data_assistido
         assistido = usuario_video.assistido
         usuario_video_id = usuario_video.id
+        tempo_corrente = usuario_video.tempo_corrente
     else:
         usuario_video_id = 0
+        tempo_corrente = 0
 
     # Caso a requisição seja via AJAX de uma página de video
     if request.is_ajax() and request.GET['origem'] == 'video':
         return JsonResponse(
             {
                 'caminho_video': caminho_video,
-                'tempo_corrente': usuario_video.tempo_corrente,
+                'tempo_corrente': tempo_corrente,
                 'tipo_video': tipo_video,
                 'conteudo_anterior_url': conteudo_anterior_url,
                 'proximo_conteudo_url': proximo_conteudo_url,
@@ -911,6 +921,8 @@ def visualizacaoQuestionarioView(request, id):
     # Caso o usuário da requisição seja do perfil ALUNO, realiza tratamentos
     # para registrar respostas
     perfil_aluno = False
+    alternativas_dict = {}
+    usuario_questionario = None
     if request.user.tem_perfil_aluno():
         perfil_aluno = True
         if request.method == 'POST':
@@ -981,7 +993,6 @@ def visualizacaoQuestionarioView(request, id):
 
         # Verifica se o usuário da requisição já respondeu ao questionário anteriormente.
         # Se sim, obtém as respostas para cada questão
-        alternativas_dict = {}
         for alternativa in alternativas:
             usuario_respostas = UsuarioResposta.objects.filter(
                 alternativa=alternativa,
@@ -1092,23 +1103,65 @@ def relatorioAcompanhamentoView(request):
       View responsável por configurar um relatório de acompanhamento de um aluno
     """
 
-    # Obtém todos os usuários de pefil ALUNO
-    usuarios = CustomUser.objects.filter(perfil=1).order_by('username')
+    # Caso o usuário tenha perfil de administrador
+    if request.user.tem_perfil_administrador():
+        # Obtém todos os usuários de pefil ALUNO
+        usuarios = CustomUser.objects.filter(perfil=1).order_by('username')
 
-    usuario = None
-    inscricoes = None
-    usuario_id = request.GET.get('usuario')
+        usuario = None
+        inscricoes = None
+        usuario_id = request.GET.get('usuario')
 
-    # Obtém o ID do usuário para então obter suas inscrições nos cursos
-    if usuario_id:
-        try:
-            usuario = CustomUser.objects.get(pk=usuario_id)
-            inscricoes = Inscricao.objects.filter(usuario=usuario)
-        except:
-            usuario = None
+        # Obtém o ID do usuário para então obter suas inscrições nos cursos
+        if usuario_id:
+            try:
+                usuario = CustomUser.objects.get(pk=usuario_id)
+                inscricoes = Inscricao.objects.filter(usuario=usuario)
+            except:
+                usuario = None
 
 
-    if request.is_ajax():
+        if request.is_ajax():
+            return render(
+                request,
+                'core/relatorio-conteudo.html',
+                {
+                    'usuario': usuario,
+                    'inscricoes': inscricoes,
+                    'arquivo': False,
+                }
+            )
+        else:
+            return render(
+                request,
+                'core/relatorio-acompanhamento.html',
+                {
+                    'usuarios': usuarios,
+                    'usuario': usuario,
+                    'inscricoes': inscricoes,
+                    'arquivo': False,
+                }
+            )
+    return HttpResponse("Usuário sem permissão.", status=400)
+
+
+def relatorioUsuarioView(request):
+    """
+      View responsável por gerar um relatório de acompanhamento de um aluno
+    """
+    
+    # Caso o usuário tenha perfil de administrador
+    if request.user.tem_perfil_administrador():
+        if request.method == 'GET':
+            try:
+                usuario_id = request.GET['usuario_id']
+
+                usuario = CustomUser.objects.get(pk=usuario_id)
+                inscricoes = Inscricao.objects.filter(usuario=usuario)
+
+            except:
+                return JsonResponse({})
+
         return render(
             request,
             'core/relatorio-conteudo.html',
@@ -1118,72 +1171,42 @@ def relatorioAcompanhamentoView(request):
                 'arquivo': False,
             }
         )
-    else:
-        return render(
-            request,
-            'core/relatorio-acompanhamento.html',
-            {
-                'usuarios': usuarios,
-                'usuario': usuario,
-                'inscricoes': inscricoes,
-                'arquivo': False,
-            }
-        )
-
-
-def relatorioUsuarioView(request):
-    """
-      View responsável por gerar um relatório de acompanhamento de um aluno
-    """
-    if request.method == 'GET':
-        try:
-            usuario_id = request.GET['usuario_id']
-
-            usuario = CustomUser.objects.get(pk=usuario_id)
-            inscricoes = Inscricao.objects.filter(usuario=usuario)
-
-        except:
-            return JsonResponse({})
-
-    return render(
-        request,
-        'core/relatorio-conteudo.html',
-        {
-            'usuario': usuario,
-            'inscricoes': inscricoes,
-            'arquivo': False,
-        }
-    )
+    return HttpResponse("Usuário sem permissão.", status=400)
 
 
 def obtemRelatorio(request, usuario_id):
     """
       View responsável por gerar um arquivo PDF do relatório de acompanhamento
     """
-    try:
-        usuario = CustomUser.objects.get(pk=usuario_id)
-        inscricoes = Inscricao.objects.filter(usuario=usuario)
 
-        contexto = {
-            'usuario': usuario,
-            'inscricoes': inscricoes,
-            'arquivo': True,
-            'request': request
-        }
-        pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
+    # Caso o usuário tenha perfil de administrador
+    if request.user.tem_perfil_administrador():
+        try:
+            usuario = CustomUser.objects.get(pk=usuario_id)
+            inscricoes = Inscricao.objects.filter(usuario=usuario)
 
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
-            nome_arquivo = "relatorio.pdf"
-            content = "inline; filename=%s" % (nome_arquivo)
-            download = request.GET.get("download")
-            if download:
-                content = "attachment; filename=%s" % (nome_arquivo)
-            response['Content-Disposition'] = content
-            return response
-        return HttpResponse("Erro ao gerar do relatório.", status=400)
-    except:
-        return HttpResponse("Erro ao gerar do relatório.", status=400)
+            contexto = {
+                'usuario': usuario,
+                'inscricoes': inscricoes,
+                'arquivo': True,
+                'request': request
+            }
+            pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
+
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                nome_arquivo = "relatorio.pdf"
+                content = "inline; filename=%s" % (nome_arquivo)
+                download = request.GET.get("download")
+                if download:
+                    content = "attachment; filename=%s" % (nome_arquivo)
+                response['Content-Disposition'] = content
+                return response
+            return HttpResponse("Erro ao gerar do relatório.", status=400)
+        except:
+            return HttpResponse("Erro ao gerar do relatório.", status=400)
+
+    return HttpResponse("Usuário sem permissão.", status=400)
 
 
 

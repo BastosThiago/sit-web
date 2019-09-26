@@ -33,15 +33,19 @@
 
                 {% if alternativa.questao.id == questao.id %}
                     <li>
-                       {% for chave, valor in alternativas_dict.items %}
-                           {% if chave == alternativa.id %}
-                                {% if valor == True %}
-                                    <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" checked="checked">{{ alternativa.descricao }}</input>
-                                {% else %}
-                                    <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}">{{ alternativa.descricao }}</input>
-                                {% endif %}
-                           {% endif %}
-                       {% endfor %}
+                       {% if perfil_aluno == True %}
+                           {% for chave, valor in alternativas_dict.items %}
+                               {% if chave == alternativa.id %}
+                                    {% if valor == True %}
+                                        <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" checked="checked">{{ alternativa.descricao }}</input>
+                                    {% else %}
+                                        <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}">{{ alternativa.descricao }}</input>
+                                    {% endif %}
+                               {% endif %}
+                           {% endfor %}
+                       {% else %}
+                           <input class="input-radio" type="radio" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" disabled="true">{{ alternativa.descricao }}</input>
+                       {% endif %}
                     </li>
                 {% endif %}
             {% endfor %}
@@ -57,7 +61,7 @@
         //__ Obtém o tempo corrente do video que será exibido
         $(document).ready(function(){
             var inputs = document.getElementsByClassName("input-radio");
-            {% if usuario_questionario is not none %}
+            {% if usuario_questionario is not none and perfil_aluno == True%}
 
                 {% if questionario_sem_questoes == False%}
                     $("#enviar")[0].hidden = true;
@@ -69,7 +73,7 @@
 
             {% else %}
 
-                {% if questionario_sem_questoes == False %}
+                {% if questionario_sem_questoes == False and perfil_aluno == True %}
                     $("#enviar")[0].hidden = false;
                     $("#refazer")[0].hidden = true
                     for(let i = 0; i < inputs.length; i++){

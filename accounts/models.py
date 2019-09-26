@@ -4,12 +4,16 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     ALUNO = 1
-    PROFESSOR = 2
+    INSTRUTOR = 2
     PERFIS = (
         (ALUNO, 'Aluno'),
-        (PROFESSOR, 'Professor'),
+        (INSTRUTOR, 'Instrutor')
     )
-    perfil = models.PositiveSmallIntegerField(choices=PERFIS)
+    perfil = models.PositiveSmallIntegerField(
+        choices=PERFIS,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.email
@@ -19,8 +23,11 @@ class CustomUser(AbstractUser):
             return True
         return False
 
-    def tem_perfil_professor(self):
-        if self.perfil == self.ALUNO:
+    def tem_perfil_instrutor(self):
+        if self.perfil == self.INSTRUTOR:
             return True
         return False
+
+    def tem_perfil_administrador(self):
+        return self.is_staff
 
