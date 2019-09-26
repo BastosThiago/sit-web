@@ -1,15 +1,18 @@
 <div class="avaliacao-usuario">
     <h3>Avaliações do curso</h3>
-    <p>Nota: <b><span class="nota-media-curso">{{ nota_media_curso }}</span></b></p>
-    <ul class="itens-lista">
+    {% if avaliacoes != None %}
+        <p>Nota: <b><span class="nota-media-curso">{{ nota_media_curso }}</span></b></p>
+        <ul class="itens-lista">
 
-        {% for avaliacao in avaliacoes %}
-            <li>
-                <p>{{avaliacao.comentario}}</p>
-            </li>
-        {% endfor %}
-    </ul>
-
+            {% for avaliacao in avaliacoes %}
+                <li>
+                    <p>{{avaliacao.comentario}}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Curso sem avaliações cadastradas</p>
+    {% endif %}
     </br>
     {% if avaliacao_usuario != None %}
 
@@ -26,30 +29,31 @@
         <input id="refazer" type="button" name="refazer" class="btn btn-success" value="Refazer" onclick="atualizaDados()">
 
     {% else %}
-        <div class="avaliacao-usuario">
-            <h3>Avaliar Curso</h3>
+        {% if curso_sem_conteudo == False %}
+            <div class="avaliacao-usuario">
+                <h3>Avaliar Curso</h3>
 
-            <div class="offset-1 col-10 list-div">
+                <div class="offset-1 col-10 list-div">
 
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    <select name="nota" size="5">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <select name="nota" size="5">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
 
-                    <textarea name="comentario" rows="10" cols="30">
+                        <textarea name="comentario" rows="10" cols="30">
 
-                    </textarea>
+                        </textarea>
 
-                    <input id="enviar" type="submit" name="enviar" class="btn btn-success" value="Enviar">
-                </form>
+                        <input id="enviar" type="submit" name="enviar" class="btn btn-success" value="Enviar">
+                    </form>
+                </div>
             </div>
-        </div>
-
+        {% endif %}
     {% endif %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script type="text/javascript">

@@ -25,18 +25,26 @@
     </br>
 
     <h3>Unidades do curso</h3>
-    <ul class="itens-lista">
+    {% if unidades != None %}
+        <ul class="itens-lista">
 
-        {% for unidade in unidades %}
-            <li>
-                <p>{{unidade.titulo}}</p>
-            </li>
-        {% endfor %}
-    </ul>
+            {% for unidade in unidades %}
+                <li>
+                    <p>{{unidade.titulo}}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Curso sem unidades cadastradas</p>
+    {% endif %}
 
     </br>
 
-    {% include  'core/avaliacao-conteudo.html' %}
+    {% if exibe_botao_inscricao == False and perfil_aluno == True %}
+
+        {% include  'core/avaliacao-conteudo.html' %}
+
+    {% endif %}
 
     {% if exibe_botao_inscricao %}
         <a class="botao_inscricao" id="add-link" href="#" data-curso_id="{{ curso.id }}">

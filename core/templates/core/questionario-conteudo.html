@@ -59,19 +59,25 @@
             var inputs = document.getElementsByClassName("input-radio");
             {% if usuario_questionario is not none %}
 
-                $("#enviar")[0].hidden = true;
-                $("#refazer")[0].hidden = false;
-                for(let i = 0; i < inputs.length; i++){
-                    inputs[i].disabled = true;
-                }
+                {% if questionario_sem_questoes == False%}
+                    $("#enviar")[0].hidden = true;
+                    $("#refazer")[0].hidden = false;
+                    for(let i = 0; i < inputs.length; i++){
+                        inputs[i].disabled = true;
+                    }
+                {% endif %}
 
             {% else %}
-                $("#enviar")[0].hidden = false;
-                $("#refazer")[0].hidden = true
-                for(let i = 0; i < inputs.length; i++){
-                    inputs[i].disabled = false;
-                    inputs[i].checked = false;
-                }
+
+                {% if questionario_sem_questoes == False %}
+                    $("#enviar")[0].hidden = false;
+                    $("#refazer")[0].hidden = true
+                    for(let i = 0; i < inputs.length; i++){
+                        inputs[i].disabled = false;
+                        inputs[i].checked = false;
+                    }
+                {% endif %}
+
             {% endif %}
 
             if('{{ conteudo_anterior_url }}' != '') {

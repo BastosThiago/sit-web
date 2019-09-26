@@ -87,6 +87,11 @@
             document.getElementById('video_interno').currentTime = tempo_corrente;
         }
 
+        function criaVideoGenerico(caminho_video) {
+            $('#player-container').append(
+                '<iframe class="player-iframe" id="media-player" src="' + caminho_video + '" allowfullscreen></iframe>'
+            );
+        }
 
         //__ Função para atualizar na base de dados via Ajax algumas informações do video
         function atualizaTempoCorrenteVideo(usuario_video_corrente_id){
@@ -113,7 +118,7 @@
         $(document).ready(function(){
             console.log("Onready");
 
-            usuario_video_corrente_id = {{ usuario_video.id }};
+            usuario_video_corrente_id = {{ usuario_video_id }};
             tipo_video_corrente       = '{{ tipo_video }}';
             tempo_corrente_video      = {{ tempo_corrente }};
             conteudo_anterior_nome    = '{{ conteudo_anterior_nome }}';
@@ -129,6 +134,10 @@
 
             if('{{ tipo_video }}' == 'interno') {
                 criaVideoInterno('{{ caminho_video }}', {{tempo_corrente }})
+            }
+
+            if('{{ tipo_video }}' == '') {
+                criaVideoGenerico('{{ caminho_video }}')
             }
 
             if('{{ conteudo_anterior_url }}' != '') {

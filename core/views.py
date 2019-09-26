@@ -372,6 +372,10 @@ def informacoesCursoView(request, id):
     exibe_botao_conteudo = False
     perfil_aluno = False
     avaliacao_usuario = None
+    curso_sem_conteudo = False
+    unidades = None
+    avaliacoes = None
+    nota_media_curso = None
 
     # Obtém o curso associado a requisição e verifica o perfil de usuário
     # para validar o curso a ser obtido
@@ -381,7 +385,6 @@ def informacoesCursoView(request, id):
         curso = get_object_or_404(Curso, pk=id, usuario=request.user)
 
     # Verifica se o curso tem algum conteúdo
-    curso_sem_conteudo = False
     if curso.tem_conteudo():
 
         # Obtém a lista de unidades associadas ao curso
@@ -485,6 +488,8 @@ def avaliacaoCursoView(request, id):
         try:
             curso = Curso.objects.get(pk=id)
 
+            curso_sem_conteudo = not(curso.tem_conteudo())
+
             inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
 
             # Obtém as avaliações associadas ao curso
@@ -533,6 +538,7 @@ def avaliacaoCursoView(request, id):
             'avaliacao_usuario': avaliacao_usuario,
             'avaliacoes': avaliacoes,
             'curso': curso,
+            'curso_sem_conteudo': curso_sem_conteudo,
             'nota_media_curso': nota_media_curso,
         },
     )
@@ -608,6 +614,7 @@ def visualizacaoVideoView(request, id):
     tipo_video = ''
     tempo_corrente = 0
     caminho_video = ''
+    usuario_video = None
 
     # Registra que o usuário acessou a página do vídeo(apenas para usuários de perfil ALUNO)
     if request.user.tem_perfil_aluno():
@@ -700,6 +707,9 @@ def visualizacaoVideoView(request, id):
         data_acesso = usuario_video.data_acesso
         data_assistido = usuario_video.data_assistido
         assistido = usuario_video.assistido
+        usuario_video_id = usuario_video.id
+    else:
+        usuario_video_id = 0
 
     # Caso a requisição seja via AJAX de uma página de video
     if request.is_ajax() and request.GET['origem'] == 'video':
@@ -712,7 +722,7 @@ def visualizacaoVideoView(request, id):
                 'proximo_conteudo_url': proximo_conteudo_url,
                 'conteudo_anterior_nome': conteudo_anterior_nome,
                 'prox_conteudo_nome': prox_conteudo_nome,
-                'usuario_video_id': usuario_video.id,
+                'usuario_video_id': usuario_video_id,
                 'data_acesso': data_acesso,
                 'data_assistido': data_assistido,
                 'assistido': assistido
@@ -740,6 +750,7 @@ def visualizacaoVideoView(request, id):
                 'data_acesso': data_acesso,
                 'data_assistido': data_assistido,
                 'assistido': assistido,
+                'usuario_video_id': usuario_video_id,
             },
         )
 
