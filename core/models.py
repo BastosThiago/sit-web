@@ -3,7 +3,7 @@ from django.db.models import Avg
 from sistema_treinamentos.settings import AUTH_USER_MODEL
 
 from .fields import OrderField
-from .managers import UsuarioVideoManager, UsuarioQuestionarioManager
+from .managers import *
 
 
 class Categoria(models.Model):
@@ -169,6 +169,9 @@ class Inscricao(models.Model):
     """
         Modelo associado as inscrições de usuários nos cursos
     """
+
+    objects = InscricaoManager()
+
     SITUACOES = [
         ('EM ANDAMENTO', 'EM ANDAMENTO'),
         ('APROVADO', 'APROVADO'),

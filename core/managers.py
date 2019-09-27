@@ -1,6 +1,24 @@
 from .models import *
 
 
+class InscricaoManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def usuario_inscrito_curso(self, usuario, curso):
+        """
+            Método para verificar se o usuário está inscrito em um dado curso
+        """
+        inscricao = self.filter(
+            usuario=usuario,
+            curso=curso,
+            curso__publicado=True
+        )
+        if inscricao.count() == 1:
+            return True
+        return False
+
+
 class UsuarioVideoManager(models.Manager):
     """
         Manager associado ao modelo UsuarioVideo

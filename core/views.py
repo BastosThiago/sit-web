@@ -37,6 +37,24 @@ forms = {
 }
 
 
+def trata_erro_404(request, exception):
+    response = render(request, '404.html')
+    response.status_code = 404
+    return response
+
+
+def trata_erro_500(request):
+    response = render(request, '500.html')
+    response.status_code = 500
+    return response
+
+
+def trata_usuario_sem_permissao(request):
+    response = render(request, '203.html')
+    response.status_code = 203
+    return response
+
+
 def usuario_requisicao_aluno(request):
     """
       Função auxiliar que retorna se o usuário de uma requisição é do perfl ALUNO
@@ -149,44 +167,64 @@ def registrosListView(request, modelo):
     ao modelo fornecido
     """
 
-    # Obtém o título a ser apresentado na página com base no nome do modelo
-    tituloPagina = modelo._meta.verbose_name_plural
+    if request.user.tem_perfil_instrutor() or request.user.tem_perfil_administrador():
 
-    # Obtém o texto a ser atribuido no link
-    nomeLink = remover_acentos(modelo._meta.verbose_name.lower())
+        # Obtém o título a ser apresentado na página com base no nome do modelo
+        tituloPagina = modelo._meta.verbose_name_plural
 
-    # Verifica se algum filtro foi passado para obtenção dos registros
-    try:
-        search = request.GET.get('search')
-    except:
-        search = None
+        # Obtém o texto a ser atribuido no link
+        nomeLink = remover_acentos(modelo._meta.verbose_name.lower())
 
-    # Verifica se na requisição de GET foi passado o parametro de pesquisa.
-    # Caso sim, verifica o texto pesquisado nas informações do modelo
-    if search:
-        search_fields = modelo.CustomMeta.search_fields
-        filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
-        objetos = modelo.objects.filter(filtro)
+        # Verifica se algum filtro foi passado para obtenção dos registros
+        try:
+            search = request.GET.get('search')
+        except:
+            search = None
 
-    # Caso não, obtém a lista de todos os objetos
+        # Verifica se na requisição de GET foi passado o parametro de pesquisa.
+        # Caso sim, verifica o texto pesquisado nas informações do modelo
+        if search:
+            search_fields = modelo.CustomMeta.search_fields
+            filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
+            objetos = modelo.objects.filter(filtro)
+
+            if request.user.tem_perfil_instrutor():
+                try:
+                    if modelo._meta.get_field('usuario'):
+                        objetos = objetos.filter(usuario=request.user)
+                except:
+                    pass
+
+        # Caso não, obtém a lista de todos os objetos
+        else:
+            lista_objetos = modelo.objects.all().order_by(modelo.CustomMeta.ordering_field)
+
+            if request.user.tem_perfil_instrutor():
+                try:
+                    if modelo._meta.get_field('usuario'):
+                        lista_objetos = lista_objetos.filter(usuario=request.user)
+                except:
+                    pass
+
+            paginator = Paginator(lista_objetos, 5)
+
+            page = request.GET.get('page')
+
+            objetos = paginator.get_page(page)
+
+
+        return render(
+            request,
+            'core/registros-lista.html',
+            {
+                'objetos': objetos,
+                'tituloPagina': tituloPagina,
+                'nomeLink': nomeLink,
+            }
+        )
     else:
-        listaObjetos = modelo.objects.all().order_by(modelo.CustomMeta.ordering_field)
-
-        paginator = Paginator(listaObjetos, 5)
-
-        page = request.GET.get('page')
-
-        objetos = paginator.get_page(page)
-
-    return render(
-        request,
-        'core/registros-lista.html',
-        {
-            'objetos': objetos,
-            'tituloPagina': tituloPagina,
-            'nomeLink': nomeLink,
-        }
-    )
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 
 @login_required
@@ -195,42 +233,49 @@ def novoRegistroView(request, modelo):
     View responsável pelo tratamento de adição de um novo registro associado ao modelo fornecido
     """
 
-    # Obtém os nomes associado ao modelo da requisição
-    nomeModelo = modelo._meta.verbose_name
-    nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
+    if request.user.tem_perfil_instrutor() or request.user.tem_perfil_administrador():
 
-    # Monta o título a ser apresentado na página
-    tituloPagina = f"Novo registro de {nomeModelo}"
+        # Obtém os nomes associado ao modelo da requisição
+        nomeModelo = modelo._meta.verbose_name
+        nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
-    # Monta a informação do link de redirecionamento
-    nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
+        # Monta o título a ser apresentado na página
+        tituloPagina = f"Novo registro de {nomeModelo}"
 
-    # Obtém o form associado ao modelo
-    formModelo = forms[remover_acentos(nomeModelo.lower())]
+        # Monta a informação do link de redirecionamento
+        nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
-    # Caso o método HTTP associado a requisição seja POST
-    # Exibe o formulário com os dados já existentes, senão, um em branco
-    if request.method == 'POST':
-        form = formModelo(request.POST, request.FILES or None)
+        # Obtém o form associado ao modelo
+        formModelo = forms[remover_acentos(nomeModelo.lower())]
 
-        if form.is_valid():
-            objeto = form.save(commit=False)
-            objeto.save()
-            return redirect(
-                nomeLinkRedirecionamento
-            )
+        # Caso o método HTTP associado a requisição seja POST
+        # Exibe o formulário com os dados já existentes, senão, um em branco
+        if request.method == 'POST':
+            form = formModelo(request.POST, request.FILES or None)
+
+            if form.is_valid():
+                objeto = form.save(commit=False)
+
+                if modelo == Curso:
+                    objeto.usuario = request.user
+                objeto.save()
+                return redirect(
+                    nomeLinkRedirecionamento
+                )
+        else:
+            form = formModelo()
+
+        return render(
+            request,
+            'core/registro-adiciona.html',
+            {
+                'form': form,
+                'tituloPagina': tituloPagina
+            }
+        )
     else:
-        form = formModelo()
-
-    return render(
-        request,
-        'core/registro-adiciona.html',
-        {
-            'form': form,
-            'tituloPagina': tituloPagina
-        }
-    )
-
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 @login_required
 def editaRegistroView(request, id, modelo):
@@ -238,34 +283,46 @@ def editaRegistroView(request, id, modelo):
     View responsável pelo tratamento de edição de um registro associado ao modelo fornecido
     """
 
-    # Obtém os nomes associado ao modelo da requisição
-    nomeModelo = modelo._meta.verbose_name
-    nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
+    if request.user.tem_perfil_instrutor() or request.user.tem_perfil_administrador():
+        # Obtém os nomes associado ao modelo da requisição
+        nomeModelo = modelo._meta.verbose_name
+        nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
-    # Monta o título a ser apresentado na página
-    tituloPagina = f"Edição de registro de {nomeModelo}"
-    nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
+        # Monta o título a ser apresentado na página
+        tituloPagina = f"Edição de registro de {nomeModelo}"
+        nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
-    # Obtém o form associado ao modelo
-    formModelo = forms[remover_acentos(nomeModelo.lower())]
+        # Obtém o form associado ao modelo
+        formModelo = forms[remover_acentos(nomeModelo.lower())]
 
-    # Obtém o objeto de acordo com seu ID
-    objeto = get_object_or_404(modelo, pk=id)
+        # Obtém o objeto de acordo com seu ID
+        objeto = get_object_or_404(modelo, pk=id)
 
-    #Obtém o form associado ao objeto
-    form = formModelo(instance=objeto)
+        #Obtém o form associado ao objeto
+        form = formModelo(instance=objeto)
 
-    # Caso o método HTTP da requsição seja de POST, cria o form com os dados recebidos
-    if request.method == 'POST':
-        form = formModelo(request.POST, instance=objeto)
+        # Caso o método HTTP da requsição seja de POST, cria o form com os dados recebidos
+        if request.method == 'POST':
+            form = formModelo(request.POST, instance=objeto)
 
-        # Caso o preenchimento do formulário seja válido, salva o objeto e
-        # redireciona para a listagem de registros
-        if(form.is_valid()):
-            objeto.save()
-            return redirect(
-                nomeLinkRedirecionamento
-            )
+            # Caso o preenchimento do formulário seja válido, salva o objeto e
+            # redireciona para a listagem de registros
+            if(form.is_valid()):
+
+                objeto.save()
+
+                return redirect(
+                    nomeLinkRedirecionamento
+                )
+            else:
+                return render(
+                    request,
+                    'core/registro-edicao.html',
+                    {
+                        'form': form,
+                        'tituloPagina': tituloPagina
+                    }
+                )
         else:
             return render(
                 request,
@@ -276,15 +333,8 @@ def editaRegistroView(request, id, modelo):
                 }
             )
     else:
-        return render(
-            request,
-            'core/registro-edicao.html',
-            {
-                'form': form,
-                'tituloPagina': tituloPagina
-            }
-        )
-
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 @login_required
 def removeRegistroView(request, id, modelo):
@@ -292,30 +342,41 @@ def removeRegistroView(request, id, modelo):
     View responsável pelo tratamento de remoção de um registro associado ao modelo fornecido
     """
 
-    nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
-    nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
+    if request.user.tem_perfil_instrutor() or request.user.tem_perfil_administrador():
+        nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
+        nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
-    # Obtém o objeto a ser removido e em caso de sucesso, o remove
-    objeto = get_object_or_404(modelo, pk=id)
+        # Obtém o objeto a ser removido e em caso de sucesso, o remove
+        objeto = get_object_or_404(modelo, pk=id)
 
-    try:
-        objeto.delete()
-        # Indica mensagem de sucesso na removação
-        messages.info(
-            request,
-            'Registro removido com sucesso'
+        if request.user.tem_perfil_instrutor():
+            try:
+                if modelo._meta.get_field('usuario'):
+                    if objeto.usuario != request.user:
+                        return HttpResponse("Sem permissão para deletar arquivo")
+            except:
+                pass
+        try:
+            objeto.delete()
+            # Indica mensagem de sucesso na removação
+            messages.info(
+                request,
+                'Registro removido com sucesso'
+            )
+        except:
+            # Indica mensagem de sucesso na removação
+            messages.info(
+                request,
+                'Falha ao remover o registro'
+            )
+
+        # Redireciona o usuário para a página da lista de registros
+        return redirect(
+            nomeLinkRedirecionamento
         )
-    except:
-        # Indica mensagem de sucesso na removação
-        messages.info(
-            request,
-            'Falha ao remover o registro'
-        )
-
-    # Redireciona o usuário para a página da lista de registros
-    return redirect(
-        nomeLinkRedirecionamento
-    )
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 
 @login_required
@@ -481,7 +542,8 @@ def inscricaoCursoView(request):
         else:
             return HttpResponse(resposta)
     else:
-        return HttpResponse("Usuário sem permissão para se inscrever em cursos.")
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 
 @login_required
@@ -539,17 +601,21 @@ def avaliacaoCursoView(request, id):
             inscricao = None
             avaliacoes = None
 
-    return render(
-        request,
-        'core/avaliacao-conteudo.html',
-        {
-            'avaliacao_usuario': avaliacao_usuario,
-            'avaliacoes': avaliacoes,
-            'curso': curso,
-            'curso_sem_conteudo': curso_sem_conteudo,
-            'nota_media_curso': nota_media_curso,
-        },
-    )
+        return render(
+            request,
+            'core/avaliacao-conteudo.html',
+            {
+                'avaliacao_usuario': avaliacao_usuario,
+                'avaliacoes': avaliacoes,
+                'curso': curso,
+                'curso_sem_conteudo': curso_sem_conteudo,
+                'nota_media_curso': nota_media_curso,
+            },
+        )
+
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 
 @login_required
@@ -565,9 +631,19 @@ def conteudoCursoView(request, id):
     if request.user.tem_perfil_aluno():
         perfil_aluno = True
         curso = get_object_or_404(Curso, pk=id, publicado=True)
+
+        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
+        # Caso não esteja inscrito, retorna uma mensagem associada
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, curso)
+        if usuario_inscrito == False:
+            # Chama tratamento padrão para usuário sem permissão
+            return trata_usuario_sem_permissao(request)
     else:
         try:
-            curso = Curso.objects.get(pk=id, usuario=request.user)
+            if request.user.tem_perfil_aluno():
+                curso = Curso.objects.get(pk=id, usuario=request.user)
+            else:
+                curso = Curso.objects.get(pk=id)
         except:
             curso = None
 
@@ -626,19 +702,25 @@ def visualizacaoVideoView(request, id):
 
     # Registra que o usuário acessou a página do vídeo(apenas para usuários de perfil ALUNO)
     if request.user.tem_perfil_aluno():
-        if video:
 
-            # Tenta obter ou cria a associação entre usuário e video
-            try:
-                usuario_video = UsuarioVideo.objects.get(
-                    video=video,
-                    usuario=request.user
-                )
-            except:
-                usuario_video = UsuarioVideo.objects.create(
-                    video=video,
-                    usuario=request.user
-                )
+        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
+        # Caso não esteja inscrito, retorna uma mensagem associada
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, video.unidade.curso)
+        if usuario_inscrito == False:
+            # Chama tratamento padrão para usuário sem permissão
+            return trata_usuario_sem_permissao(request)
+
+        # Tenta obter ou cria a associação entre usuário e video
+        try:
+            usuario_video = UsuarioVideo.objects.get(
+                video=video,
+                usuario=request.user
+            )
+        except:
+            usuario_video = UsuarioVideo.objects.create(
+                video=video,
+                usuario=request.user
+            )
 
         # Obtém as informações da associação entre usuário e video
         if usuario_video:
@@ -765,7 +847,6 @@ def visualizacaoVideoView(request, id):
         )
 
 
-
 def atualizaAndamentoCurso(curso, usuario):
     """
     View responsável por atualizar o percentual da andamento do curso para um dado usuário
@@ -806,7 +887,7 @@ def atualizaAndamentoCurso(curso, usuario):
             inscricao_usuario.save()
 
         except:
-         return None
+            return None
 
 
 @login_required
@@ -831,7 +912,6 @@ def atualizaVideoUsuarioView(request):
 
                 usuario_video = UsuarioVideo.objects.get(pk=usuario_video_id)
                 usuario_video.tempo_corrente = tempo_corrente
-                assistido = bool(video_assistido)
                 if(video_assistido == 'true'):
 
                     usuario_video.assistido = True
@@ -875,6 +955,15 @@ def visualizacaoArquivoView(request, id):
     # Obtém o arquivo de acordo com o ID recebido
     arquivo = get_object_or_404(Arquivo, pk=id)
 
+    # Verifica o perfil do usuário
+    if request.user.tem_perfil_aluno():
+        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
+        # Caso não esteja inscrito, retorna uma mensagem associada
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, arquivo.unidade.curso)
+        if usuario_inscrito == False:
+            # Chama tratamento padrão para usuário sem permissão
+            return trata_usuario_sem_permissao(request)
+
     # Obtém as URLs do próximo e do conteúdo anterior ao arquivo acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         arquivo.unidade.curso.id,
@@ -906,6 +995,16 @@ def visualizacaoQuestionarioView(request, id):
 
     # Obtém o questionário de acordo com seu ID
     questionario = get_object_or_404(Questionario, pk=id)
+
+    # Verifica o perfil do usuário
+    if request.user.tem_perfil_aluno():
+
+        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
+        # Caso não esteja inscrito, retorna uma mensagem associada
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, questionario.unidade.curso)
+        if usuario_inscrito == False:
+            # Chama tratamento padrão para usuário sem permissão
+            return trata_usuario_sem_permissao(request)
 
     # Obtém a questões associadas ao questionário
     questoes = Questao.objects.filter(questionario=questionario).order_by('ordem')
@@ -1046,6 +1145,7 @@ def visualizacaoQuestionarioView(request, id):
     )
 
 
+@login_required
 def downloadConteudo(request, file_path, diretorio):
     """
       View responsável por permitir o download de algum conteúdo do curso
@@ -1060,6 +1160,7 @@ def downloadConteudo(request, file_path, diretorio):
         return None
 
 
+@login_required
 def obtemCertificado(request, curso_id):
     """
       View responsável por gerar um certificado de participação ao usuário
@@ -1090,14 +1191,15 @@ def obtemCertificado(request, curso_id):
                     content = "attachment; filename=%s" % (nome_arquivo)
                 response['Content-Disposition'] = content
                 return response
-            return HttpResponse("Erro ao gerar do certificado.", status=400)
+            return trata_erro_500(request)
         else:
-            return HttpResponse("Usuário sem permissão para gerar certificado.", status=400)
+            return trata_usuario_sem_permissao(request)
 
     except:
-      return HttpResponse("Erro ao gerar do certificado.", status=400)
+      return trata_erro_500(request)
 
 
+@login_required
 def relatorioAcompanhamentoView(request):
     """
       View responsável por configurar um relatório de acompanhamento de um aluno
@@ -1142,14 +1244,16 @@ def relatorioAcompanhamentoView(request):
                     'arquivo': False,
                 }
             )
-    return HttpResponse("Usuário sem permissão.", status=400)
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 
 def relatorioUsuarioView(request):
     """
       View responsável por gerar um relatório de acompanhamento de um aluno
     """
-    
+
     # Caso o usuário tenha perfil de administrador
     if request.user.tem_perfil_administrador():
         if request.method == 'GET':
@@ -1171,9 +1275,12 @@ def relatorioUsuarioView(request):
                 'arquivo': False,
             }
         )
-    return HttpResponse("Usuário sem permissão.", status=400)
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 
+@login_required
 def obtemRelatorio(request, usuario_id):
     """
       View responsável por gerar um arquivo PDF do relatório de acompanhamento
@@ -1202,11 +1309,13 @@ def obtemRelatorio(request, usuario_id):
                     content = "attachment; filename=%s" % (nome_arquivo)
                 response['Content-Disposition'] = content
                 return response
-            return HttpResponse("Erro ao gerar do relatório.", status=400)
+            return trata_erro_500(request)
         except:
-            return HttpResponse("Erro ao gerar do relatório.", status=400)
+            return trata_erro_500(request)
 
-    return HttpResponse("Usuário sem permissão.", status=400)
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 
 

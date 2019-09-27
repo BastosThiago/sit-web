@@ -14,8 +14,9 @@
         {% endfor %}
     </select>
 
-    {% include  'core/conteudo-relatorio.html' %}
+    {% include  'core/relatorio-conteudo.html' %}
 
+    <p><span><i class="fas fa-arrow-right" onclick="geraRelatorio()"></i></span></p>
     <script>
         //__ Função responsável por obter os dados do relatório via AJAX
         function geraRelatorio(){
@@ -38,5 +39,5 @@
             })
         }
     </script>
-    <p><span><i class="fas fa-arrow-right" onclick="geraRelatorio()"></i></span></p>
+
 {% endblock %}

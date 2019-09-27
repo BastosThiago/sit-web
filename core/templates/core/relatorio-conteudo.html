@@ -1,24 +1,121 @@
 <div class="conteudo-relatorio-container">
     {% if usuario != None %}
 
-        <h2>Relatório acompanhamento - {{ usuario.username }}</h2>
+        <style>
+            @page {
+                size: A4 landscape;
+                margin: 1cm;
+            }
 
-        <table style="width:100%">
-            <tr>
-                <th>Curso</th>
-                <th>Percentual de Andamento</th>
-                <th>Percentual de Acertos</th>
-                <th>Situação</th>
-            </tr>
-            {% for inscricao in inscricoes %}
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            table, th, td {
+                border: 1px solid black;
+                text-align: center;
+            }
+
+            th, td {
+                padding: 4px;
+                vertical-align: center;
+            }
+
+            tr:hover td {
+                background: transparent;
+            }
+
+            .linha-conteudo:hover {
+                background-color: #B4FE8A;
+            }
+            td {
+                font-size: 1.2em;
+            }
+
+            .titulo-relatorio {
+                font-size: 1.5em;
+                background-color: #C8D1FF;
+            }
+
+            .titulo-colunas {
+                font-size: 1.3em;
+                background-color: #FCDEC2;
+            }
+
+            .coluna-conteudo-1 {
+                font-size: 1.1em;
+            }
+
+            .coluna-conteudo-2 {
+                font-size: 1.1em;
+                background-color: #f2f2f2;
+            }
+
+            .reprovado {
+                background-color: #FFC2BC;
+            }
+
+            .aprovado {
+                background-color: #CAFAB0;
+            }
+        </style>
+
+
+        <div style="overflow-x:auto;">
+            <table>
+
                 <tr>
-                    <td>{{ inscricao.curso.titulo }}</td>
-                    <td>{{ inscricao.percentual_andamento }}</td>
-                    <td>{{ inscricao.percentual_acertos }}</td>
-                    <td>{{ inscricao.situacao }}</td>
+                    <th class="titulo-relatorio" colspan="7">Relatório acompanhamento - {{ usuario.username }}</th>
                 </tr>
-            {% endfor %}
-        </table>
+
+                <tr>
+                    <th class="titulo-colunas">Curso</th>
+                    <th class="titulo-colunas">Data Inscrição</th>
+                    <th class="titulo-colunas">Andamento</th>
+                    <th class="titulo-colunas">Acertos</th>
+                    <th class="titulo-colunas">Situação</th>
+                    <th class="titulo-colunas">Data Conclusão</th>
+                    <th class="titulo-colunas">Obteve Certificado</th>
+                </tr>
+
+                {% for inscricao in inscricoes %}
+
+                    <tr class="linha-conteudo">
+
+                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.curso.titulo }}</td>
+                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_inscricao | date:"d/m/Y" }}</td>
+                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_andamento }} %</td>
+                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_acertos }}  %</td>
+
+
+                        {% if inscricao.situacao == 'REPROVADO' %}
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} reprovado">{{ inscricao.situacao }}</td>
+                        {% else %}
+                            {% if inscricao.situacao == 'APROVADO' %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} aprovado">{{ inscricao.situacao }}</td>
+                            {% else %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.situacao }}</td>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if inscricao.data_conclusao != None %}
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_conclusao | date:"d/m/Y" }}</td>
+                        {% else %}
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}"> --- </td>
+                        {% endif %}
+
+                        {% if inscricao.obteve_certificado == True %}
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Sim</td>
+                        {% else %}
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Não</td>
+                        {% endif %}
+
+                    </tr>
+
+                {% endfor %}
+            </table>
+        </div>
 
         {% if arquivo == False %}
             <div class="botao-certificado">

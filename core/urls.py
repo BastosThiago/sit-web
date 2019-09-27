@@ -90,3 +90,4 @@ urlpatterns = [
     
 
 ] + static(STATIC_URL, document_root=STATIC_ROOT) + static(MEDIA_URL, document_root=MEDIA_ROOT)
+

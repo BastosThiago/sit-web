@@ -5,43 +5,36 @@
       <title>Certificado</title>
       <style type="text/css">
           @page {
-              size: A5 landscape;
+              size: A4 landscape;
               margin: 1cm;
-          }
-
-          .borda-externa {
-              width:400px;
-              height:200px;
-              padding:20px;
-              text-align:center;
               border: 10px solid gray;
           }
 
-          .borda-interna{
-              width:10px;
-              height:10px;
-              padding:20px;
+          .borda-externa {
+              height: 100%;
               text-align:center;
-              border: 5px solid gray;
+          }
+
+          .borda-interna{
+              height: 100%;
+              text-align:center;
           }
 
           .titulo {
-              font-size:50px;
+              font-size:52px;
               font-weight:bold;
           }
 
           .texto-certificamos {
-              font-size:25px;
+              font-size:30px;
           }
 
           .nome-aluno {
-
-              font-size:30px;
-
+              font-size:40px;
           }
 
           .curso-completo {
-              font-size:25px
+              font-size:30px
           }
 
           .nome-curso {
@@ -49,11 +42,11 @@
           }
 
           .texto-nota {
-              font-size:20px
+              font-size:30px
           }
 
           .texto-data {
-              font-size:25px
+              font-size:30px
           }
 
       </style>
@@ -61,25 +54,40 @@
   <body>
     <div class="borda-externa">
         <div class="borda-interna">
+
+            <br><br><br><br>
             <span class="titulo">Certificado de Participação</span>
-            <br><br>
+
+            <br><br><br><br><br><br>
+
             <span class="texto-certificamos"><i>Certificamos que</i></span>
-            <br><br>
+
+            <br><br><br><br>
+
             <span class="nome-aluno"><b>{{ usuario.username }}</b></span>
-            <br/><br/>
+
+            <br/><br/><br><br>
+
             <span class="curso-completo"><i>completou todo o conteúdo didático do curso</i></span>
-            <br/><br/>
-            <span class="nome-curso">{{ inscricao.curso.titulo }}</span>
-            <br/><br/>
-            <span class="texto-nota">com um aproveitamento de <b>{{ inscricao.percentual_acertos }}</b></span>
+            <br/><br/><br><br>
+
+            <span class="nome-curso"><b>{{ inscricao.curso.titulo }}</b></span>
+            <br/><br/><br><br>
+
+            <span class="texto-nota">com um aproveitamento de <b>{{ inscricao.percentual_acertos }}%</b></span>
+
             <br/><br/><br/><br/>
+
             <span class="texto-data">
                 <i>com início em {{ inscricao.data_inscricao | date:"d/m/Y" }}</i>
             </span>
+
+            <br><br><br><br>
+
+
             <span class="texto-data">
                 <i>e concluído em {{ inscricao.data_conclusao | date:"d/m/Y" }}</i>
             </span>
-            <br>
         </div>
     </div>
   </body>

@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from core.views import trata_erro_404, trata_erro_500
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +26,8 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
 
 ]
+
+handler404 = trata_erro_404
+handler500 = trata_erro_500
+
 
