@@ -148,8 +148,8 @@ def paginaInicialView(request):
     """
       View responsável por fornecer o template da página inicial
     """
-    user = CustomUser.objects.get(pk=3)
-    curso = Curso.objects.get(pk=1)
+    #user = CustomUser.objects.get(pk=3)
+    #curso = Curso.objects.get(pk=1)
     #Curso.obtem_unidades(curso)
     #Curso.obtem_videos(curso)
     #Curso.obtem_questionarios(curso)
