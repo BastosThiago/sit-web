@@ -143,11 +143,12 @@ def remover_acentos(txt):
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
 
 
-class Home(TemplateView):
+@login_required
+def paginaInicialView(request):
     """
-      Classe responsável por fornecer o template da página inicial
+      View responsável por fornecer o template da página inicial
     """
-    #user = CustomUser.objects.get(pk=3)
+    user = CustomUser.objects.get(pk=3)
     curso = Curso.objects.get(pk=1)
     #Curso.obtem_unidades(curso)
     #Curso.obtem_videos(curso)
@@ -157,7 +158,35 @@ class Home(TemplateView):
     #Curso.objects.obtem_percentual_andamento_por_usuario(curso, user)
     #Curso.objects.obtem_percentual_acertos_por_usuario(curso, user)
     #curso.obtem_nota_media_curso()
-    template_name = 'index.html'
+    #Unidade.objects.obtem_objetos_por_permissao(user)
+    #Video.objects.obtem_objetos_por_permissao(user)
+    #Questao.objects.obtem_objetos_por_permissao(user)
+    #Alternativa.objects.obtem_objetos_por_permissao(user)
+
+    #template_name = 'index.html'
+
+    # Obtém qual o perfil do usuário que acessou a página inicial do sistema
+    perfil_administrador = request.user.tem_perfil_administrador()
+    perfil_instrutor = request.user.tem_perfil_instrutor()
+    perfil_aluno = request.user.tem_perfil_aluno()
+
+    inscricao = None
+    if perfil_aluno:
+        inscricao = Inscricao.objects.filter(usuario=request.user).order_by('data_ultimo_conteudo_acessado')[:1]
+
+        if inscricao.count() == 1:
+            inscricao = inscricao[0]
+
+    return render(
+        request,
+        'index.html',
+        {
+            'perfil_administrador': perfil_administrador,
+            'perfil_instrutor': perfil_instrutor,
+            'perfil_aluno': perfil_aluno,
+            'inscricao': inscricao,
+        }
+    )
 
 
 @login_required
@@ -186,25 +215,15 @@ def registrosListView(request, modelo):
         if search:
             search_fields = modelo.CustomMeta.search_fields
             filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
-            objetos = modelo.objects.filter(filtro)
-
-            if request.user.tem_perfil_instrutor():
-                try:
-                    if modelo._meta.get_field('usuario'):
-                        objetos = objetos.filter(usuario=request.user)
-                except:
-                    pass
+            objetos = modelo.objects.obtem_objetos_por_perfil_usuario(request.user).filter(filtro)
 
         # Caso não, obtém a lista de todos os objetos
         else:
-            lista_objetos = modelo.objects.all().order_by(modelo.CustomMeta.ordering_field)
-
-            if request.user.tem_perfil_instrutor():
-                try:
-                    if modelo._meta.get_field('usuario'):
-                        lista_objetos = lista_objetos.filter(usuario=request.user)
-                except:
-                    pass
+            lista_objetos = modelo.objects.obtem_objetos_por_perfil_usuario(
+                request.user
+            ).order_by(
+                modelo.CustomMeta.ordering_field
+            )
 
             paginator = Paginator(lista_objetos, 5)
 
@@ -234,6 +253,15 @@ def novoRegistroView(request, modelo):
     """
 
     if request.user.tem_perfil_instrutor() or request.user.tem_perfil_administrador():
+
+        if request.user.tem_perfil_instrutor():
+            if modelo == Categoria or modelo == Avaliacao or modelo == Inscricao:
+                # Chama tratamento padrão para usuário sem permissão
+                return trata_usuario_sem_permissao(request)
+        else:
+            if request.user.tem_perfil_administrador():
+                if modelo == Inscricao:
+                    return trata_usuario_sem_permissao(request)
 
         # Obtém os nomes associado ao modelo da requisição
         nomeModelo = modelo._meta.verbose_name
@@ -296,7 +324,10 @@ def editaRegistroView(request, id, modelo):
         formModelo = forms[remover_acentos(nomeModelo.lower())]
 
         # Obtém o objeto de acordo com seu ID
-        objeto = get_object_or_404(modelo, pk=id)
+        try:
+            objeto = modelo.objects.obtem_objetos_por_perfil_usuario(request.user).filter(pk=id)[0]
+        except:
+            return trata_erro_404(request, None)
 
         #Obtém o form associado ao objeto
         form = formModelo(instance=objeto)
@@ -336,6 +367,7 @@ def editaRegistroView(request, id, modelo):
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
 
+
 @login_required
 def removeRegistroView(request, id, modelo):
     """
@@ -347,15 +379,11 @@ def removeRegistroView(request, id, modelo):
         nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
         # Obtém o objeto a ser removido e em caso de sucesso, o remove
-        objeto = get_object_or_404(modelo, pk=id)
+        try:
+            objeto = modelo.objects.obtem_objetos_por_perfil_usuario(request.user).filter(pk=id)[0]
+        except:
+            return trata_erro_404(request, None)
 
-        if request.user.tem_perfil_instrutor():
-            try:
-                if modelo._meta.get_field('usuario'):
-                    if objeto.usuario != request.user:
-                        return HttpResponse("Sem permissão para deletar arquivo")
-            except:
-                pass
         try:
             objeto.delete()
             # Indica mensagem de sucesso na removação
@@ -557,6 +585,13 @@ def avaliacaoCursoView(request, id):
 
         try:
             curso = Curso.objects.get(pk=id)
+
+            # Verifica se o usuário está inscrito no curso associado ao recurso acessado
+            # Caso não esteja inscrito, retorna uma mensagem associada
+            usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, curso)
+            if usuario_inscrito == False:
+                # Chama tratamento padrão para usuário sem permissão
+                return trata_usuario_sem_permissao(request)
 
             curso_sem_conteudo = not(curso.tem_conteudo())
 
@@ -788,7 +823,6 @@ def visualizacaoVideoView(request, id):
             usuario_video_proximo = None
             usuario_video_proximo_id = 0
 
-
     # Caso tenha obtido as informações de associação entre usuário e video
     data_acesso = None
     data_assistido = None
@@ -803,10 +837,24 @@ def visualizacaoVideoView(request, id):
         usuario_video_id = 0
         tempo_corrente = 0
 
+    # Atualiza percentual de andamento no curso para o usuário
+    atualizaAndamentoCurso(
+        video.unidade.curso,
+        request.user
+    )
+
+    # Atualiza o último conteúdo acessado pelo usuário
+    atualizaUltimoConteudoAcessado(
+        request.user,
+        usuario_video.video.unidade.curso,
+        f"visualizacao-video/{video.id}"
+    )
+
     # Caso a requisição seja via AJAX de uma página de video
     if request.is_ajax() and request.GET['origem'] == 'video':
         return JsonResponse(
             {
+                'titulo_video': video.titulo,
                 'caminho_video': caminho_video,
                 'tempo_corrente': tempo_corrente,
                 'tipo_video': tipo_video,
@@ -817,7 +865,7 @@ def visualizacaoVideoView(request, id):
                 'usuario_video_id': usuario_video_id,
                 'data_acesso': data_acesso,
                 'data_assistido': data_assistido,
-                'assistido': assistido
+                'assistido': assistido,
             }
         )
     else:
@@ -828,7 +876,7 @@ def visualizacaoVideoView(request, id):
             request,
             nome_template,
             {
-                'video': video,
+                'titulo_video': video.titulo,
                 'usuario_video': usuario_video,
                 'tipo_video': tipo_video,
                 'tempo_corrente': tempo_corrente,
@@ -843,6 +891,7 @@ def visualizacaoVideoView(request, id):
                 'data_assistido': data_assistido,
                 'assistido': assistido,
                 'usuario_video_id': usuario_video_id,
+                'url_corrente': f"/visualizacao-video/{video.id}"
             },
         )
 
@@ -858,7 +907,7 @@ def atualizaAndamentoCurso(curso, usuario):
         try:
 
             # Obtém o percentual de andamento do usuário no curso
-            percentual_andamento= curso.obtem_percentual_andamento_por_usuario(
+            percentual_andamento = curso.obtem_percentual_andamento_por_usuario(
                 usuario
             )
 
@@ -890,6 +939,19 @@ def atualizaAndamentoCurso(curso, usuario):
             return None
 
 
+def atualizaUltimoConteudoAcessado(usuario, curso, url):
+    """
+        View responsável por atualizar o último conteúdo acessado pelo aluno
+    """
+    # Obtém a inscrição do usuário no curso para atualizar o último conteudo acessado por ele
+    try:
+        inscricao = Inscricao.objects.get(usuario=usuario, curso=curso)
+        inscricao.ultimo_conteudo_acessado = url
+        inscricao.data_ultimo_conteudo_acessado = datetime.now()
+        inscricao.save()
+    except:
+        pass
+
 @login_required
 @never_cache
 def atualizaVideoUsuarioView(request):
@@ -917,8 +979,6 @@ def atualizaVideoUsuarioView(request):
                     usuario_video.assistido = True
                     usuario_video.data_assistido = datetime.now()
                 usuario_video.save()
-
-                atualizaAndamentoCurso(usuario_video.video.unidade.curso)
             except:
                 return resposta
     return resposta
@@ -957,12 +1017,27 @@ def visualizacaoArquivoView(request, id):
 
     # Verifica o perfil do usuário
     if request.user.tem_perfil_aluno():
+
         # Verifica se o usuário está inscrito no curso associado ao recurso acessado
         # Caso não esteja inscrito, retorna uma mensagem associada
         usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, arquivo.unidade.curso)
+
         if usuario_inscrito == False:
             # Chama tratamento padrão para usuário sem permissão
             return trata_usuario_sem_permissao(request)
+
+        # Atualiza percentual de andamento no curso para o usuário
+        atualizaAndamentoCurso(
+            arquivo.unidade.curso,
+            request.user
+        )
+
+        # Atualiza o último conteúdo acessado pelo usuário
+        atualizaUltimoConteudoAcessado(
+            request.user,
+            arquivo.unidade.curso,
+            f"visualizacao-arquivo/{arquivo.id}"
+        )
 
     # Obtém as URLs do próximo e do conteúdo anterior ao arquivo acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
@@ -1005,6 +1080,19 @@ def visualizacaoQuestionarioView(request, id):
         if usuario_inscrito == False:
             # Chama tratamento padrão para usuário sem permissão
             return trata_usuario_sem_permissao(request)
+
+        # Atualiza as informações de andamento do curso para o usuário
+        atualizaAndamentoCurso(
+            questionario.unidade.curso,
+            request.user
+        )
+
+        # Atualiza o último conteúdo acessado pelo usuário
+        atualizaUltimoConteudoAcessado(
+            request.user,
+            questionario.unidade.curso,
+            f"visualizacao-questionario/{questionario.id}"
+        )
 
     # Obtém a questões associadas ao questionário
     questoes = Questao.objects.filter(questionario=questionario).order_by('ordem')
@@ -1086,9 +1174,6 @@ def visualizacaoQuestionarioView(request, id):
                     percentual_acertos=percentual_acertos,
                     data_execucao=datetime.now()
                 )
-
-            # Atualiza as informações de andamento do curso para o usuário
-            atualizaAndamentoCurso(questionario.unidade.curso, request.user)
 
         # Verifica se o usuário da requisição já respondeu ao questionário anteriormente.
         # Se sim, obtém as respostas para cada questão

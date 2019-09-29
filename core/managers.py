@@ -1,6 +1,51 @@
 from .models import *
 
 
+class CategoriaManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        return objetos
+
+
+class AvaliacaoManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        return objetos
+
+
+class CursoManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        else:
+            if usuario.tem_perfil_instrutor():
+                objetos = self.filter(usuario=usuario)
+        return objetos
+
+
 class InscricaoManager(models.Manager):
     """
         Manager associado ao modelo UsuarioVideo
@@ -17,6 +62,117 @@ class InscricaoManager(models.Manager):
         if inscricao.count() == 1:
             return True
         return False
+
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        return objetos
+
+
+class UnidadeManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        else:
+            if usuario.tem_perfil_instrutor():
+                objetos = self.filter(curso__usuario=usuario)
+        return objetos
+
+
+class VideoManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        else:
+            if usuario.tem_perfil_instrutor():
+                objetos = self.filter(unidade__curso__usuario=usuario)
+        return objetos
+
+
+class ArquivoManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        else:
+            if usuario.tem_perfil_instrutor():
+                objetos = self.filter(unidade__curso__usuario=usuario)
+        return objetos
+
+
+class QuestionarioManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        else:
+            if usuario.tem_perfil_instrutor():
+                objetos = self.filter(unidade__curso__usuario=usuario)
+        return objetos
+
+
+class QuestaoManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        else:
+            if usuario.tem_perfil_instrutor():
+                objetos = self.filter(questionario__unidade__curso__usuario=usuario)
+        return objetos
+
+
+class AlternativaManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioVideo
+    """
+    def obtem_objetos_por_perfil_usuario(self, usuario):
+        """
+            Método para
+        """
+        objetos = self.none()
+        if usuario.tem_perfil_administrador():
+            objetos = self.all()
+        else:
+            if usuario.tem_perfil_instrutor():
+                objetos = self.filter(questao__questionario__unidade__curso__usuario=usuario)
+        return objetos
 
 
 class UsuarioVideoManager(models.Manager):

@@ -19,7 +19,7 @@ from sistema_treinamentos.settings import STATIC_URL, STATIC_ROOT, MEDIA_URL, ME
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', Home.as_view()),
+    path('',                                    paginaInicialView),
 
     path('cursos',                              cursosListView,                                 name='cursos'),
     path('informacoes-curso/<int:id>',          informacoesCursoView,                           name='informacoes-curso'),

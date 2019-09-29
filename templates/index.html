@@ -11,39 +11,79 @@
                 <p>
                    <a href="cursos">Lista de Cursos</a>
                 </p>
+
+                {% if perfil_administrador == True %}
                 <p>
                    <a href="cadastros-categorias">Categorias</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
                 <p>
                    <a href="cadastros-cursos">Cursos</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True %}
                 <p>
                    <a href="cadastros-inscricoes">Inscrições</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True %}
                 <p>
                    <a href="cadastros-avaliacoes">Avaliações</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
                 <p>
                    <a href="cadastros-unidades">Unidades</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
                 <p>
                    <a href="cadastros-videos">Videos</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
                 <p>
                    <a href="cadastros-arquivos">Arquivos</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
                 <p>
                    <a href="cadastros-questionarios">Questionários</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
                 <p>
                    <a href="cadastros-questoes">Questões</a>
                 </p>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
                 <p>
                    <a href="cadastros-alternativas">Alternativos</a>
                 </p>
+                {% endif %}
 
             </div>
         </div>
+
+        {% if perfil_aluno == True and inscricao != None %}
+            {% if inscricao.ultimo_conteudo_acessado != None %}
+                <p>
+                   <a href="{{ inscricao.ultimo_conteudo_acessado }}">Acesse aqui para continuar</a>
+                </p>
+            {% endif %}
+
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}

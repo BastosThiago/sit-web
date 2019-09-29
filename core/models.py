@@ -10,6 +10,8 @@ class Categoria(models.Model):
     """
         Modelo de Categorias para um curso
     """
+    objects = CategoriaManager()
+
     titulo = models.CharField(max_length=200)
 
     class Meta:
@@ -28,6 +30,8 @@ class Curso(models.Model):
     """
         Modelo de Curso
     """
+    objects = CursoManager()
+
     titulo = models.CharField(unique=True, max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -165,6 +169,7 @@ class Curso(models.Model):
         except:
             return 0
 
+
 class Inscricao(models.Model):
     """
         Modelo associado as inscrições de usuários nos cursos
@@ -185,6 +190,8 @@ class Inscricao(models.Model):
     obteve_certificado = models.BooleanField(default=False)
     data_inscricao = models.DateTimeField(auto_now_add=True)
     data_conclusao = models.DateTimeField(null=True, blank=True)
+    ultimo_conteudo_acessado = models.CharField(max_length=50, null=True, blank=True)
+    data_ultimo_conteudo_acessado = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Inscrição do usuário {self.usuario}"
@@ -203,6 +210,8 @@ class Avaliacao(models.Model):
     """
         Modelo associado as avaliações de um curso realizadas pelos usuários
     """
+    objects = AvaliacaoManager()
+
     NOTAS = [
         (1, '1'),
         (2, '2'),
@@ -234,6 +243,8 @@ class Unidade(models.Model):
     """
         Modelo associado as unidades de um curso
     """
+    objects = UnidadeManager()
+
     titulo = models.CharField(unique=True, max_length=200)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['curso'])
@@ -256,6 +267,8 @@ class Video(models.Model):
     """
         Modelo associado aos vídeos de um curso
     """
+    objects = VideoManager()
+
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     video_interno = models.BooleanField(default=False)
@@ -281,6 +294,8 @@ class Arquivo(models.Model):
     """
         Modelo associado aos arquivos(materiais didáticos) de um curso
     """
+    objects = ArquivoManager()
+
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     caminho = models.FileField(upload_to='arquivos')
@@ -325,6 +340,8 @@ class Questionario(models.Model):
     """
         Modelo associado aos questionários de um curso
     """
+    objects = QuestionarioManager()
+
     titulo = models.CharField(unique=True, max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['unidade'])
@@ -365,6 +382,8 @@ class Questao(models.Model):
     """
         Modelo associado as questões de questionários de um curso
     """
+    objects = QuestaoManager()
+
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     enunciado = models.TextField()
     ordem = OrderField(blank=True, for_fields=['questionario'])
@@ -387,6 +406,8 @@ class Alternativa(models.Model):
     """
         Modelo associado as alternativas de questões de questionários de um curso
     """
+    objects = AlternativaManager()
+
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
     descricao = models.TextField()
     ordem = OrderField(blank=True, for_fields=['questao'])

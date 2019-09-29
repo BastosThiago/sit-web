@@ -1,6 +1,6 @@
 
 <div class="conteudo-curso-container">
-
+    <p id="titulo-video">{{ titulo_video }}</p>
     <p id="botao-anterior-container">
         <span>
             <i id="botao-anterior" class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}', -1)"></i>
@@ -154,6 +154,9 @@
                 $('#botao-proximo-container')[0].hidden = true;
             }
 
+            $('#titulo-video')[0].innerHTML = '{{ titulo_video }}';
+
+            window.history.pushState({route: '{{ url_corrente }}'}, "Video", '{{ url_corrente  }}');
 
         })
 
@@ -242,6 +245,25 @@
         //__ Método executado antes de fechar a página
         $(window).on("beforeunload", function() {
             atualizaTempoCorrenteVideo(usuario_video_corrente_id)
+            console.log("OnBeforeLoad")
+        });
+
+        $(window).on('hashchange', function() {
+            console.log("HashChange")
+        });
+
+        $(window).unload(function () {
+           console.log("unload")
+        });
+
+        window.addEventListener("popstate", event => {
+            console.log( "popstate" )
+            if(event && event.state && event.state.route) {
+              atualizaConteudo(event.state.route, 0)
+            }
+            else {
+                history.back();
+            }
         });
 
         function atualizaConteudo(url, sentido){
@@ -260,7 +282,7 @@
 
                     if(
                         (sentido == -1 && conteudo_anterior_nome =='video') ||
-                        (sentido == 1  && prox_conteudo_nome =='video')
+                        (sentido == 1  && prox_conteudo_nome =='video' || sentido == 0)
                     ) {
                         $("#src-video").remove();
                         $("#media-player").remove();
@@ -305,7 +327,11 @@
                         $(".conteudo-curso-container").replaceWith(data);
                     }
 
-                    window.history.pushState({route: url}, "Video", url);
+                    if(sentido != 0) {
+                      window.history.pushState({route: url}, "Video", url);
+                    }
+
+                    $('#titulo-video')[0].innerHTML = data['titulo_video'];
                 }
             })
         }
