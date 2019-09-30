@@ -172,7 +172,7 @@ def paginaInicialView(request):
 
     inscricao = None
     if perfil_aluno:
-        inscricao = Inscricao.objects.filter(usuario=request.user).order_by('data_ultimo_conteudo_acessado')[:1]
+        inscricao = Inscricao.objects.filter(usuario=request.user).order_by('-data_ultimo_conteudo_acessado')[:1]
 
         if inscricao.count() == 1:
             inscricao = inscricao[0]
@@ -284,14 +284,23 @@ def novoRegistroView(request, modelo):
             if form.is_valid():
                 objeto = form.save(commit=False)
 
+                # Caso seja a criação de um curso, atualiza o usuário
+                # responsável por criar o curso
                 if modelo == Curso:
                     objeto.usuario = request.user
+
+                if modelo == Video:
+                    if objeto.path != None:
+                        objeto.video_interno = True
+                    else:
+                        objeto.video_interno = False
+
                 objeto.save()
                 return redirect(
                     nomeLinkRedirecionamento
                 )
         else:
-            form = formModelo()
+            form = formModelo(user=request.user)
 
         return render(
             request,
@@ -330,7 +339,7 @@ def editaRegistroView(request, id, modelo):
             return trata_erro_404(request, None)
 
         #Obtém o form associado ao objeto
-        form = formModelo(instance=objeto)
+        form = formModelo(instance=objeto, user=request.user)
 
         # Caso o método HTTP da requsição seja de POST, cria o form com os dados recebidos
         if request.method == 'POST':
@@ -339,6 +348,19 @@ def editaRegistroView(request, id, modelo):
             # Caso o preenchimento do formulário seja válido, salva o objeto e
             # redireciona para a listagem de registros
             if(form.is_valid()):
+
+                objeto = form.save(commit=False)
+
+                # Caso seja a criação de um curso, atualiza o usuário
+                # responsável por criar o curso
+                if modelo == Curso:
+                    objeto.usuario = request.user
+
+                if modelo == Video:
+                    if objeto.path != None:
+                        objeto.video_interno = True
+                    else:
+                        objeto.video_interno = False
 
                 objeto.save()
 
@@ -699,7 +721,7 @@ def conteudoCursoView(request, id):
         if perfil_aluno:
             try:
                 inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
-                if inscricao.situacao != "EM ANDAMENTO":
+                if inscricao.situacao == "APROVADO":
                     curso_concluido = True
             except:
                 inscricao = None
@@ -837,18 +859,19 @@ def visualizacaoVideoView(request, id):
         usuario_video_id = 0
         tempo_corrente = 0
 
-    # Atualiza percentual de andamento no curso para o usuário
-    atualizaAndamentoCurso(
-        video.unidade.curso,
-        request.user
-    )
+    if request.user.tem_perfil_aluno():
+        # Atualiza percentual de andamento no curso para o usuário
+        atualizaAndamentoCurso(
+            video.unidade.curso,
+            request.user
+        )
 
-    # Atualiza o último conteúdo acessado pelo usuário
-    atualizaUltimoConteudoAcessado(
-        request.user,
-        usuario_video.video.unidade.curso,
-        f"visualizacao-video/{video.id}"
-    )
+        # Atualiza o último conteúdo acessado pelo usuário
+        atualizaUltimoConteudoAcessado(
+            request.user,
+            usuario_video.video.unidade.curso,
+            f"visualizacao-video/{video.id}"
+        )
 
     # Caso a requisição seja via AJAX de uma página de video
     if request.is_ajax() and request.GET['origem'] == 'video':
@@ -979,6 +1002,12 @@ def atualizaVideoUsuarioView(request):
                     usuario_video.assistido = True
                     usuario_video.data_assistido = datetime.now()
                 usuario_video.save()
+
+                # Atualiza percentual de andamento no curso para o usuário
+                atualizaAndamentoCurso(
+                    usuario_video.video.unidade.curso,
+                    request.user
+                )
             except:
                 return resposta
     return resposta
