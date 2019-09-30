@@ -1,14 +1,28 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponseRedirect
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
+from core.views import paginaInicialView
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy(paginaInicialView)
     template_name = 'signup.html'
+
+    def form_valid(self, form):
+        #save the new user first
+        form.save()
+        #get the username and password
+        username = self.request.POST['username']
+        password = self.request.POST['password1']
+        #authenticate user then login
+        user = authenticate(username=username, password=password)
+        login(self.request, user)
+        return HttpResponseRedirect('/')  # User is not logged in on this page
 
 def EditUserView(request, id): # Edita uma tarefa já existente
 
