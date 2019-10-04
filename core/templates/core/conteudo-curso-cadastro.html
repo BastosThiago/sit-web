@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>jQuery UI Accordion - Sortable</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+<body>
+
+    <div class="panel-group" id="accordion">
+
+        {% for unidade in unidades %}
+            <div class="card card-unidade" id="unidade-{{ unidade.ordem }}">
+              <div class="card-header" id="heading{{ unidade.ordem }}">        
+                <h5 class="mb-0">
+                  <i class="fa fa-search" id="elimina-unidade" style="float: right;"></i>
+                  <button class="btn btn-link link-unidade" data-toggle="collapse" data-target="#collapse{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse{{ unidade.ordem }}" style="float: left;">
+                    Unidade - {{ unidade.ordem }}
+                  </button>
+                </h5>
+              </div>
+              <div id="collapse{{ unidade.ordem }}" class="collapse show" aria-labelledby="heading{{ unidade.ordem }}" data-parent="#accordion">
+                <div class="card-body  accordion{{ unidade.ordem }}">
+                    <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion{{ unidade.ordem }}">
+                        <i class="glyphicon glyphicon-plus"></i> Add v
+                    </button>
+
+                      {% for video in videos %}
+                          {% if video.unidade.id == unidade.id %}
+                          <div class="card card-conteudo-unidade-{{ unidade.ordem }}" id="conteudo-${hash1}-unidade{{ unidade.ordem }}">
+
+                              <div class="card-header" id="heading{{ unidade.ordem }}{{ video.ordem }}>
+                                  <h5 class="mb-0">
+                                    <i class="fa fa-search" id="elimina-conteudo" style="float: right;"></i>
+                                    <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse{{ unidade.ordem }}{{ video.ordem }}b" aria-expanded="true" aria-controls="collaps{{ unidade.ordem }}{{ video.ordem }}b">
+                                      Conteudo - {{ video.ordem }}
+                                    </button>
+                                  </h5>
+                              </div>
+                              <div id="collapse{{ unidade.ordem }}{{ video.ordem }}b" class="collapse show" aria-labelledby="heading{{ unidade.ordem }}{{ video.ordem }}" data-parent="#accordion{{ unidade.ordem }}">
+                                <div class="card-body  accordion${hash1}b">
+                                  <form action="/cadastro-conteudo-curso" method="POST" id="form" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="curso_id" value="{{ curso.id}}">
+                                    <input type="hidden" name="conteudo_id" value="{{ video.id }}">
+                                    <input type="hidden" name="conteudo_tipo" value="video">
+                                    <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                    <input type="hidden" name="conteudo_ordem" value="{{ video.ordem }}">
+                                    <div class="form-group">
+                                      <label for="video-titulo">Título</label>
+                                      <input type="text" class="form-control" id="titulo-video" value="{{ video.titulo }}" aria-describedby="" placeholder="título" name="titulo">
+                                      <span id="titulo-{{ unidade.ordem }}-{{ video.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="video-url">Url</label>
+                                      <input type="url" class="form-control" id="video-url" placeholder="URL" value="{{ video.url }}" name="url">
+                                      <span id="url-{{ unidade.ordem }}-{{ video.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="video-path">Path</label>
+                                      <input type="file" class="form-control" id="video-path" value="{{ video.path }}" placeholder="caminho" name="path">
+                                      <span id="path-{{ unidade.ordem }}-{{ video.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div id="results"></div>
+                                    <input type="submit" value="Submit">
+                                  </form>
+                                </div>
+                              </div>
+
+                          </div>
+                          {% endif %}
+                      {% endfor %}
+
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+
+<br />
+<button class="btn btn-lg btn-primary btn-add-panel"> <i class="glyphicon glyphicon-plus"></i> Add new panel</button>
+
+</body>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script>
+ 
+    var hash  = {{ unidade_proxima_ordem }};
+    var hash1 = 1;
+    var ordem_conteudo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    $(".btn-add-panel1").on("click", adicionaConteudo);
+         
+    $(".btn-add-panel").on("click", function () {
+             
+        $("#accordion").append(
+         `
+            <div class="card card-unidade" id="unidade-${hash}">
+              <div class="card-header" id="heading${hash}">        
+                <h5 class="mb-0">
+                  <i class="fa fa-search" id="elimina-unidade" style="float: right;"></i>
+                  <button class="btn btn-link link-unidade" data-toggle="collapse" data-target="#collapse${hash}" aria-expanded="true" aria-controls="collapse${hash}" style="float: left;">
+                    Unidade - ${hash}
+                  </button>
+                </h5>
+              </div>
+              <div id="collapse${hash}" class="collapse show" aria-labelledby="heading${hash}" data-parent="#accordion">
+                <div class="card-body  accordion${hash}">
+                    <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion${hash}"> <i class="glyphicon glyphicon-plus"></i> Add v</button>
+
+                </div>
+              </div>
+            </div>
+         `
+        );
+
+       
+        $("#accordion" + hash).on("click", adicionaConteudo);
+        hash = hash + 1;
+    });
+   
+     function adicionaConteudo() {
+
+          unidade_id = this.id;
+
+          var unidade = unidade_id.substring(unidade_id.length-1, unidade_id.length)
+
+          $("." + this.id).append(
+            `
+              <div class="card card-conteudo-unidade-${unidade}" id="conteudo-${hash1}-unidade${unidade}">
+
+                  <div class="card-header" id="heading${hash1}>
+                      <h5 class="mb-0">
+                        <i class="fa fa-search" id="elimina-conteudo" style="float: right;"></i>
+                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse${hash1}b" aria-expanded="true" aria-controls="collapse${hash1}b">
+                          Conteudo - ${ordem_conteudo[unidade] + 1}
+                        </button>
+                      </h5>
+                  </div>
+                  <div id="collapse${hash1}b" class="collapse show" aria-labelledby="heading${hash1}" data-parent="#${this.id}">
+                    <div class="card-body  accordion${hash1}b">
+                      <form action="/cadastro-conteudo-curso" method="POST" id="form">
+                        {% csrf_token %}
+                        <input type="hidden" name="curso_id" value="0">
+                        <input type="hidden" name="conteudo_id" value="0">
+                        <input type="hidden" name="conteudo_tipo" value="video">
+                        <input type="hidden" name="unidade_ordem" value="${unidade}">
+                        <input type="hidden" name="conteudo_ordem" value="${ordem_conteudo[unidade] + 1}">
+
+                        <div class="form-group">
+                          <label for="video-titulo">Título</label>
+                          <input type="text" class="form-control" id="titulo-video" aria-describedby="" placeholder="título" name="titulo">
+                          <span id="titulo-${unidade}-${ordem_conteudo[unidade] + 1}" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                          <label for="video-url">Url</label>
+                          <input type="url" class="form-control" id="video-url" placeholder="URL" name="url">
+                          <span id="url-${unidade}-${ordem_conteudo[unidade] + 1}" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                          <label for="video-path">Path</label>
+                          <input type="file" class="form-control" id="video-path" placeholder="caminho" name="path">
+                          <span id="path-${unidade}-${ordem_conteudo[unidade] + 1}" style="color: red;"></span>
+                        </div>
+                        <div id="results"></div>
+                        <input type="submit" value="Submit">
+                      </form>
+                    </div>
+                  </div>
+
+              </div>
+            `
+          );
+
+          hash1 = hash1 + 1;
+
+          ordem_conteudo[unidade] = ordem_conteudo[unidade] + 1;
+         
+          $("." + this.id).on("click", ordenaConteudo);
+
+          $('form').on('submit', enviaForm);
+          $('input').on('focus', removeErro)
+    }  
+                                            
+    $(document).on('click', '#elimina-unidade', function () {
+        $(this).parents('.card').get(0).remove();
+        var card_unidade = $(".card-unidade")
+
+        for (let i = 0; i < card_unidade.length; i++){
+          card_unidade[i].id = "unidade-" + (i + 1);
+          card_unidade[i].getElementsByClassName("link-unidade")[0].innerText = "Unidade - " + (i + 1);
+        }
+        hash = hash - 1;
+    });
+
+    $(document).on('click', '#elimina-conteudo', function () {
+        var card_conteudo = $(this).parents('.card').get(0);
+        var unidade_numero = card_conteudo.id.substring(card_conteudo.id.length-1, card_conteudo.id.length);
+        card_conteudo.remove();
+
+        var cards_conteudo = $(".card-conteudo-unidade-" + unidade_numero);
+
+        for (let i = 0; i < cards_conteudo.length; i++){
+          cards_conteudo[i].id = "conteudo-" + (i + 1) + "unidade" + unidade_numero;
+          cards_conteudo[i].getElementsByClassName("link-conteudo")[0].innerText = "Conteudo - " +  + (i + 1);
+        }
+        hash1 = hash1 - 1;
+        ordem_conteudo[unidade_numero] = ordem_conteudo[unidade_numero] - 1;
+    });
+   
+
+    $( function() {  
+      $( "#accordion" )
+        .sortable(
+          {
+            stop         : function(event,ui){
+              var card_unidade = $(".card-unidade")
+
+              var unidade_numero = card_unidade[0].id.substring(card_unidade[0].id.length-1, card_unidade[0].id.length)
+
+              for (let i = 0; i < card_unidade.length; i++){
+                card_unidade[i].id = "unidade-" + (i + 1);
+                card_unidade[i].getElementsByClassName("link-unidade")[0].innerText = "Unidade - " + (i + 1);
+              }
+
+              organizaUnidadesConteudos()
+            }
+          }
+        );
+    } );
+
+    function ordenaConteudo() {  
+      $( ".card-body" )
+        .sortable(
+          {
+            stop         : function(event,ui){
+
+              var unidade_numero = ui.item[0].id.substring(ui.item[0].id.length-1, ui.item[0].id.length)
+
+              var card_conteudo = $(".card-conteudo-unidade-" + unidade_numero);
+
+              for (let i = 0; i < ordem_conteudo[unidade_numero]; i++){
+                card_conteudo[i].id = "conteudo-" + (i + 1) + "-unidade" + unidade_numero;
+                card_conteudo[i].getElementsByClassName("link-conteudo")[0].innerText = "Conteudo - " +  + (i + 1);
+              }
+
+              organizaUnidadesConteudos();
+            }
+          }
+
+        );
+    }
+
+    function organizaUnidadesConteudos(){
+        cards_unidade = $(".card-unidade")
+        hash  = 0;
+        hash1 = 0;
+        for (let i = 0; i < cards_unidade.length; i++){
+            hash = hash + 1;
+            cards_conteudo = $("#" + cards_unidade[i].id).find(".card");
+
+            cards_conteudo.removeClass().addClass("card card-conteudo-unidade-" + (i + 1))
+
+            var numero_conteudos_unidade = 0
+            for (let j = 0; j < cards_conteudo.length; j++){
+
+                card_conteudo = cards_conteudo[j];
+                card_conteudo.id = "conteudo-" + (j + 1 )+ "-unidade" + (i + 1);
+
+                $(card_conteudo).find('input[name="unidade_ordem"]')[0].value = (i + 1)
+                $(card_conteudo).find('input[name="conteudo_ordem"]')[0].value = (j + 1)
+
+                hash1 = hash1 + 1;
+                numero_conteudos_unidade = numero_conteudos_unidade + 1;
+            }
+            ordem_conteudo[hash] = numero_conteudos_unidade;
+        }
+    }
+
+
+   function enviaForm(event){
+        event.preventDefault();
+        //var form = $(this);
+        //var data  = form.serialize();
+        var formData = new FormData(this);
+
+        for (var [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
+
+        $.ajax({
+            url         : '/cadastro-conteudo-curso/{{ curso.id }}',
+            //data        : form.serialize(),
+            data        : formData,
+            type        : 'POST',
+            processData: false,
+            contentType: false,
+            success     : function(data, textStatus, jqXHR){
+                var errors = jQuery.parseJSON(data)
+                for (key in errors) {
+                  document.getElementById(key).innerHTML = errors[key];
+                }
+            },
+            error: function(data){
+                var teste = "0"
+            }
+        });
+    }
+
+    function removeErro(){
+        if(this && this.nextElementSibling && this.nextElementSibling.innerText){
+            this.nextElementSibling.innerText=""
+        }
+    }
+
+    $(document).ready(function() {
+        $('form').on('submit', enviaForm);
+        $('input').on('focus', removeErro)
+        organizaUnidadesConteudos()
+    });
+
+         
+  </script>
+</html>

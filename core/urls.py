@@ -87,7 +87,8 @@ urlpatterns = [
     path('adiciona-alternativa/',          novoRegistroView,   {'modelo': Alternativa},    name='nova-alternativa'),
     path('edita-alternativa/<int:id>',     editaRegistroView,  {'modelo': Alternativa},    name='edita-alternativa'),
     path('remove-alternativa/<int:id>',    removeRegistroView, {'modelo': Alternativa},    name='remove-alternativa'),
-    
+
+    path('cadastro-conteudo-curso/<int:id>', cadastroConteudoCursoView, name='cadastro-conteudo-curso'),
 
 ] + static(STATIC_URL, document_root=STATIC_ROOT) + static(MEDIA_URL, document_root=MEDIA_ROOT)
 

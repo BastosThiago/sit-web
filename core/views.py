@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from wsgiref.util import FileWrapper
 from datetime import datetime
 from django.utils import timezone
+import json
 
 
 from sistema_treinamentos.settings import MEDIA_ROOT
@@ -313,6 +314,7 @@ def novoRegistroView(request, modelo):
     else:
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
+
 
 @login_required
 def editaRegistroView(request, id, modelo):
@@ -1432,4 +1434,48 @@ def obtemRelatorio(request, usuario_id):
         return trata_usuario_sem_permissao(request)
 
 
+def cadastroConteudoCursoView(request, id):
+    """
+    View responsável pelo tratamento de
+    """
+
+    curso = get_object_or_404(Curso, pk=id)
+
+    unidades = curso.obtem_unidades()
+
+    unidade_proxima_ordem = unidades[unidades.count() - 1].ordem + 1
+
+    videos = Video.objects.filter(unidade__in=unidades)
+
+    # Caso o método HTTP associado a requisição seja POST
+    # Exibe o formulário com os dados já existentes, senão, um em branco
+    if request.method == 'POST':
+        form = VideoForm(request.POST, request.FILES or None)
+
+        unidade_ordem  = request.POST['unidade_ordem']
+        conteudo_ordem = request.POST['conteudo_ordem']
+        video_titulo   = request.POST['titulo']
+        video_url      = request.POST['url']
+
+        response_data = {}
+
+        response_data[f"titulo-{unidade_ordem}-{conteudo_ordem}"] = 'Campo obrigatório'
+
+        return HttpResponse(
+            json.dumps(response_data)
+        )
+
+    else:
+        teste = "a"
+
+    return render(
+        request,
+        'core/conteudo-curso-cadastro.html',
+        {
+            'curso': curso,
+            'unidades': unidades,
+            'videos': videos,
+            'unidade_proxima_ordem': unidade_proxima_ordem,
+        }
+    )
 

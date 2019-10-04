@@ -97,6 +97,8 @@ class Curso(models.Model):
         """
         unidades_curso = Unidade.objects.filter(
             curso=self
+        ).order_by(
+            'ordem'
         )
 
         return unidades_curso
