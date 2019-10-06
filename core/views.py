@@ -1445,7 +1445,15 @@ def cadastroConteudoCursoView(request, id):
 
     unidade_proxima_ordem = unidades[unidades.count() - 1].ordem + 1
 
-    videos = Video.objects.filter(unidade__in=unidades)
+    videos = Video.objects.filter(unidade__in=unidades).order_by('ordem')
+
+    arquivos = Arquivo.objects.filter(unidade__in=unidades).order_by('ordem')
+
+    questionarios = Questionario.objects.filter(unidade__in=unidades).order_by('ordem')
+
+    questoes = Questao.objects.filter(questionario__in=questionarios).order_by('ordem')
+
+    alternativas = Alternativa.objects.filter(questao__in=questoes).order_by('ordem')
 
     # Caso o método HTTP associado a requisição seja POST
     # Exibe o formulário com os dados já existentes, senão, um em branco
@@ -1470,11 +1478,15 @@ def cadastroConteudoCursoView(request, id):
 
     return render(
         request,
-        'core/conteudo-curso-cadastro.html',
+        'core/curso-cadastro-conteudo.html',
         {
             'curso': curso,
             'unidades': unidades,
             'videos': videos,
+            'arquivos': arquivos,
+            'questionarios': questionarios,
+            'questoes': questoes,
+            'alternativas': alternativas,
             'unidade_proxima_ordem': unidade_proxima_ordem,
         }
     )

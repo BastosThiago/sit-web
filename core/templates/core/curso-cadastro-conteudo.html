@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+  <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>jQuery UI Accordion - Sortable</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+<body>
+
+    <div class="panel-group" id="accordion">
+
+    {% for unidade in unidades %}
+    <div class="card card-unidade unidade" id="unidade-{{ unidade.ordem }}">
+      <div class="card-header" id="heading{{ unidade.ordem }}" style="text-align-last: justify;">
+        <h5 class="mb-0">
+          <button class="btn btn-link link-unidade" data-toggle="collapse" data-target="#collapse{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse{{ unidade.ordem }}">
+            Unidade - {{ unidade.ordem }}
+          </button>
+          <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'unidade')" style="font-size: 1.2rem;"></i>
+        </h5>
+      </div>
+      <div id="collapse{{ unidade.ordem }}" class="collapse" aria-labelledby="heading{{ unidade.ordem }}" data-parent="#accordion">
+
+        <form action="/cadastro-conteudo-curso" method="POST" id="form-unidade-{{ unidade.ordem }}">
+                {% csrf_token %}
+                <input type="hidden" name="curso_id" value="0">
+                <input type="hidden" name="tipo" value="unidade">
+                <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                <div class="form-group">
+                    <label for="titulo-unidade" id="label-unidade">Titulo</label>
+                    <input type="text" class="form-control" id="titulo-unidade" value="{{ unidade.titulo }}" aria-describedby="" placeholder="titulo" name="titulo-unidade">
+                    <span id="titulo-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <label for="descricao-unidade" id="label-descricao">Descrição</label>
+                    <input type="text" class="form-control" id="descricao-unidade" aria-describedby="" placeholder="descrição" name="descricao-unidade">
+                </div>
+        </form>
+
+        <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="videos-tab" data-toggle="tab" href="#videos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="videos-unidade-{{ unidade.ordem }}" aria-selected="true">Vídeos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="arquivos-unidade-{{ unidade.ordem }}" aria-selected="false">Arquivos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-{{ unidade.ordem }}" role="tab" aria-controls="questionarios-unidade-{{ unidade.ordem }}" aria-selected="false">Questionários</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="navegacao-conteudo">
+
+        <div class="tab-pane fade show active" id="videos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="videos-tab">
+            <div class="card-body  accordion-videos-unidade-{{ unidade.ordem }} card-videos">
+                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
+                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
+                </button>
+                {% for video in videos %}
+                    {% if video.unidade.id == unidade.id %}
+
+                    <div class="card card-video-{{ video.ordem }}-unidade-{{ unidade.ordem }} video" id="video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
+
+                        <div class="card-header" id="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
+                                    Vídeo - {{ video.ordem }}
+                                </button>
+                                <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'video')" style="font-size: 1.2rem;"></i>
+                            </h5>
+                        </div>
+
+                        <div id="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-videos-unidade-{{ unidade.ordem }}">
+                            <div class="card-body  accordion-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
+                                <form action="/cadastro-conteudo-curso" method="POST" id="form-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
+                                {% csrf_token %}
+                                    <input type="hidden" name="curso_id" value="0">
+                                    <input type="hidden" name="conteudo_id" value="0">
+                                    <input type="hidden" name="conteudo_tipo" value="video">
+                                    <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                    <input type="hidden" name="conteudo_ordem" value="{{ video.ordem }}">
+                                    <div class="form-group">
+                                        <label for="titulo-conteudo" id="label-titulo">Titulo</label>
+                                        <input type="text" class="form-control" id="titulo-conteudo" value="{{ video.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
+                                        <span id="titulo-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="conteudo-url" id="label-url">Url</label>
+                                        <input type="url" class="form-control" id="conteudo-url" value="{{ video.url  }}" placeholder="URL" name="url">
+                                        <span id="url-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="conteudo-path" id="label-path">Path</label>
+                                        <input type="file" class="form-control" id="conteudo-path" value="{{ video.path  }}" placeholder="caminho" name="path">
+                                        <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div id="resultado"></div>
+                                    <input type="submit" value="Salva">
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="arquivos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="arquivos-tab">
+            <div class="card-body  accordion-arquivos-unidade-{{ unidade.ordem }} card-arquivos">
+                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
+                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
+                </button>
+                {% for arquivo in arquivos %}
+                    {% if arquivo.unidade.id == unidade.id %}
+
+                    <div class="card card-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }} arquivo" id="arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
+
+                        <div class="card-header" id="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
+                                    Arquivo - {{ arquivo.ordem }}
+                                </button>
+                                <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'arquivo')" style="font-size: 1.2rem;"></i>
+                            </h5>
+                        </div>
+
+                        <div id="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-arquivos-unidade-{{ unidade.ordem }}">
+                            <div class="card-body  accordion-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
+                                <form action="/cadastro-conteudo-curso" method="POST" id="form-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
+                                {% csrf_token %}
+                                    <input type="hidden" name="curso_id" value="0">
+                                    <input type="hidden" name="conteudo_id" value="0">
+                                    <input type="hidden" name="conteudo_tipo" value="arquivo">
+                                    <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                    <input type="hidden" name="conteudo_ordem" value="{{ arquivo.ordem }}">
+                                    <div class="form-group">
+                                        <label for="titulo-conteudo" id="label-titulo">Titulo</label>
+                                        <input type="text" class="form-control" id="titulo-conteudo" value="{{ arquivo.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
+                                        <span id="titulo-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="conteudo-path" id="label-path">Path</label>
+                                        <input type="file" class="form-control" id="conteudo-path" value="{{ arquivo.path  }}" placeholder="caminho" name="path">
+                                        <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div id="resultado"></div>
+                                    <input type="submit" value="Salva">
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="questionarios-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="questionarios-tab">
+            <div class="card-body  accordion-questionarios-unidade-{{ unidade.ordem }} card-questionarios">
+                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
+                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
+                </button>
+                {% for questionario in questionarios %}
+                    {% if questionario.unidade.id == unidade.id %}
+
+                    <div class="card card-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questionario" id="questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+
+                        <div class="card-header" id="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
+                                    Questionário - {{ questionario.ordem }}
+                                </button>
+                                <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'questionario')" style="font-size: 1.2rem;"></i>
+                            </h5>
+                        </div>
+
+                        <div id="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questionarios-unidade-{{ unidade.ordem }}">
+                            <div class="card-body  accordion-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
+                                <form action="/cadastro-conteudo-curso" method="POST" id="form-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                {% csrf_token %}
+                                    <input type="hidden" name="curso_id" value="0">
+                                    <input type="hidden" name="conteudo_id" value="0">
+                                    <input type="hidden" name="conteudo_tipo" value="questionario">
+                                    <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                    <input type="hidden" name="conteudo_ordem" value="{{ questionario.ordem }}">
+                                    <div class="form-group">
+                                        <label for="titulo-conteudo" id="label-titulo">Titulo</label>
+                                        <input type="text" class="form-control" id="titulo-conteudo" value="{{ questionario.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
+                                        <span id="titulo-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                    </div>
+                                    <div id="resultado"></div>
+                                    <input type="submit" value="Salva">
+
+
+                                    <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes">
+                                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
+                                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
+                                        </button>
+
+                                        {% for questao in questoes %}
+                                            {% if questao.questionario.id == questionario.id %}
+                                            <div class="card card-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questao" id="questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+
+                                                <div class="card-header" id="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                            Questão - {{ questao.ordem }}
+                                                        </button>
+                                                        <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'questao')" style="font-size: 1.2rem;"></i>
+                                                    </h5>
+                                                </div>
+
+                                                <div id="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse show" aria-labelledby="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                    <div class="card-body  accordion-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                        <form id="form-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                        {% csrf_token %}
+                                                            <input type="hidden" name="conteudo_tipo" value="questao">
+                                                            <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                                            <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
+                                                            <input type="hidden" name="questao_ordem" value="0">
+                                                            <div class="form-group">
+                                                                <label for="titulo-questao" id="label-questao">Titulo</label>
+                                                                <input type="text" class="form-control" id="titulo-questao" aria-describedby="" placeholder="questão" name="questao">
+                                                                <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                                                            </div>
+
+                                                            <div id="resultado"></div>
+                                                            <input type="submit" value="Salva">
+
+                                                            <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas">
+                                                                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaAlternativas(this, {{ questionario.ordem }}, ${(numero_unidade)})'>
+                                                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
+                                                                </button>
+                                                            </div>
+
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+<br />
+<button class="btn btn-lg btn-primary btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
+
+</body>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script>
+
+    var numero_unidade  = 1;
+    var numero_questao = 1;
+    var hash1 = 1;
+    var hash2 = 1;
+    var hash3 = 1;
+    var tipo_conteudo_video        = 0
+    var tipo_conteudo_arquivo      = 1
+    var tipo_conteudo_questionario = 2
+
+    $(".btn-add-panel").on("click", function () {
+
+        $("#accordion").append(
+         `
+            <div class="card card-unidade unidade" id="unidade-${numero_unidade}">
+              <div class="card-header" id="heading${numero_unidade}" style="text-align-last: justify;">
+                <h5 class="mb-0">
+                  <button class="btn btn-link link-unidade" data-toggle="collapse" data-target="#collapse${numero_unidade}" aria-expanded="true" aria-controls="collapse${numero_unidade}">
+                    Unidade - ${numero_unidade}
+                  </button>
+                  <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'unidade')" style="font-size: 1.2rem;"></i>
+                </h5>
+              </div>
+              <div id="collapse${numero_unidade}" class="collapse show" aria-labelledby="heading${numero_unidade}" data-parent="#accordion">
+
+                <form action="/cadastro-conteudo-curso" method="POST" id="form-unidade-${numero_unidade}">
+                        {% csrf_token %}
+                        <input type="hidden" name="curso_id" value="0">
+                        <input type="hidden" name="tipo" value="unidade">
+                        <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
+                        <div class="form-group">
+                            <label for="titulo-unidade" id="label-unidade">Titulo</label>
+                            <input type="text" class="form-control" id="titulo-unidade" aria-describedby="" placeholder="titulo" name="titulo-unidade">
+                            <span id="titulo-unidade-${numero_unidade}" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="descricao-unidade" id="label-descricao">Descrição</label>
+                            <input type="text" class="form-control" id="descricao-unidade" aria-describedby="" placeholder="descrição" name="descricao-unidade">
+                        </div>
+                </form>
+
+                <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="videos-tab" data-toggle="tab" href="#videos-unidade-${numero_unidade}" role="tab" aria-controls="videos-unidade-${numero_unidade}" aria-selected="true">Vídeos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-${numero_unidade}" role="tab" aria-controls="arquivos-unidade-${numero_unidade}" aria-selected="false">Arquivos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-${numero_unidade}" role="tab" aria-controls="questionarios-unidade-${numero_unidade}" aria-selected="false">Questionários</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="navegacao-conteudo">
+
+                <div class="tab-pane fade show active" id="videos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="videos-tab">
+                    <div class="card-body  accordion-videos-unidade-${numero_unidade} card-videos">
+                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
+                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="arquivos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="arquivos-tab">
+                    <div class="card-body  accordion-arquivos-unidade-${numero_unidade} card-arquivos">
+                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
+                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="questionarios-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="questionarios-tab">
+                    <div class="card-body  accordion-questionarios-unidade-${numero_unidade} card-questionarios">
+                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
+                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
+                        </button>
+                    </div>
+                </div>
+
+                </div>
+              </div>
+            </div>
+         `
+        );
+
+        organizaUnidadesConteudos()
+    });
+
+    function adicionaConteudo(elemento, tipo_conteudo) {
+        unidade_id = elemento.id;
+
+        var unidade = unidade_id.substring(unidade_id.length-1, unidade_id.length)
+
+        var tipo_conteudo_atual  = 0
+        var titulo_card = ""
+        if(tipo_conteudo == "video"){
+            $("." + elemento.id).on("click", ordenaConteudo);
+            tipo_conteudo_atual = tipo_conteudo_video
+            titulo_card = "Vídeo"
+        }
+
+        if(tipo_conteudo == "arquivo"){
+            $("." + elemento.id).on("click", ordenaConteudoArquivo);
+            tipo_conteudo_atual = tipo_conteudo_arquivo
+            titulo_card = "Arquivo"
+        }
+
+        if(tipo_conteudo == "questionario"){
+            $("." + elemento.id).on("click", ordenaConteudoQuestionario);
+            tipo_conteudo_atual = tipo_conteudo_questionario
+            titulo_card = "Questionário"
+        }
+
+        $("." + unidade_id).append(
+            `
+            <div class="card card-${tipo_conteudo}-0-unidade-${unidade} ${tipo_conteudo}" id="${tipo_conteudo}-0-unidade-${unidade}">
+
+                <div class="card-header" id="heading${hash1}b" style="text-align-last: justify;">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse${hash1}b" aria-expanded="true" aria-controls="collapse${hash1}b">
+                            ${titulo_card} - 0
+                        </button>
+                        <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, '${tipo_conteudo}')" style="font-size: 1.2rem;"></i>
+                    </h5>
+                </div>
+
+                <div id="collapse${hash1}b" class="collapse show" aria-labelledby="heading${hash1}b" data-parent="#${unidade_id}">
+                    <div class="card-body  accordion${hash1}b">
+                        <form action="/cadastro-conteudo-curso" method="POST" id="form-${tipo_conteudo}-0-unidade-${unidade}">
+                        {% csrf_token %}
+                            <input type="hidden" name="curso_id" value="0">
+                            <input type="hidden" name="conteudo_id" value="0">
+                            <input type="hidden" name="conteudo_tipo" value="${tipo_conteudo}"">
+                            <input type="hidden" name="unidade_ordem" value="${unidade}">
+                            <input type="hidden" name="conteudo_ordem" value="0">
+                            <div class="form-group">
+                                <label for="titulo-conteudo" id="label-titulo">Titulo</label>
+                                <input type="text" class="form-control" id="titulo-conteudo" aria-describedby="" placeholder="titulo" name="titulo">
+                                <span id="titulo-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="conteudo-url" id="label-url">Url</label>
+                                <input type="url" class="form-control" id="conteudo-url" placeholder="URL" name="url">
+                                <span id="url-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="conteudo-path" id="label-path">Path</label>
+                                <input type="file" class="form-control" id="conteudo-path" placeholder="caminho" name="path">
+                                <span id="path-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
+                            </div>
+                            <div id="resultado"></div>
+                            <input type="submit" value="Salva">
+
+
+                            <div class="card-body  accordion-questoes-questionario-0-unidade-${numero_unidade - 1} card-questoes">
+                                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questoes-questionario-0-unidade-${numero_unidade - 1}" onclick='adicionaQuestoes(this, 0, ${(numero_unidade - 1)})'>
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+              `
+        );
+        var classe_card_conteudo = 'card-' + tipo_conteudo + '-' + 0 + '-unidade-' + unidade
+
+        var label_titulo = $('.' + classe_card_conteudo).find('#label-titulo')[0]
+        var input_titulo = $('.' + classe_card_conteudo).find('input[name="titulo"]')[0]
+        var label_url    = $('.' + classe_card_conteudo).find('#label-url')[0]
+        var input_url    = $('.' + classe_card_conteudo).find('input[name="url"]')[0]
+        var label_path   = $('.' + classe_card_conteudo).find('#label-path')[0]
+        var input_path   = $('.' + classe_card_conteudo).find('input[name="path"]')[0]
+
+        var div_questoes = $('.' + "accordion-questoes-questionario-" + 0 + "-unidade-" +  (numero_unidade - 1))[0]
+
+        if(tipo_conteudo == "video"){
+            div_questoes.remove()
+        }
+
+        if(tipo_conteudo == "arquivo"){
+            if(label_url)
+                label_url.hidden  = true
+            if(input_url)
+               input_url.hidden  = true
+            if(div_questoes)
+                div_questoes.remove()
+        }
+
+        if(tipo_conteudo == "questionario"){
+            if(label_url)
+                label_url.hidden  = true
+            if(input_url)
+                input_url.hidden  = true
+            if(label_path)
+                label_path.hidden = true
+            if(input_path)
+               input_path.hidden = true
+        }
+
+        $('form').on('submit', enviaForm);
+
+        organizaUnidadesConteudos();
+    }
+
+
+    function adicionaQuestoes(elemento, numero_questionario, numero_unidade){
+
+        $('.' + elemento.id).append(
+        `
+            <div class="card card-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} questao" id="questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
+
+                <div class="card-header" id="heading${hash2}c" style="text-align-last: justify;">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse${hash2}c" aria-expanded="true" aria-controls="collapse${hash2}c">
+                            Questão - 0
+                        </button>
+                        <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'questao')" style="font-size: 1.2rem;"></i>
+                    </h5>
+                </div>
+
+                <div id="collapse${hash2}c" class="collapse show" aria-labelledby="heading${hash2}c" data-parent="#${elemento.id}">
+                    <div class="card-body  accordion${hash2}c">
+                        <form action="/cadastro-conteudo-curso" method="POST" id="form-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
+                        {% csrf_token %}
+                            <input type="hidden" name="conteudo_tipo" value="questao">
+                            <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
+                            <input type="hidden" name="questionario_ordem" value="${numero_questionario}">
+                            <input type="hidden" name="questao_ordem" value="0">
+                            <div class="form-group">
+                                <label for="titulo-questao" id="label-questao">Titulo</label>
+                                <input type="text" class="form-control" id="titulo-questao" aria-describedby="" placeholder="questão" name="questao">
+                                <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                            </div>
+
+                            <div id="resultado"></div>
+                            <input type="submit" value="Salva">
+
+                            <div class="card-body  accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} card-alternativas">
+                                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick='adicionaAlternativas(this, ${numero_questionario}, ${(numero_unidade)})'>
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `
+        );
+
+        $('form').on('submit', enviaForm);
+        $("." + elemento.id).on("click", ordenaConteudoQuestao);
+        organizaUnidadesConteudos()
+    }
+
+    function adicionaAlternativas(elemento, numero_questionario, numero_unidade){
+
+        $('.' + elemento.id).append(
+        `
+            <div class="card card-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} alternativa" id="alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
+
+                <div class="card-header" id="heading${hash3}d" style="text-align-last: justify;">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse${hash3}d" aria-expanded="true" aria-controls="collapse${hash3}d">
+                            Alternativa - 0
+                        </button>
+                        <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'alternativa')" style="font-size: 1.2rem;"></i>
+                    </h5>
+                </div>
+
+                <div id="collapse${hash3}d" class="collapse show" aria-labelledby="heading${hash3}d" data-parent="#${elemento.id}">
+                    <div class="card-body  accordion${hash3}d">
+                        <form action="/cadastro-conteudo-curso" method="POST" id="form-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
+                        {% csrf_token %}
+                            <input type="hidden" name="conteudo_tipo" value="questao">
+                            <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
+                            <input type="hidden" name="questionario_ordem" value="${numero_questionario}">
+                            <input type="hidden" name="questao_ordem" value="0">
+                            <input type="hidden" name="alternativa_ordem" value="0">
+                            <div class="form-group">
+                                <label for="titulo-alternativa" id="label-alternativa">Titulo</label>
+                                <input type="text" class="form-control" id="titulo-alternativa" aria-describedby="" placeholder="alternativa" name="alternativa">
+                                <span id="titulo-alternativa-0-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                            </div>
+
+                            <div id="resultado"></div>
+                            <input type="submit" value="Salva">
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `
+        );
+
+        $('form').on('submit', enviaForm);
+        $("." + elemento.id).on("click", ordenaConteudoAlternativa);
+
+        organizaUnidadesConteudos()
+    }
+
+    function removeCard(elemento, classe_elemento) {
+        $(elemento).parents('.' + classe_elemento).get(0).remove();
+        organizaUnidadesConteudos()
+    }
+
+    $( function() {
+        $( "#accordion" ).sortable({
+            stop : function(event,ui) {
+                organizaUnidadesConteudos()
+            }
+          }
+        );
+    });
+
+    function ordenaConteudo() {
+        $( ".card-videos" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
+    function ordenaConteudoArquivo() {
+        $( ".card-arquivos" )
+        .sortable(
+          {
+            stop         : function(event,ui){
+
+              organizaUnidadesConteudos();
+
+            }
+          }
+
+        );
+    }
+
+    function ordenaConteudoQuestionario() {
+        $( ".card-questionarios" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
+    function ordenaConteudoQuestao() {
+        $( ".card-questoes" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
+    function ordenaConteudoAlternativa() {
+        $( ".card-alternativas" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
+    function organizaUnidadesConteudos(){
+        cards_unidade = $(".card-unidade")
+        numero_unidade  = 1;
+        var numero_conteudo = 0;
+        var titulo_secao = ""
+        hash1 = 1;
+        hash2 = 1;
+        ordem_conteudo = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        for (let i = 0; i < cards_unidade.length; i++){
+
+            numero_unidade = i + 1;
+
+            cards_conteudo = $("#" + cards_unidade[i].id).find(".card");
+
+            cards_unidade[i].getElementsByClassName("link-unidade")[0].innerText = "Unidade - " + (i + 1);
+
+            $(cards_unidade[i]).find('form')[0].id ="form-unidade-" + numero_unidade
+            $(cards_unidade[i]).find('span')[0].id ="titulo-unidade-" + numero_unidade
+
+            for (let j = 0; j < cards_conteudo.length; j++){
+
+                card_conteudo = cards_conteudo[j];
+
+                var tipo_conteudo = ""
+                var tipo_conteudo_id = 0;
+
+                if($(card_conteudo).hasClass("video")) {
+                    tipo_conteudo = "video"
+                    tipo_conteudo_id = 0
+                    titulo_secao = "Vídeo"
+                }
+
+                if($(card_conteudo).hasClass("arquivo")) {
+                    tipo_conteudo = "arquivo"
+                    tipo_conteudo_id = 1
+                    titulo_secao = "Arquivo"
+                }
+
+                if($(card_conteudo).hasClass("questionario")) {
+                    tipo_conteudo = "questionario"
+                    tipo_conteudo_id = 2
+                    titulo_secao = "Questionário"
+                }
+
+                if(tipo_conteudo != "") {
+                    ordem_conteudo[numero_unidade][tipo_conteudo_id] = ordem_conteudo[numero_unidade][tipo_conteudo_id] + 1;
+
+                    numero_conteudo = ordem_conteudo[numero_unidade][tipo_conteudo_id];
+
+                    card_conteudo.getElementsByClassName("link-conteudo")[0].innerText = titulo_secao + " - " +  numero_conteudo;
+
+                    card_conteudo.id = tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade;
+                    $(card_conteudo).removeClass().addClass("card card-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade + " " + tipo_conteudo)
+
+                    $(card_conteudo).find('form')[0].id ="form-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+                    $(card_conteudo).find('input[name="unidade_ordem"]')[0].value = numero_unidade
+                    $(card_conteudo).find('input[name="conteudo_ordem"]')[0].value = numero_conteudo
+
+                    $(card_conteudo).find('span')[0].id="titulo-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+
+                    if($(card_conteudo).find('span')[1]){
+                        $(card_conteudo).find('span')[1].id="url-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+                    }
+
+                    if($(card_conteudo).find('span')[2]){
+                        $(card_conteudo).find('span')[2].id="path-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+                    }
+
+                    hash1 = hash1 + 1;
+
+                    if(tipo_conteudo_id == 2) {
+                        var questoes = $(card_conteudo).find(".questao" );
+                        var questao = undefined;
+
+                        for (let k = 0; k < questoes.length; k++){
+
+                            questao = questoes[k]
+                            numero_questao = k + 1
+
+
+                            $(questao).removeClass().addClass("card card-questao-"+ numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade + " questao")
+
+                            $(questao)[0].getElementsByClassName("link-conteudo")[0].innerText = "Questão" + " - " +  numero_questao;
+
+                            $(questao)[0].id = "questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
+
+                            if($(questao).find('form')[0])
+                              $(questao).find('form')[0].id ="form-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
+                            $(questao).find('input[name="unidade_ordem"]')[0].value = numero_unidade
+                            $(questao).find('input[name="questionario_ordem"]')[0].value = numero_conteudo
+                            $(questao).find('input[name="questao_ordem"]')[0].value = numero_questao
+
+
+
+                            $(questao).find('span')[0].id ="titulo-questao-" + numero_questao + "-questionario-" + numero_conteudo +  "-unidade-" + numero_unidade
+
+                            hash2 = hash2 + 1
+
+                            var alternativas = $(questao).find(".alternativa" );
+                            var alternativa = undefined;
+
+                            for (let l = 0; l < alternativas.length; l++){
+
+                                alternativa = alternativas[l]
+                                numero_alternativa = l + 1
+
+                                $(alternativa).removeClass().addClass("card-alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade + " alternativa")
+
+                                $(alternativa)[0].getElementsByClassName("link-conteudo")[0].innerText = "Alternativa" + " - " +  numero_alternativa;
+
+                                $(alternativa)[0].id = "alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
+
+                                $(alternativa).find('form')[0].id ="form-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
+                                $(alternativa).find('input[name="unidade_ordem"]')[0].value = numero_unidade
+                                $(alternativa).find('input[name="questionario_ordem"]')[0].value = numero_conteudo
+                                $(alternativa).find('input[name="questao_ordem"]')[0].value = numero_questao
+                                $(alternativa).find('input[name="alternativa_ordem"]')[0].value = numero_alternativa
+
+                                $(alternativa).find('span')[0].id ="titulo-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo +  "-unidade-" + numero_unidade
+
+                                hash3 = hash3 + 1
+                            }
+                        }
+
+                    }
+                }
+
+            }
+            numero_unidade = numero_unidade + 1
+        }
+    }
+
+
+   function enviaForm(event){
+        event.preventDefault();
+        var form = $(this);
+        var data  = form.serialize();
+        $.ajax({
+            url         : '/cadastro-conteudo-curso',
+            data        : form.serialize(),
+            type        : 'POST',
+            success     : function(data, textStatus, jqXHR){
+                // Callback code
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        //$('form').on('submit', enviaForm);
+        //$('input').on('focus', removeErro)
+
+        $('.card-videos').on('click', ordenaConteudo)
+        $('.card-arquivos').on('click', ordenaConteudoArquivo)
+        $('.card-questionarios').on('click', ordenaConteudoQuestionario)
+        organizaUnidadesConteudos()
+    });
+
+   </script>
+</html>
