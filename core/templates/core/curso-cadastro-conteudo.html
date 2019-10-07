@@ -193,58 +193,94 @@
                                     </div>
                                     <div id="resultado"></div>
                                     <input type="submit" value="Salva">
+                                </form>
 
+                                <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes">
+                                    <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
+                                        <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
+                                    </button>
 
-                                    <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes">
-                                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
-                                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
-                                        </button>
+                                    {% for questao in questoes %}
+                                        {% if questao.questionario.id == questionario.id %}
+                                        <div class="card card-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questao" id="questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
 
-                                        {% for questao in questoes %}
-                                            {% if questao.questionario.id == questionario.id %}
-                                            <div class="card card-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questao" id="questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                            <div class="card-header" id="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                        Questão - {{ questao.ordem }}
+                                                    </button>
+                                                    <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'questao')" style="font-size: 1.2rem;"></i>
+                                                </h5>
+                                            </div>
 
-                                                <div class="card-header" id="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
-                                                    <h5 class="mb-0">
-                                                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                            Questão - {{ questao.ordem }}
+                                            <div id="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse show" aria-labelledby="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                <div class="card-body  accordion-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                    <form id="form-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                    {% csrf_token %}
+                                                        <input type="hidden" name="conteudo_tipo" value="questao">
+                                                        <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                                        <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
+                                                        <input type="hidden" name="questao_ordem" value="0">
+                                                        <div class="form-group">
+                                                            <label for="titulo-questao" id="label-questao">Titulo</label>
+                                                            <input type="text" class="form-control" id="titulo-questao" value="{{ questao.enunciado }}" aria-describedby="" placeholder="questão" name="questao">
+                                                            <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                                                        </div>
+
+                                                        <div id="resultado"></div><input type="submit" value="Salva">
+
+                                                    </form>
+                                                    <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas">
+                                                        <button class="btn btn-lg btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaAlternativas(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
+                                                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
                                                         </button>
-                                                        <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'questao')" style="font-size: 1.2rem;"></i>
-                                                    </h5>
-                                                </div>
 
-                                                <div id="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse show" aria-labelledby="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                    <div class="card-body  accordion-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                        <form id="form-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                        {% csrf_token %}
-                                                            <input type="hidden" name="conteudo_tipo" value="questao">
-                                                            <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
-                                                            <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
-                                                            <input type="hidden" name="questao_ordem" value="0">
-                                                            <div class="form-group">
-                                                                <label for="titulo-questao" id="label-questao">Titulo</label>
-                                                                <input type="text" class="form-control" id="titulo-questao" aria-describedby="" placeholder="questão" name="questao">
-                                                                <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                                                        {% for alternativa in alternativas %}
+                                                            {% if questao.questionario.id == questionario.id %}
+                                                            <div class="card card-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }} alternativa" id="alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+
+                                                                <div class="card-header" id="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" style="text-align-last: justify;">
+                                                                    <h5 class="mb-0">
+                                                                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" aria-expanded="true" aria-controls="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+                                                                            Alternativa - 0
+                                                                        </button>
+                                                                        <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'alternativa')" style="font-size: 1.2rem;"></i>
+                                                                    </h5>
+                                                                </div>
+
+                                                                <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" class="collapse show" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                    <div class="card-body  accordion-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+                                                                        <form action="/cadastro-conteudo-curso" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+                                                                        {% csrf_token %}
+                                                                            <input type="hidden" name="conteudo_tipo" value="questao">
+                                                                            <input type="hidden" name="unidade_ordem" value="{{ undiade.ordem }}">
+                                                                            <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
+                                                                            <input type="hidden" name="questao_ordem" value="{{ questao.ordem }}">
+                                                                            <input type="hidden" name="alternativa_ordem" value="{{ alternativa.ordem }}">
+                                                                            <div class="form-group">
+                                                                                <label for="titulo-alternativa" id="label-alternativa">Titulo</label>
+                                                                                <input type="text" class="form-control" id="titulo-alternativa" value="{{ alternativa.descricao }} "aria-describedby="" placeholder="alternativa" name="alternativa">
+                                                                                <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" style="color: red;"></span>
+                                                                            </div>
+
+                                                                            <div id="resultado"></div>
+                                                                            <input type="submit" value="Salva">
+
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-
-                                                            <div id="resultado"></div>
-                                                            <input type="submit" value="Salva">
-
-                                                            <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas">
-                                                                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaAlternativas(this, {{ questionario.ordem }}, ${(numero_unidade)})'>
-                                                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
-                                                                </button>
-                                                            </div>
-
-                                                        </form>
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
                                             </div>
-                                            {% endif %}
-                                        {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
 
-                                    </div>
-                                </form>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -508,14 +544,12 @@
 
                             <div id="resultado"></div>
                             <input type="submit" value="Salva">
-
-                            <div class="card-body  accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} card-alternativas">
-                                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick='adicionaAlternativas(this, ${numero_questionario}, ${(numero_unidade)})'>
-                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
-                                </button>
-                            </div>
-
                         </form>
+                        <div class="card-body  accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} card-alternativas">
+                            <button class="btn btn-lg btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick='adicionaAlternativas(this, ${numero_questionario}, ${(numero_unidade)})'>
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -729,7 +763,8 @@
                             $(questao).find('input[name="questionario_ordem"]')[0].value = numero_conteudo
                             $(questao).find('input[name="questao_ordem"]')[0].value = numero_questao
 
-
+                            $(questao).find('.card-alternativas').removeClass().addClass("card-body accordion-alternativas-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade + " card-alternativas")
+                            $(questao).find('.btn-add-alternativa')[0].id = "accordion-alternativas-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
 
                             $(questao).find('span')[0].id ="titulo-questao-" + numero_questao + "-questionario-" + numero_conteudo +  "-unidade-" + numero_unidade
 
@@ -791,6 +826,8 @@
         $('.card-videos').on('click', ordenaConteudo)
         $('.card-arquivos').on('click', ordenaConteudoArquivo)
         $('.card-questionarios').on('click', ordenaConteudoQuestionario)
+        $('.card-questoes').on('click', ordenaConteudoQuestao)
+        $('.card-alternativas').on('click', ordenaConteudoAlternativa)
         organizaUnidadesConteudos()
     });
 
