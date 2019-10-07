@@ -23,7 +23,7 @@
       </div>
       <div id="collapse{{ unidade.ordem }}" class="collapse" aria-labelledby="heading{{ unidade.ordem }}" data-parent="#accordion">
 
-        <form action="/cadastro-conteudo-curso" method="POST" id="form-unidade-{{ unidade.ordem }}">
+        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-{{ unidade.ordem }}">
                 {% csrf_token %}
                 <input type="hidden" name="curso_id" value="0">
                 <input type="hidden" name="tipo" value="unidade">
@@ -37,6 +37,7 @@
                     <label for="descricao-unidade" id="label-descricao">Descrição</label>
                     <input type="text" class="form-control" id="descricao-unidade" aria-describedby="" placeholder="descrição" name="descricao-unidade">
                 </div>
+                <input type="submit" value="Salva">
         </form>
 
         <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist">
@@ -74,7 +75,7 @@
 
                         <div id="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-videos-unidade-{{ unidade.ordem }}">
                             <div class="card-body  accordion-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
-                                <form action="/cadastro-conteudo-curso" method="POST" id="form-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
+                                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
                                 {% csrf_token %}
                                     <input type="hidden" name="curso_id" value="0">
                                     <input type="hidden" name="conteudo_id" value="0">
@@ -129,7 +130,7 @@
 
                         <div id="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-arquivos-unidade-{{ unidade.ordem }}">
                             <div class="card-body  accordion-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
-                                <form action="/cadastro-conteudo-curso" method="POST" id="form-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
+                                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
                                 {% csrf_token %}
                                     <input type="hidden" name="curso_id" value="0">
                                     <input type="hidden" name="conteudo_id" value="0">
@@ -179,7 +180,7 @@
 
                         <div id="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questionarios-unidade-{{ unidade.ordem }}">
                             <div class="card-body  accordion-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
-                                <form action="/cadastro-conteudo-curso" method="POST" id="form-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                 {% csrf_token %}
                                     <input type="hidden" name="curso_id" value="0">
                                     <input type="hidden" name="conteudo_id" value="0">
@@ -250,7 +251,7 @@
 
                                                                 <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" class="collapse show" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                                     <div class="card-body  accordion-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
-                                                                        <form action="/cadastro-conteudo-curso" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+                                                                        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
                                                                         {% csrf_token %}
                                                                             <input type="hidden" name="conteudo_tipo" value="questao">
                                                                             <input type="hidden" name="unidade_ordem" value="{{ undiade.ordem }}">
@@ -331,7 +332,7 @@
               </div>
               <div id="collapse${numero_unidade}" class="collapse show" aria-labelledby="heading${numero_unidade}" data-parent="#accordion">
 
-                <form action="/cadastro-conteudo-curso" method="POST" id="form-unidade-${numero_unidade}">
+                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-${numero_unidade}">
                         {% csrf_token %}
                         <input type="hidden" name="curso_id" value="0">
                         <input type="hidden" name="tipo" value="unidade">
@@ -434,7 +435,7 @@
 
                 <div id="collapse${hash1}b" class="collapse show" aria-labelledby="heading${hash1}b" data-parent="#${unidade_id}">
                     <div class="card-body  accordion${hash1}b">
-                        <form action="/cadastro-conteudo-curso" method="POST" id="form-${tipo_conteudo}-0-unidade-${unidade}">
+                        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-${tipo_conteudo}-0-unidade-${unidade}">
                         {% csrf_token %}
                             <input type="hidden" name="curso_id" value="0">
                             <input type="hidden" name="conteudo_id" value="0">
@@ -530,7 +531,7 @@
 
                 <div id="collapse${hash2}c" class="collapse show" aria-labelledby="heading${hash2}c" data-parent="#${elemento.id}">
                     <div class="card-body  accordion${hash2}c">
-                        <form action="/cadastro-conteudo-curso" method="POST" id="form-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
+                        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
                         {% csrf_token %}
                             <input type="hidden" name="conteudo_tipo" value="questao">
                             <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
@@ -578,7 +579,7 @@
 
                 <div id="collapse${hash3}d" class="collapse show" aria-labelledby="heading${hash3}d" data-parent="#${elemento.id}">
                     <div class="card-body  accordion${hash3}d">
-                        <form action="/cadastro-conteudo-curso" method="POST" id="form-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
+                        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
                         {% csrf_token %}
                             <input type="hidden" name="conteudo_tipo" value="questao">
                             <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
@@ -810,7 +811,7 @@
         var form = $(this);
         var data  = form.serialize();
         $.ajax({
-            url         : '/cadastro-conteudo-curso',
+            url         : '/cadastro-conteudo-curso/{{ curso.id }}',
             data        : form.serialize(),
             type        : 'POST',
             success     : function(data, textStatus, jqXHR){
@@ -820,7 +821,7 @@
     }
 
     $(document).ready(function() {
-        //$('form').on('submit', enviaForm);
+        $('form').on('submit', enviaForm);
         //$('input').on('focus', removeErro)
 
         $('.card-videos').on('click', ordenaConteudo)

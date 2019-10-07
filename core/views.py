@@ -1443,8 +1443,6 @@ def cadastroConteudoCursoView(request, id):
 
     unidades = curso.obtem_unidades()
 
-    unidade_proxima_ordem = unidades[unidades.count() - 1].ordem + 1
-
     videos = Video.objects.filter(unidade__in=unidades).order_by('ordem')
 
     arquivos = Arquivo.objects.filter(unidade__in=unidades).order_by('ordem')
@@ -1486,8 +1484,7 @@ def cadastroConteudoCursoView(request, id):
             'arquivos': arquivos,
             'questionarios': questionarios,
             'questoes': questoes,
-            'alternativas': alternativas,
-            'unidade_proxima_ordem': unidade_proxima_ordem,
+            'alternativas': alternativas
         }
     )
 
