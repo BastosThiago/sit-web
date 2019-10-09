@@ -1455,29 +1455,75 @@ def cadastroConteudoCursoView(request, id):
 
     # Caso o método HTTP associado a requisição seja POST
     # Exibe o formulário com os dados já existentes, senão, um em branco
+    response_data = {}
     if request.method == 'POST':
-        form = VideoForm(request.POST, request.FILES or None)
+        #form = VideoForm(request.POST, request.FILES or None)
 
         try:
-            if request.POST['conteudo_tipo'] == 'video':
-                unidade_ordem = request.POST['unidade_ordem']
-                video_titulo = request.POST['titulo']
-                video_url = request.POST['url']
+            conteudo_tipo = request.POST['conteudo_tipo']
+            unidade_ordem = request.POST['unidade_ordem']
 
-            if request.POST['conteudo_tipo'] == 'arquivo':
-                unidade_ordem = request.POST['unidade_ordem']
-                video_titulo = request.POST['titulo']
+            if conteudo_tipo == 'unidade':
+                unidade_titulo = request.POST['titulo-unidade']
+                unidade_descricao = request.POST['descricao-unidade']
+
+                if unidade_titulo == "":
+                    response_data[f"titulo-unidade-{unidade_ordem}"] = 'O título da unidade é obrigatório'
+                    return HttpResponse(
+                        json.dumps(response_data)
+                    )
+
+                unidade = Unidade.objects.filter(curso=curso, ordem=unidade_ordem)
+
+                if unidade.count() == 1:
+                    unidade = unidade[0]
+                    unidade.titulo = unidade_titulo
+                    unidade.descricao = unidade_descricao
+                    unidade.save()
+                else:
+                    unidade = Unidade.objects.create(
+                        curso=curso,
+                        titulo=unidade_titulo,
+                        ordem=unidade_ordem
+                    )
+
+            if conteudo_tipo == 'video':
+                conteudo_ordem = request.POST['conteudo_ordem']
+                arquivo_titulo = request.POST['titulo']
                 video_url = request.POST['url']
+                try:
+                    video_path = request.FILES['path']
+                except:
+                    video_path = ""
+
+            if conteudo_tipo == 'arquivo':
+                conteudo_ordem = request.POST['conteudo_ordem']
+                arquivo_titulo = request.POST['titulo']
+                try:
+                    arquivo_path = request.FILES['path']
+                except:
+                    arquivo_path = ""
+
+            if conteudo_tipo == 'questionario':
+                conteudo_ordem = request.POST['conteudo_ordem']
+                questionario_titulo = request.POST['titulo']
+
+            if conteudo_tipo == 'questao':
+                questionario_ordem = request.POST['questionario_ordem']
+                questao_ordem = request.POST['questao_ordem']
+                questao_enunciado = request.POST['titulo']
+
+            if conteudo_tipo == 'alternativa':
+                questionario_ordem = request.POST['questionario_ordem']
+                questao_ordem = request.POST['questao_ordem']
+                alternativa_ordem = request.POST['alternativa_ordem']
+                alternativa_descricao = request.POST['titulo']
+
         except:
             pass
-        unidade_ordem  = request.POST['unidade_ordem']
-        conteudo_ordem = request.POST['conteudo_ordem']
-        video_titulo   = request.POST['titulo']
-        video_url      = request.POST['url']
 
-        response_data = {}
 
-        response_data[f"titulo-{unidade_ordem}-{conteudo_ordem}"] = 'Campo obrigatório'
+
 
         return HttpResponse(
             json.dumps(response_data)
