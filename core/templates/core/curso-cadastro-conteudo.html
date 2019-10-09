@@ -37,6 +37,7 @@
                     <label for="descricao-unidade" id="label-descricao">Descrição</label>
                     <input type="text" class="form-control" id="descricao-unidade" aria-describedby="" placeholder="descrição" name="descricao-unidade">
                 </div>
+                <div class="resultado-unidade" id="resultado-unidade-{{ unidade.ordem }}"></div>
                 <input type="submit" value="Salva">
         </form>
 
@@ -97,7 +98,7 @@
                                         <input type="file" class="form-control" id="conteudo-path" name="path">
                                         <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                     </div>
-                                    <div id="resultado"></div>
+                                    <div class="resultado-video" id="resultado-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"></div>
                                     <input type="submit" value="Salva">
 
                                 </form>
@@ -147,7 +148,7 @@
                                         <input type="file" class="form-control" id="conteudo-path" placeholder="caminho" name="path">
                                         <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                     </div>
-                                    <div id="resultado"></div>
+                                    <div class="resultado-arquivo" id="resultado-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"></div>
                                     <input type="submit" value="Salva">
 
                                 </form>
@@ -191,7 +192,7 @@
                                         <input type="text" class="form-control" id="titulo-conteudo" value="{{ questionario.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
                                         <span id="titulo-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                     </div>
-                                    <div id="resultado"></div>
+                                    <div class="resultado-questionario" id="resultado-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"></div>
                                     <input type="submit" value="Salva">
                                 </form>
 
@@ -228,7 +229,8 @@
                                                             <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
                                                         </div>
 
-                                                        <div id="resultado"></div><input type="submit" value="Salva">
+                                                        <div class="resultado-questao" id="resultado-questao-0-questionario-0-unidade-0"></div>
+                                                        <input type="submit" value="Salva">
 
                                                     </form>
                                                     <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas">
@@ -265,7 +267,7 @@
                                                                                 <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                                                             </div>
 
-                                                                            <div id="resultado"></div>
+                                                                            <div class="resultado-alternativa" id="resultado-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"></div>
                                                                             <input type="submit" value="Salva">
 
                                                                         </form>
@@ -347,6 +349,8 @@
                             <label for="descricao-unidade" id="label-descricao">Descrição</label>
                             <input type="text" class="form-control" id="descricao-unidade" aria-describedby="" placeholder="descrição" name="descricao-unidade">
                         </div>
+                        <div class="resultado-unidade" id="resultado-unidade-${numero_unidade}"></div>
+                        <input type="submit" value="Salva">
                 </form>
 
                 <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist">
@@ -462,7 +466,7 @@
                                 <input type="file" class="form-control" id="conteudo-path" placeholder="caminho" name="path">
                                 <span id="path-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
-                            <div id="resultado"></div>
+                            <div class="resultado-${tipo_conteudo}" id="resultado-${tipo_conteudo}-0-unidade-${unidade}"></div>
                             <input type="submit" value="Salva">
 
 
@@ -551,7 +555,7 @@
                                 <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
                             </div>
 
-                            <div id="resultado"></div>
+                            <div class="resultado-questao" id="resultado-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}"></div>
                             <input type="submit" value="Salva">
                         </form>
                         <div class="card-body  accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} card-alternativas">
@@ -604,7 +608,7 @@
                                 <span id="titulo-alternativa-0-questao-0-questionario-0-unidade-0" style="color: red;"></span>
                             </div>
 
-                            <div id="resultado"></div>
+                            <div class="resultado-alternativa" id="resultado-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}"></div>
                             <input type="submit" value="Salva">
 
                         </form>
@@ -635,9 +639,12 @@
                         conteudo_id: id_conteudo,
                     },
                     success: function (data) {
-                        tempo_corrente = parseInt(data["tempo_corrente"]);
-                        player.setCurrentTime(tempo_corrente)
+
+                    },
+                    error: function(data){
+                        var teste = "0"
                     }
+
                 })
         }
 
@@ -720,6 +727,8 @@
 
             cards_unidade[i].getElementsByClassName("link-unidade")[0].innerText = "Unidade - " + (i + 1);
 
+            $(cards_unidade[i]).find('i').attr('onclick', "removeCard" + "(this, 'unidade', " + numero_unidade + ")")
+
             var form_unidade = $(cards_unidade[i]).find('form')[0]
             var form_novo_id  = "form-unidade-" + numero_unidade
 
@@ -727,6 +736,8 @@
               form_unidade.id = form_novo_id
               $(form_unidade).addClass("dados-modificados")
             }
+
+            $(form_unidade).find(".resultado-unidade")[0].id = "resultado-unidade-" + numero_unidade
 
             $(cards_unidade[i]).find('span')[0].id ="titulo-unidade-" + numero_unidade
 
@@ -786,7 +797,7 @@
                     }
 
                     if($(card_conteudo).find('span')[2]){
-                        if($(card_conteudo).find('span').find('a')) {
+                        if($(card_conteudo).find('span').find('a')[0]) {
                             $(card_conteudo).find('span').find('a')[0].id = "link-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
                         }
                     }
@@ -794,6 +805,8 @@
                     if($(card_conteudo).find('span')[3]){
                         $(card_conteudo).find('span')[3].id="path-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
                     }
+
+                    $(form_conteudo).find(".resultado-" + tipo_conteudo)[0].id = "resultado-"+ tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
 
                     hash1 = hash1 + 1;
 
@@ -829,6 +842,8 @@
 
                             $(questao).find('span')[0].id ="titulo-questao-" + numero_questao + "-questionario-" + numero_conteudo +  "-unidade-" + numero_unidade
 
+                            $(questao).find(".resultado-questao")[0].id = "resultado-questao-" + numero_questao + "-questionario-" + numero_conteudo +  "-unidade-" + numero_unidade
+
                             hash2 = hash2 + 1
 
                             var alternativas = $(questao).find(".alternativa" );
@@ -858,6 +873,8 @@
                                 $(alternativa).find('input[name="alternativa_ordem"]')[0].value = numero_alternativa
 
                                 $(alternativa).find('span')[0].id ="titulo-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo +  "-unidade-" + numero_unidade
+
+                                $(alternativa).find(".resultado-alternativa")[0].id = "resultado-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo +  "-unidade-" + numero_unidade
 
                                 hash3 = hash3 + 1
                             }
