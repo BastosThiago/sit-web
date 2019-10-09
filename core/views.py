@@ -1458,6 +1458,18 @@ def cadastroConteudoCursoView(request, id):
     if request.method == 'POST':
         form = VideoForm(request.POST, request.FILES or None)
 
+        try:
+            if request.POST['conteudo_tipo'] == 'video':
+                unidade_ordem = request.POST['unidade_ordem']
+                video_titulo = request.POST['titulo']
+                video_url = request.POST['url']
+
+            if request.POST['conteudo_tipo'] == 'arquivo':
+                unidade_ordem = request.POST['unidade_ordem']
+                video_titulo = request.POST['titulo']
+                video_url = request.POST['url']
+        except:
+            pass
         unidade_ordem  = request.POST['unidade_ordem']
         conteudo_ordem = request.POST['conteudo_ordem']
         video_titulo   = request.POST['titulo']

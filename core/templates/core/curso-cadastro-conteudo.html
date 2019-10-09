@@ -56,7 +56,7 @@
 
         <div class="tab-pane fade show active" id="videos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="videos-tab">
             <div class="card-body  accordion-videos-unidade-{{ unidade.ordem }} card-videos">
-                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
+                <button class="btn btn-lg btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                 </button>
                 {% for video in videos %}
@@ -111,7 +111,7 @@
 
         <div class="tab-pane fade" id="arquivos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="arquivos-tab">
             <div class="card-body  accordion-arquivos-unidade-{{ unidade.ordem }} card-arquivos">
-                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
+                <button class="btn btn-lg btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                 </button>
                 {% for arquivo in arquivos %}
@@ -144,7 +144,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="conteudo-path" id="label-path">Path</label>
-                                        <input type="file" class="form-control" id="conteudo-path" value="{{ arquivo.path  }}" placeholder="caminho" name="path">
+                                        <input type="file" class="form-control" id="conteudo-path" value="{{ arquivo.caminho }}" placeholder="caminho" name="path">
                                         <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                     </div>
                                     <div id="resultado"></div>
@@ -161,7 +161,7 @@
 
         <div class="tab-pane fade" id="questionarios-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="questionarios-tab">
             <div class="card-body  accordion-questionarios-unidade-{{ unidade.ordem }} card-questionarios">
-                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
+                <button class="btn btn-lg btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                 </button>
                 {% for questionario in questionarios %}
@@ -197,7 +197,7 @@
                                 </form>
 
                                 <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes">
-                                    <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
+                                    <button class="btn btn-lg btn-primary btn-add-panel-conteudo" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
                                         <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
                                     </button>
 
@@ -237,31 +237,31 @@
                                                         </button>
 
                                                         {% for alternativa in alternativas %}
-                                                            {% if questao.questionario.id == questionario.id %}
-                                                            <div class="card card-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }} alternativa" id="alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+                                                            {% if alternativa.questao.id == questao.id %}
+                                                            <div class="card card-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} alternativa" id="alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
 
-                                                                <div class="card-header" id="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" style="text-align-last: justify;">
+                                                                <div class="card-header" id="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
                                                                     <h5 class="mb-0">
-                                                                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" aria-expanded="true" aria-controls="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+                                                                        <button class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                                             Alternativa - 0
                                                                         </button>
                                                                         <i class="fa fa-trash align-middle" id="elimina-unidade" onclick="removeCard(this, 'alternativa')" style="font-size: 1.2rem;"></i>
                                                                     </h5>
                                                                 </div>
 
-                                                                <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" class="collapse show" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                                    <div class="card-body  accordion-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
-                                                                        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}">
+                                                                <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse show" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                    <div class="card-body  accordion-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                                         {% csrf_token %}
                                                                             <input type="hidden" name="conteudo_tipo" value="questao">
-                                                                            <input type="hidden" name="unidade_ordem" value="{{ undiade.ordem }}">
+                                                                            <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
                                                                             <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
                                                                             <input type="hidden" name="questao_ordem" value="{{ questao.ordem }}">
                                                                             <input type="hidden" name="alternativa_ordem" value="{{ alternativa.ordem }}">
                                                                             <div class="form-group">
                                                                                 <label for="titulo-alternativa" id="label-alternativa">Titulo</label>
                                                                                 <input type="text" class="form-control" id="titulo-alternativa" value="{{ alternativa.descricao }} "aria-describedby="" placeholder="alternativa" name="alternativa">
-                                                                                <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ undiade.ordem }}" style="color: red;"></span>
+                                                                                <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                                                             </div>
 
                                                                             <div id="resultado"></div>
@@ -332,7 +332,7 @@
               </div>
               <div id="collapse${numero_unidade}" class="collapse show" aria-labelledby="heading${numero_unidade}" data-parent="#accordion">
 
-                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-${numero_unidade}">
+                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-0">
                         {% csrf_token %}
                         <input type="hidden" name="curso_id" value="0">
                         <input type="hidden" name="tipo" value="unidade">
@@ -364,7 +364,7 @@
 
                 <div class="tab-pane fade show active" id="videos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="videos-tab">
                     <div class="card-body  accordion-videos-unidade-${numero_unidade} card-videos">
-                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
+                        <button class="btn btn-lg btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
                             <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                         </button>
                     </div>
@@ -372,7 +372,7 @@
 
                 <div class="tab-pane fade" id="arquivos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="arquivos-tab">
                     <div class="card-body  accordion-arquivos-unidade-${numero_unidade} card-arquivos">
-                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
+                        <button class="btn btn-lg btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
                             <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                         </button>
                     </div>
@@ -380,7 +380,7 @@
 
                 <div class="tab-pane fade" id="questionarios-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="questionarios-tab">
                     <div class="card-body  accordion-questionarios-unidade-${numero_unidade} card-questionarios">
-                        <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
+                        <button class="btn btn-lg btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
                             <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                         </button>
                     </div>
@@ -391,6 +391,10 @@
             </div>
          `
         );
+
+        $('form').on('submit', enviaForm);
+        $('input').on('focus', removeErro)
+        $('input').on('change', alterouDados)
 
         organizaUnidadesConteudos()
     });
@@ -509,6 +513,9 @@
         }
 
         $('form').on('submit', enviaForm);
+        $('input').on('focus', removeErro)
+        $('input').on('change', alterouDados)
+        $('input:file').on('change', alterouArquivo)
 
         organizaUnidadesConteudos();
     }
@@ -558,7 +565,11 @@
         );
 
         $('form').on('submit', enviaForm);
+        $('input').on('focus', removeErro)
+        $('input').on('change', alterouDados)
+
         $("." + elemento.id).on("click", ordenaConteudoQuestao);
+
         organizaUnidadesConteudos()
     }
 
@@ -603,6 +614,9 @@
         );
 
         $('form').on('submit', enviaForm);
+        $('input').on('focus', removeErro)
+        $('input').on('change', alterouDados)
+
         $("." + elemento.id).on("click", ordenaConteudoAlternativa);
 
         organizaUnidadesConteudos()
@@ -688,7 +702,14 @@
 
             cards_unidade[i].getElementsByClassName("link-unidade")[0].innerText = "Unidade - " + (i + 1);
 
-            $(cards_unidade[i]).find('form')[0].id ="form-unidade-" + numero_unidade
+            var form_unidade = $(cards_unidade[i]).find('form')[0]
+            var form_novo_id  = "form-unidade-" + numero_unidade
+
+            if(form_unidade.id != form_novo_id){
+              form_unidade.id = form_novo_id
+              $(form_unidade).addClass("dados-modificados")
+            }
+
             $(cards_unidade[i]).find('span')[0].id ="titulo-unidade-" + numero_unidade
 
             for (let j = 0; j < cards_conteudo.length; j++){
@@ -726,7 +747,17 @@
                     card_conteudo.id = tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade;
                     $(card_conteudo).removeClass().addClass("card card-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade + " " + tipo_conteudo)
 
-                    $(card_conteudo).find('form')[0].id ="form-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+                    var form_conteudo = $(card_conteudo).find('form')[0]
+                    var form_novo_id  = "form-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+
+                    if(form_conteudo.id != form_novo_id){
+                        form_conteudo.id = form_novo_id
+                        $(form_conteudo).addClass("dados-modificados")
+                        if($(form_conteudo).find('input:file')[0]){
+                            $(form_conteudo).find('input:file').addClass("trocou-arquivo")
+                        }
+                    }
+
                     $(card_conteudo).find('input[name="unidade_ordem"]')[0].value = numero_unidade
                     $(card_conteudo).find('input[name="conteudo_ordem"]')[0].value = numero_conteudo
 
@@ -758,8 +789,13 @@
 
                             $(questao)[0].id = "questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
-                            if($(questao).find('form')[0])
-                              $(questao).find('form')[0].id ="form-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
+                            var form_questao = $(questao).find('form')[0]
+                            var form_novo_id = "form-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
+                            if(form_questao.id != form_novo_id){
+                              form_questao.id = form_novo_id
+                              $(form_questao).addClass("dados-modificados")
+                            }
+
                             $(questao).find('input[name="unidade_ordem"]')[0].value = numero_unidade
                             $(questao).find('input[name="questionario_ordem"]')[0].value = numero_conteudo
                             $(questao).find('input[name="questao_ordem"]')[0].value = numero_questao
@@ -785,7 +821,13 @@
 
                                 $(alternativa)[0].id = "alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
-                                $(alternativa).find('form')[0].id ="form-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
+                                var form_alternativa = $(alternativa).find('form')[0]
+                                var form_novo_id = "form-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
+                                if(form_alternativa.id != form_novo_id){
+                                  form_alternativa.id = form_novo_id
+                                  $(form_alternativa).addClass("dados-modificados")
+                                }
+
                                 $(alternativa).find('input[name="unidade_ordem"]')[0].value = numero_unidade
                                 $(alternativa).find('input[name="questionario_ordem"]')[0].value = numero_conteudo
                                 $(alternativa).find('input[name="questao_ordem"]')[0].value = numero_questao
@@ -805,25 +847,79 @@
         }
     }
 
+    function enviaForms(){
 
-   function enviaForm(event){
-        event.preventDefault();
-        var form = $(this);
-        var data  = form.serialize();
-        $.ajax({
-            url         : '/cadastro-conteudo-curso/{{ curso.id }}',
-            data        : form.serialize(),
-            type        : 'POST',
-            success     : function(data, textStatus, jqXHR){
-                // Callback code
+      var formData;
+
+      var forms_modificados = $('.dados-modificados')
+
+      for(var i = 0; i < forms_modificados.length; i++){
+
+          var form = forms_modificados[i]
+
+          if($(form).find('input:file')[0]){
+
+            if($(form).find('input:file').hasClass("trocou-arquivo") == false) {
+              $(form).find('input:file').removeAttr("name")
             }
-        });
+          }
+
+          formData = new FormData(form);
+
+          $.ajax({
+              url         : '/cadastro-conteudo-curso/{{ curso.id }}',
+              data        : formData,
+              type        : 'POST',
+              processData : false,
+              contentType : false,
+              success     : function(data, textStatus, jqXHR){
+                  var errors = jQuery.parseJSON(data)
+                  console.log("teste")
+                  for (key in errors) {
+                    //document.getElementById(key).innerHTML = errors[key];
+
+                  }
+              },
+              error: function(data){
+                  var teste = "0"
+              }
+          });
+
+          $(form).removeClass("dados-modificados")
+          if($(form).find('input:file')[0]){
+              $(form).find('input:file').removeClass("trocou-arquivo")
+          }
+      }
+    }
+
+    function enviaForm(event){
+        event.preventDefault();
+
+        enviaForms()
+
+    }
+
+    function alterouDados(){
+        $(this).closest("form").addClass("dados-modificados")
+    }
+
+    function alterouArquivo(){
+        if($(this).val() != ""){
+            $(this).addClass("trocou-arquivo")
+        }
+    }
+
+    function removeErro(){
+        if(this && this.nextElementSibling && this.nextElementSibling.innerText){
+            this.nextElementSibling.innerText=""
+        }
     }
 
     $(document).ready(function() {
         $('form').on('submit', enviaForm);
-        //$('input').on('focus', removeErro)
-
+        $('input').on('focus', removeErro)
+        $('input').on('change', alterouDados)
+        $('input:file').on('change', alterouArquivo)
         $('.card-videos').on('click', ordenaConteudo)
         $('.card-arquivos').on('click', ordenaConteudoArquivo)
         $('.card-questionarios').on('click', ordenaConteudoQuestionario)
@@ -831,6 +927,7 @@
         $('.card-alternativas').on('click', ordenaConteudoAlternativa)
         organizaUnidadesConteudos()
     });
+
 
    </script>
 </html>
