@@ -82,6 +82,7 @@
                                     <input type="hidden" name="conteudo_tipo" value="video">
                                     <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
                                     <input type="hidden" name="conteudo_ordem" value="{{ video.ordem }}">
+                                    <input type="hidden" name="path_arquivo" value="{{ video.path }}">
                                     <div class="form-group">
                                         <label for="titulo-conteudo" id="label-titulo">Titulo</label>
                                         <input type="text" class="form-control" id="titulo-conteudo" value="{{ video.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
@@ -137,6 +138,7 @@
                                     <input type="hidden" name="conteudo_tipo" value="arquivo">
                                     <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
                                     <input type="hidden" name="conteudo_ordem" value="{{ arquivo.ordem }}">
+                                    <input type="hidden" name="path_arquivo" value="{{ arquivo.caminho }}">
                                     <div class="form-group">
                                         <label for="titulo-conteudo" id="label-titulo">Titulo</label>
                                         <input type="text" class="form-control" id="titulo-conteudo" value="{{ arquivo.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
@@ -187,6 +189,7 @@
                                     <input type="hidden" name="conteudo_tipo" value="questionario">
                                     <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
                                     <input type="hidden" name="conteudo_ordem" value="{{ questionario.ordem }}">
+                                    <input type="hidden" name="path_arquivo" value="">
                                     <div class="form-group">
                                         <label for="titulo-conteudo" id="label-titulo">Titulo</label>
                                         <input type="text" class="form-control" id="titulo-conteudo" value="{{ questionario.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
@@ -337,6 +340,7 @@
 
                 <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-0">
                         {% csrf_token %}
+                        <input type="hidden" name="conteudo_id" value="0">
                         <input type="hidden" name="curso_id" value="0">
                         <input type="hidden" name="conteudo_tipo" value="unidade">
                         <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
@@ -450,6 +454,7 @@
                             <input type="hidden" name="conteudo_tipo" value="${tipo_conteudo}"">
                             <input type="hidden" name="unidade_ordem" value="${unidade}">
                             <input type="hidden" name="conteudo_ordem" value="0">
+                            <input type="hidden" name="path_arquivo" value="">
                             <div class="form-group">
                                 <label for="titulo-conteudo" id="label-titulo">Titulo</label>
                                 <input type="text" class="form-control" id="titulo-conteudo" aria-describedby="" placeholder="titulo" name="titulo">
@@ -629,28 +634,52 @@
 
     function removeCard(elemento, classe_elemento, id_conteudo) {
 
-        if(id_conteudo > 0) {
-            $.ajax(
-                {
-                    type: "GET",
-                    url: "/remove-conteudo-curso",
-                    data: {
-                        tipo_conteudo: classe_elemento,
-                        conteudo_id: id_conteudo,
-                    },
-                    success: function (data) {
+        var str = elemento.id
 
-                    },
-                    error: function(data){
-                        var teste = "0"
-                    }
+        str = str.split("-")
 
-                })
+        msg = ""
+        for(let i = 1; i < str.length; i++){
+            msg = msg + str[i] + " "
         }
 
-        $(elemento).parents('.' + classe_elemento).get(0).remove();
-        organizaUnidadesConteudos()
-    }
+        msg = "Deseja remover o item: " + msg + "?"
+        var resposta = confirm(msg);
+
+        id_resultado = elemento.id.replace("elimina", "resultado");
+
+        if(resposta == true) {
+            if (id_conteudo > 0) {
+                $.ajax(
+                    {
+                        type: "GET",
+                        url: "/remove-conteudo-curso",
+                        data: {
+                            tipo_conteudo: classe_elemento,
+                            conteudo_id: id_conteudo,
+                            id_resultado: id_resultado,
+                        },
+                        success: function (data) {
+                            $(elemento).parents('.' + classe_elemento).get(0).remove();
+                            organizaUnidadesConteudos()
+
+                        },
+                        error: function (data) {
+                            var errors = jQuery.parseJSON(data.responseText)
+                            for (key in errors) {
+                                document.getElementById(key).innerHTML = errors[key];
+
+                            }
+                        }
+                    }
+                )
+            }
+            else {
+                $(elemento).parents('.' + classe_elemento).get(0).remove();
+                organizaUnidadesConteudos()
+            }
+          }
+        }
 
     $( function() {
         $( "#accordion" ).sortable({
@@ -727,7 +756,7 @@
 
             cards_unidade[i].getElementsByClassName("link-unidade")[0].innerText = "Unidade - " + (i + 1);
 
-            $(cards_unidade[i]).find('i').attr('onclick', "removeCard" + "(this, 'unidade', " + numero_unidade + ")")
+            $(cards_unidade[i]).find('i')[0].id = "elimina-unidade-" + numero_unidade
 
             var form_unidade = $(cards_unidade[i]).find('form')[0]
             var form_novo_id  = "form-unidade-" + numero_unidade
@@ -740,6 +769,8 @@
             $(form_unidade).find(".resultado-unidade")[0].id = "resultado-unidade-" + numero_unidade
 
             $(cards_unidade[i]).find('span')[0].id ="titulo-unidade-" + numero_unidade
+
+            $(cards_unidade[i]).find('i').attr('onclick', "removeCard" + "(this, 'unidade', " + $(form_unidade).find('input[name="conteudo_id"]')[0].value + ")")
 
             for (let j = 0; j < cards_conteudo.length; j++){
 
@@ -776,6 +807,8 @@
                     card_conteudo.id = tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade;
                     $(card_conteudo).removeClass().addClass("card card-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade + " " + tipo_conteudo)
 
+                    $(card_conteudo).find('i')[0].id = "elimina-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+
                     var form_conteudo = $(card_conteudo).find('form')[0]
                     var form_novo_id  = "form-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
 
@@ -786,6 +819,8 @@
                             $(form_conteudo).find('input:file').addClass("trocou-arquivo")
                         }
                     }
+
+                    $(card_conteudo).find('i').attr('onclick', "removeCard" + "(this, '" + tipo_conteudo + "', "  + $(form_conteudo).find('input[name="conteudo_id"]')[0].value + ")")
 
                     $(card_conteudo).find('input[name="unidade_ordem"]')[0].value = numero_unidade
                     $(card_conteudo).find('input[name="conteudo_ordem"]')[0].value = numero_conteudo
@@ -826,12 +861,16 @@
 
                             $(questao)[0].id = "questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
+                            $(questao).find('i')[0].id = "elimina-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
+
                             var form_questao = $(questao).find('form')[0]
                             var form_novo_id = "form-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
                             if(form_questao.id != form_novo_id){
                               form_questao.id = form_novo_id
                               $(form_questao).addClass("dados-modificados")
                             }
+
+                            $(questao).find('i').attr('onclick', "removeCard" + "(this, 'questao', "  + $(form_questao).find('input[name="conteudo_id"]')[0].value + ")")
 
                             $(questao).find('input[name="unidade_ordem"]')[0].value = numero_unidade
                             $(questao).find('input[name="questionario_ordem"]')[0].value = numero_conteudo
@@ -860,12 +899,16 @@
 
                                 $(alternativa)[0].id = "alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
+                                $(alternativa).find('i')[0].id = "elimina-alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
+
                                 var form_alternativa = $(alternativa).find('form')[0]
                                 var form_novo_id = "form-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
                                 if(form_alternativa.id != form_novo_id){
                                   form_alternativa.id = form_novo_id
                                   $(form_alternativa).addClass("dados-modificados")
                                 }
+
+                                $(alternativa).find('i').attr('onclick', "removeCard" + "(this, 'alternativa', "  + $(form_alternativa).find('input[name="conteudo_id"]')[0].value + ")")
 
                                 $(alternativa).find('input[name="unidade_ordem"]')[0].value = numero_unidade
                                 $(alternativa).find('input[name="questionario_ordem"]')[0].value = numero_conteudo
@@ -914,22 +957,19 @@
               processData : false,
               contentType : false,
               success     : function(data, textStatus, jqXHR){
-                  var errors = jQuery.parseJSON(data)
-                  console.log("teste")
-                  for (key in errors) {
-                    //document.getElementById(key).innerHTML = errors[key];
-
+                  $(form).removeClass("dados-modificados")
+                  if($(form).find('input:file')[0]){
+                      $(form).find('input:file').removeClass("trocou-arquivo")
                   }
               },
               error: function(data){
-                  var teste = "0"
+                  var errors = jQuery.parseJSON(data.responseText)
+                  console.log("teste")
+                  for (key in errors) {
+                    document.getElementById(key).innerHTML = errors[key];
+                  }
               }
           });
-
-          $(form).removeClass("dados-modificados")
-          if($(form).find('input:file')[0]){
-              $(form).find('input:file').removeClass("trocou-arquivo")
-          }
       }
     }
 

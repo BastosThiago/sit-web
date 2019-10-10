@@ -1434,9 +1434,10 @@ def obtemRelatorio(request, usuario_id):
         return trata_usuario_sem_permissao(request)
 
 
+@never_cache
 def cadastroConteudoCursoView(request, id):
     """
-    View responsável pelo tratamento de
+    View responsável pelo tratamento cadastrar os conteúdos de um curso
     """
 
     curso = get_object_or_404(Curso, pk=id)
@@ -1463,6 +1464,9 @@ def cadastroConteudoCursoView(request, id):
             conteudo_tipo = request.POST['conteudo_tipo']
             unidade_ordem = request.POST['unidade_ordem']
 
+            # Tenta obter a unidade de acordo com sua ordem no curso
+            unidade = Unidade.objects.filter(curso=curso, ordem=unidade_ordem)
+
             if conteudo_tipo == 'unidade':
                 unidade_titulo = request.POST['titulo-unidade']
                 unidade_descricao = request.POST['descricao-unidade']
@@ -1472,8 +1476,6 @@ def cadastroConteudoCursoView(request, id):
                     return HttpResponse(
                         json.dumps(response_data)
                     )
-
-                unidade = Unidade.objects.filter(curso=curso, ordem=unidade_ordem)
 
                 if unidade.count() == 1:
                     unidade = unidade[0]
@@ -1489,20 +1491,40 @@ def cadastroConteudoCursoView(request, id):
 
             if conteudo_tipo == 'video':
                 conteudo_ordem = request.POST['conteudo_ordem']
-                arquivo_titulo = request.POST['titulo']
+                video_titulo = request.POST['titulo']
                 video_url = request.POST['url']
+                path_arquivo = request.POST['path_arquivo']
                 try:
                     video_path = request.FILES['path']
                 except:
-                    video_path = ""
+                    video_path = path_arquivo
+
+                # Tenta obter o video de acordo com sua ordem na unidade
+                video = Video.objects.filter(unidade=unidade, ordem=unidade_ordem)
+
+                if video.count() == 1:
+                    video = video[0]
+                    video.titulo = video_titulo
+                    video.url = video_url
+                    video.path = path_arquivo
+                    video.save()
+                else:
+                    video = Video.objects.create(
+                        curso=curso,
+                        unidade=unidade,
+                        titulo=video_titulo,
+                        url=video_url,
+                        ordem=conteudo_ordem
+                    )
 
             if conteudo_tipo == 'arquivo':
                 conteudo_ordem = request.POST['conteudo_ordem']
                 arquivo_titulo = request.POST['titulo']
+                path_arquivo = request.POST['path_arquivo']
                 try:
-                    arquivo_path = request.FILES['path']
+                    arquivo_caminho = request.FILES['path']
                 except:
-                    arquivo_path = ""
+                    arquivo_caminho = ""
 
             if conteudo_tipo == 'questionario':
                 conteudo_ordem = request.POST['conteudo_ordem']
@@ -1545,4 +1567,45 @@ def cadastroConteudoCursoView(request, id):
             'alternativas': alternativas
         }
     )
+
+
+@never_cache
+def removeConteudoCursoView(request):
+    """
+    View responsável pelo tratamento remover um conteúdo de curso
+    """
+
+    if request.method == 'GET':
+
+        tipo_conteudo = request.GET['tipo_conteudo']
+        conteudo_id = request.GET['conteudo_id']
+        id_resultado = request.GET['id_resultado']
+
+        mensagem_erro = "Falha ao remover o item"
+
+        status_response = 200
+        response_data = {}
+
+        dict_modelo = {
+            'unidade': Unidade,
+            'video': Video,
+            'arquivo': Arquivo,
+            'questionario': Questionario,
+            'questao': Questao,
+            'alternativa': Alternativa
+        }
+
+        modelo = dict_modelo[tipo_conteudo]
+        try:
+            objeto = modelo.objects.get(pk=conteudo_id)
+            a = 10/0
+            objeto.delete()
+        except:
+            response_data[id_resultado] = mensagem_erro
+            status_response = 500
+
+        return HttpResponse(
+            json.dumps(response_data), status=status_response
+        )
+    return HttpResponse()
 
