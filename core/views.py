@@ -1474,139 +1474,180 @@ def cadastroConteudoCursoView(request, id):
             # Tenta obter a unidade de acordo com sua ordem no curso
             unidade = Unidade.objects.filter(curso=curso, ordem=unidade_ordem)
 
+            if unidade.count() == 1:
+                unidade = unidade[0]
+            else:
+                status_response = 500
+                response_data['resultado'] = "Falha ao salvar este item"
+                return HttpResponse(
+                    json.dumps(response_data), status=status_response
+                )
+
+            dict_modelo = {
+                'unidade': Unidade,
+                'video': Video,
+                'arquivo': Arquivo,
+                'questionario': Questionario,
+                'questao': Questao,
+                'alternativa': Alternativa
+            }
+
+            modelo = dict_modelo[conteudo_tipo]
+            formModelo = forms[remover_acentos(conteudo_tipo.lower())]
+
+            max_ordem_objeto = 0
+
             if conteudo_tipo == 'unidade':
                 unidade_titulo = request.POST['titulo-unidade']
                 unidade_descricao = request.POST['descricao-unidade']
 
-                if unidade_titulo == "":
-                    response_data[f"titulo-unidade-{unidade_ordem}"] = 'O título da unidade é obrigatório'
+                dict_conteudo = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'titulo': unidade_titulo,
+                    'ordem': unidade_descricao
+                }
+
+                #if unidade_titulo == "":
+                #    response_data[f"titulo-unidade-{unidade_ordem}"] = 'O título da unidade é obrigatório'
+                #    status_response = 500
+                #    return HttpResponse(
+                #        json.dumps(response_data), status=status_response
+                #    )
+
+                max_ordem_objeto = modelo.objects.obtem_ultima_ordem(
+                    curso
+                )
+
+            if conteudo_tipo == 'video' or conteudo_tipo == 'arquivo' or conteudo_tipo == 'questionario':
+                conteudo_ordem = request.POST['conteudo_ordem']
+                conteudo_titulo = request.POST['titulo']
+                conteudo_url = request.POST['url']
+
+                max_ordem_objeto = modelo.objects.obtem_ultima_ordem(
+                    unidade
+                )
+
+            # Monta dicionário com as informações do conteudo
+            if conteudo_tipo == 'video':
+                dict_conteudo = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'unidade': unidade.id,
+                    'titulo': conteudo_titulo,
+                    'url': conteudo_url,
+                    'ordem': conteudo_ordem
+                }
+
+            if conteudo_tipo == 'arquivo':
+                dict_conteudo = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'unidade': unidade.id,
+                    'titulo': conteudo_titulo,
+                    'ordem': conteudo_ordem
+                }
+
+            if conteudo_tipo == 'questionario':
+                dict_conteudo = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'unidade': unidade.id,
+                    'titulo': conteudo_titulo,
+                    'ordem': conteudo_ordem
+                }
+
+            if conteudo_tipo == 'questao':
+                dict_conteudo = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'unidade': unidade.id,
+                    'titulo': conteudo_titulo,
+                    'ordem': conteudo_ordem
+                }
+
+            if conteudo_tipo == 'alternativa':
+                dict_conteudo = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'unidade': unidade.id,
+                    'titulo': conteudo_titulo,
+                    'ordem': conteudo_ordem
+                }
+
+            # Caso o conteudo já exista na base de dados
+            if conteudo_id > 0:
+
+                # Obtém a instância do conteúdo
+                try:
+                    conteudo = modelo.objects.get(pk=conteudo_id)
+                except:
                     status_response = 500
+                    response_data['resultado'] = "Falha ao salvar este item"
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
 
-                if unidade.count() == 1:
-                    unidade = unidade[0]
-                    unidade.titulo = unidade_titulo
-                    unidade.descricao = unidade_descricao
-                    unidade.save()
-                else:
-                    unidade = Unidade.objects.create(
-                        curso=curso,
-                        titulo=unidade_titulo,
-                        ordem=unidade_ordem
-                    )
+                # Verifica se mudou a ordem do conteúdo
+                if conteudo.ordem != conteudo_ordem:
 
-            if conteudo_tipo == 'video':
-                conteudo_ordem = request.POST['conteudo_ordem']
-                video_titulo = request.POST['titulo']
-                video_url = request.POST['url']
-
-                # Obtém a instância da unidade associada ao conteúdo
-                unidade = unidade[0]
-
-                # Obtém a última ordem do conteúdo na unidade
-                max_ordem_video_unidade = Video.objects.obtem_ultima_ordem_video_unidade(
-                    unidade
-                )
-
-                # Monta dicionário com as informações do conteudo
-                dict_video = {
-                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
-                    'unidade': unidade.id,
-                    'titulo': video_titulo,
-                    'url': video_url,
-                    'ordem': conteudo_ordem
-                }
-
-                # Caso o conteudo já exista na base de dados
-                if conteudo_id > 0:
-
-                    # Obtém a instância do conteúdo
-                    try:
-                        video = Video.objects.get(pk=conteudo_id)
-                    except:
-                        status_response = 500
-                        response_data['resultado'] = "Falha ao salvar este item"
-                        return HttpResponse(
-                            json.dumps(response_data), status=status_response
-                        )
-
-                    # Verifica se mudou a ordem do conteúdo
-                    if video.ordem != conteudo_ordem:
-
-                        # Tenta obter o video de acordo com sua ordem na unidade
-                        video_ordem_atual = Video.objects.filter(
-                            unidade=unidade,
-                            ordem=conteudo_ordem
-                        )
-
-                        # Caso consiga obter o instância do conteúdo, altera sua
-                        # ordem para permitir o cadastro do novo conteúdo
-                        if video_ordem_atual.count() == 1:
-                            video_aux = Video.objects.get(pk=video_ordem_atual[0].id)
-                            video_aux.ordem = max_ordem_video_unidade + 1
-                            video_aux.save()
-
-                    # Verifica se foi enviado um novo arquivo no conteudo. Caso
-                    # sim, elemina a instância corrente do conteúdo para então
-                    # criar a nova
-                    if request.FILES.__len__() > 0:
-                        video.delete()
-                        form = VideoForm(dict_video, request.FILES or None)
-
-                        video = form.save()
-                    else:
-                        # Atualiza as informações do Video
-                        video.unidade = unidade
-                        video.titulo = video_titulo
-                        video.url = video_url
-                        video.ordem = conteudo_ordem
-                        video.save()
-
-                # Caso seja a criação de um novo conteudo
-                else:
-                    # Verifica se o video da ordem atual já existe para então
-                    # trocar sua ordem para permitir o cadastro do novo video
-                    video_ordem_atual = Video.objects.filter(
+                    # Tenta obter o video de acordo com sua ordem na unidade
+                    conteudo_ordem_atual = modelo.objects.filter(
                         unidade=unidade,
                         ordem=conteudo_ordem
                     )
 
-                    if video_ordem_atual.count() == 1:
-                        video_aux = Video.objects.get(pk=video_ordem_atual[0].id)
-                        video_aux.ordem = max_ordem_video_unidade + 1
-                        video_aux.save()
-                    form = VideoForm(dict_video, request.FILES or None)
+                    # Caso consiga obter o instância do conteúdo, altera sua
+                    # ordem para permitir o cadastro do novo conteúdo
+                    if conteudo_ordem_atual.count() == 1:
+                        conteudo_aux = modelo.objects.get(pk=conteudo_ordem_atual[0].id)
+                        conteudo_aux.ordem = max_ordem_conteudo_unidade + 1
+                        conteudo_aux.save()
 
-                    video = form.save()
+                # Verifica se foi enviado um novo arquivo no conteudo. Caso
+                # sim, elemina a instância corrente do conteúdo para então
+                # criar a nova
+                if request.FILES.__len__() > 0:
+                    conteudo.delete()
+                    form = formModelo(dict_conteudo, request.FILES or None)
 
-                response_data['path_conteudo'] = video.path.name
-                response_data['conteudo_id'] = video.id
+                    conteudo = form.save()
+                else:
+                    # Atualiza as informações do Video
 
-            if conteudo_tipo == 'arquivo':
-                conteudo_ordem = request.POST['conteudo_ordem']
-                arquivo_titulo = request.POST['titulo']
-                path_arquivo = request.POST['path_arquivo']
-                try:
-                    arquivo_caminho = request.FILES['path']
-                except:
-                    arquivo_caminho = ""
+                    if conteudo_tipo == 'video':
+                        conteudo.unidade = unidade
+                        conteudo.titulo = conteudo_titulo
+                        conteudo.url = conteudo_url
+                        conteudo.ordem = conteudo_ordem
+                        conteudo.save()
 
-            if conteudo_tipo == 'questionario':
-                conteudo_ordem = request.POST['conteudo_ordem']
-                questionario_titulo = request.POST['titulo']
+                    if conteudo_tipo == 'arquivo':
+                        conteudo.unidade = unidade
+                        conteudo.titulo = conteudo_titulo
+                        conteudo.ordem = conteudo_ordem
+                        conteudo.save()
 
-            if conteudo_tipo == 'questao':
-                questionario_ordem = request.POST['questionario_ordem']
-                questao_ordem = request.POST['questao_ordem']
-                questao_enunciado = request.POST['titulo']
+                    if conteudo_tipo == 'questionario':
+                        conteudo.unidade = unidade
+                        conteudo.titulo = conteudo_titulo
+                        conteudo.ordem = conteudo_ordem
+                        conteudo.save()
 
-            if conteudo_tipo == 'alternativa':
-                questionario_ordem = request.POST['questionario_ordem']
-                questao_ordem = request.POST['questao_ordem']
-                alternativa_ordem = request.POST['alternativa_ordem']
-                alternativa_descricao = request.POST['titulo']
+            # Caso seja a criação de um novo conteudo
+            else:
+                # Verifica se o video da ordem atual já existe para então
+                # trocar sua ordem para permitir o cadastro do novo video
+                conteudo_ordem_atual = modelo.objects.filter(
+                    unidade=unidade,
+                    ordem=conteudo_ordem
+                )
+
+                if conteudo_ordem_atual.count() == 1:
+                    conteudo_aux = modelo.objects.get(pk=conteudo_ordem_atual[0].id)
+                    conteudo_aux.ordem = max_ordem_conteudo_unidade + 1
+                    conteudo_aux.save()
+                form = formModelo(dict_conteudo, request.FILES or None)
+
+                conteudo = form.save()
+
+            response_data['path_conteudo'] = conteudo.path.name
+            response_data['conteudo_id'] = conteudo.id
+
 
         except:
             status_response = 500

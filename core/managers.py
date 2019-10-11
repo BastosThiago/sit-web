@@ -89,6 +89,25 @@ class UnidadeManager(models.Manager):
                 objetos = self.filter(curso__usuario=usuario)
         return objetos
 
+    def obtem_ultima_ordem(self, curso):
+        max_ordem_conteudo = self.filter(
+            curso=curso,
+        ).aggregate(
+            Max(
+                'ordem'
+            )
+        )['ordem__max']
+        return max_ordem_conteudo
+
+    def reordena_objetos(self, curso):
+        objetos = self.filter(curso=curso).order_by('ordem')
+
+        ordem = 1
+        for objeto in objetos:
+            objeto.ordem = ordem
+            objeto.save()
+            ordem = ordem + 1
+
 
 class VideoManager(models.Manager):
     """
@@ -106,26 +125,24 @@ class VideoManager(models.Manager):
                 objetos = self.filter(unidade__curso__usuario=usuario)
         return objetos
 
-    def obtem_ultima_ordem_video_unidade(self, unidade):
-        max_ordem_video = self.filter(
+    def obtem_ultima_ordem(self, unidade):
+        max_ordem_conteudo = self.filter(
             unidade=unidade,
         ).aggregate(
             Max(
                 'ordem'
             )
         )['ordem__max']
-        return max_ordem_video
+        return max_ordem_conteudo
 
-    def reordena_conteudo(self, unidade):
-        videos = self.filter(unidade=unidade).order_by('ordem')
+    def reordena_objetos(self, unidade):
+        objetos = self.filter(unidade=unidade).order_by('ordem')
 
         ordem = 1
-        for video in videos:
-            video.ordem = ordem
-            video.save()
+        for objeto in objetos:
+            objeto.ordem = ordem
+            objeto.save()
             ordem = ordem + 1
-
-
 
 
 class ArquivoManager(models.Manager):
@@ -144,6 +161,25 @@ class ArquivoManager(models.Manager):
                 objetos = self.filter(unidade__curso__usuario=usuario)
         return objetos
 
+    def obtem_ultima_ordem(self, unidade):
+        max_ordem_conteudo = self.filter(
+            unidade=unidade,
+        ).aggregate(
+            Max(
+                'ordem'
+            )
+        )['ordem__max']
+        return max_ordem_conteudo
+
+    def reordena_objetos(self, unidade):
+        objetos = self.filter(unidade=unidade).order_by('ordem')
+
+        ordem = 1
+        for objeto in objetos:
+            objeto.ordem = ordem
+            objeto.save()
+            ordem = ordem + 1
+
 
 class QuestionarioManager(models.Manager):
     """
@@ -160,6 +196,26 @@ class QuestionarioManager(models.Manager):
             if usuario.tem_perfil_instrutor():
                 objetos = self.filter(unidade__curso__usuario=usuario)
         return objetos
+
+    def obtem_ultima_ordem(self, unidade):
+        max_ordem_conteudo = self.filter(
+            unidade=unidade,
+        ).aggregate(
+            Max(
+                'ordem'
+            )
+        )['ordem__max']
+        return max_ordem_conteudo
+
+
+    def reordena_objetos(self, unidade):
+        objetos = self.filter(unidade=unidade).order_by('ordem')
+
+        ordem = 1
+        for objeto in objetos:
+            objeto.ordem = ordem
+            objeto.save()
+            ordem = ordem + 1
 
 
 class QuestaoManager(models.Manager):
@@ -178,6 +234,25 @@ class QuestaoManager(models.Manager):
                 objetos = self.filter(questionario__unidade__curso__usuario=usuario)
         return objetos
 
+    def obtem_ultima_ordem(self, questionario):
+        max_ordem_conteudo = self.filter(
+            questionario=questionario,
+        ).aggregate(
+            Max(
+                'ordem'
+            )
+        )['ordem__max']
+        return max_ordem_conteudo
+
+    def reordena_objetos(self, questionario):
+        objetos = self.filter(questionario=questionario).order_by('ordem')
+
+        ordem = 1
+        for objeto in objetos:
+            objeto.ordem = ordem
+            objeto.save()
+            ordem = ordem + 1
+
 
 class AlternativaManager(models.Manager):
     """
@@ -194,6 +269,25 @@ class AlternativaManager(models.Manager):
             if usuario.tem_perfil_instrutor():
                 objetos = self.filter(questao__questionario__unidade__curso__usuario=usuario)
         return objetos
+
+    def obtem_ultima_ordem(self, questao):
+        max_ordem_conteudo = self.filter(
+            questao=questao,
+        ).aggregate(
+            Max(
+                'ordem'
+            )
+        )['ordem__max']
+        return max_ordem_conteudo
+
+    def reordena_objetos(self, questao):
+        objetos = self.filter(questao=questao).order_by('ordem')
+
+        ordem = 1
+        for objeto in objetos:
+            objeto.ordem = ordem
+            objeto.save()
+            ordem = ordem + 1
 
 
 class UsuarioVideoManager(models.Manager):
