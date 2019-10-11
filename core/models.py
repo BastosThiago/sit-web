@@ -282,7 +282,7 @@ class Video(models.Model):
         verbose_name = "Vídeo"
         verbose_name_plural = "Vídeos"
         ordering = ['ordem']
-        unique_together = (('titulo', 'unidade'), ('unidade', 'ordem'),)
+        unique_together = (('titulo', 'unidade'),)
 
     def __str__(self):
         return self.titulo
@@ -307,7 +307,7 @@ class Arquivo(models.Model):
         verbose_name = "Arquivo"
         verbose_name_plural = "Arquivos"
         ordering = ['ordem']
-        unique_together = (('titulo', 'unidade'), ('unidade', 'ordem'),)
+        unique_together = (('titulo', 'unidade'),)
 
     def __str__(self):
         return self.titulo
@@ -352,7 +352,7 @@ class Questionario(models.Model):
         verbose_name = "Questionário"
         verbose_name_plural = "Questionários"
         ordering = ['ordem']
-        unique_together = (('titulo', 'unidade'), ('unidade', 'ordem'),)
+        unique_together = (('titulo', 'unidade'),)
 
     def __str__(self):
         return self.titulo

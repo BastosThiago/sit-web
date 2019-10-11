@@ -904,8 +904,8 @@
                                 var form_alternativa = $(alternativa).find('form')[0]
                                 var form_novo_id = "form-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
                                 if(form_alternativa.id != form_novo_id){
-                                  form_alternativa.id = form_novo_id
-                                  $(form_alternativa).addClass("dados-modificados")
+                                    form_alternativa.id = form_novo_id
+                                    $(form_alternativa).addClass("dados-modificados")
                                 }
 
                                 $(alternativa).find('i').attr('onclick', "removeCard" + "(this, 'alternativa', "  + $(form_alternativa).find('input[name="conteudo_id"]')[0].value + ")")
@@ -937,46 +937,68 @@
 
       var forms_modificados = $('.dados-modificados')
 
-      for(var i = 0; i < forms_modificados.length; i++){
 
-          var form = forms_modificados[i]
+      var form = forms_modificados[0]
 
-          if($(form).find('input:file')[0]){
+      if($(form).find('input:file')[0]){
 
-            if($(form).find('input:file').hasClass("trocou-arquivo") == false) {
-              $(form).find('input:file').removeAttr("name")
-            }
-          }
+        if($(form).find('input:file').hasClass("trocou-arquivo") == false) {
+          $(form).find('input:file').removeAttr("name")
+        }
+      }
 
-          formData = new FormData(form);
+      formData = new FormData(form);
 
-          $.ajax({
-              url         : '/cadastro-conteudo-curso/{{ curso.id }}',
-              data        : formData,
-              type        : 'POST',
-              processData : false,
-              contentType : false,
-              success     : function(data, textStatus, jqXHR){
-                  $(form).removeClass("dados-modificados")
-                  if($(form).find('input:file')[0]){
-                      $(form).find('input:file').removeClass("trocou-arquivo")
+      $.ajax({
+          url         : '/cadastro-conteudo-curso/{{ curso.id }}',
+          data        : formData,
+          type        : 'POST',
+          processData : false,
+          contentType : false,
+          success     : function(data, textStatus, jqXHR){
+              $(form).removeClass("dados-modificados")
+              if($(form).find('input:file')[0]){
+                  $(form).find('input:file').removeClass("trocou-arquivo")
+              }
+
+              if(data != "") {
+                  var resposta = jQuery.parseJSON(data)
+
+                  $(form).find('input[name="conteudo_id"]')[0].value = resposta['conteudo_id']
+
+                  if(resposta['path_conteudo'] != '') {
+                    $(form).find('a')[0].innerHTML = resposta['path_conteudo']
+                    $(form).find('a').attr('href', "/media/" + resposta['path_conteudo'])
+                    $(form).find('a')[0].hidden = false
                   }
-              },
-              error: function(data){
-                  var errors = jQuery.parseJSON(data.responseText)
-                  console.log("teste")
-                  for (key in errors) {
-                    document.getElementById(key).innerHTML = errors[key];
+                  else {
+                      $(form).find('a')[0].hidden = true
+                }
+              }
+              organizaUnidadesConteudos()
+              enviaForms()
+          },
+          error: function(data){
+              var errors = jQuery.parseJSON(data.responseText)
+              console.log("teste")
+              for (key in errors) {
+                  if(document.getElementById(key)){
+                        document.getElementById(key).innerHTML = errors[key];
                   }
               }
-          });
-      }
+
+              if(errors['resultado']) {
+                  $(form).find('.resultado-' + errors['conteudo_tipo'])[0].innerHTML = errors['resultado']
+              }
+          }
+      });
     }
 
     function enviaForm(event){
         event.preventDefault();
 
         enviaForms()
+
 
     }
 

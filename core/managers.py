@@ -1,5 +1,5 @@
 from .models import *
-
+from django.db.models import Max
 
 class CategoriaManager(models.Manager):
     """
@@ -105,6 +105,27 @@ class VideoManager(models.Manager):
             if usuario.tem_perfil_instrutor():
                 objetos = self.filter(unidade__curso__usuario=usuario)
         return objetos
+
+    def obtem_ultima_ordem_video_unidade(self, unidade):
+        max_ordem_video = self.filter(
+            unidade=unidade,
+        ).aggregate(
+            Max(
+                'ordem'
+            )
+        )['ordem__max']
+        return max_ordem_video
+
+    def reordena_conteudo(self, unidade):
+        videos = self.filter(unidade=unidade).order_by('ordem')
+
+        ordem = 1
+        for video in videos:
+            video.ordem = ordem
+            video.save()
+            ordem = ordem + 1
+
+
 
 
 class ArquivoManager(models.Manager):
