@@ -474,14 +474,12 @@
                             <div class="resultado-${tipo_conteudo}" id="resultado-${tipo_conteudo}-0-unidade-${unidade}"></div>
                             <input type="submit" value="Salva">
 
-
-                            <div class="card-body  accordion-questoes-questionario-0-unidade-${numero_unidade - 1} card-questoes">
-                                <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questoes-questionario-0-unidade-${numero_unidade - 1}" onclick='adicionaQuestoes(this, 0, ${(numero_unidade - 1)})'>
-                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
-                                </button>
-                            </div>
-
                         </form>
+                        <div class="card-body  accordion-questoes-questionario-0-unidade-${numero_unidade - 1} card-questoes">
+                            <button class="btn btn-lg btn-primary btn-add-panel1" id="accordion-questoes-questionario-0-unidade-${numero_unidade - 1}" onclick='adicionaQuestoes(this, 0, ${(numero_unidade - 1)})'>
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -770,6 +768,8 @@
 
             $(form_unidade).find(".resultado-unidade")[0].id = "resultado-unidade-" + numero_unidade
 
+            $(form_unidade).find('input[name="unidade_ordem"]')[0].value = numero_unidade
+
             $(cards_unidade[i]).find('span')[0].id ="titulo-unidade-" + numero_unidade
 
             $(cards_unidade[i]).find('i').attr('onclick', "removeCard" + "(this, 'unidade', " + $(form_unidade).find('input[name="conteudo_id"]')[0].value + ")")
@@ -976,9 +976,14 @@
                     $(form).find('a')[0].hidden = false
                   }
                   else {
-                      if($(form).find('a')[0])
+                      if($(form).find('a')[0]) {
                           $(form).find('a')[0].hidden = true
-                }
+                      }
+                  }
+
+                  if($(form).find('.resultado-' + resposta['conteudo_tipo'])[0]) {
+                      $(form).find('.resultado-' + resposta['conteudo_tipo'])[0].innerHTML = resposta['resultado']
+                  }
               }
               organizaUnidadesConteudos()
               enviaForms()
@@ -999,6 +1004,13 @@
               }
           }
         });
+
+        if($(form).find('input:file')[0]){
+
+          if($(form).find('input:file').attr('name') == undefined) {
+            $(form).find('input:file').attr("name", "caminho")
+          }
+        }
       }
     }
 

@@ -1,5 +1,5 @@
 from .models import *
-from django.db.models import Max
+from django.db.models import Max, Q
 
 class CategoriaManager(models.Manager):
     """
@@ -107,6 +107,16 @@ class UnidadeManager(models.Manager):
             objeto.ordem = ordem
             objeto.save()
             ordem = ordem + 1
+
+    def verifica_titulo_repetido(self, curso, titulo, ordem):
+        objetos = self.filter(
+            curso=curso,
+            titulo=titulo
+        ).exclude(ordem=ordem)
+
+        if objetos.count() > 0:
+            return True
+        return False
 
 
 class VideoManager(models.Manager):

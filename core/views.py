@@ -1461,7 +1461,7 @@ def cadastroConteudoCursoView(request, id):
 
         response_data = {}
         response_data['conteudo_tipo'] = ""
-        response_data['resultado'] = ""
+        response_data['resultado'] = "Item salvo com sucesso."
         response_data['conteudo_id'] = 0
 
         objeto_ordem = 0
@@ -1476,14 +1476,15 @@ def cadastroConteudoCursoView(request, id):
             # Tenta obter a unidade de acordo com sua ordem no curso
             unidade = Unidade.objects.filter(curso=curso, ordem=unidade_ordem)
 
-            if unidade.count() == 1:
+            if conteudo_tipo != "unidade" and unidade.count() == 1:
                 unidade = unidade[0]
             else:
-                status_response = 500
-                response_data['resultado'] = "Falha ao salvar este item"
-                return HttpResponse(
-                    json.dumps(response_data), status=status_response
-                )
+                if conteudo_tipo != "unidade":
+                    status_response = 500
+                    response_data['resultado'] = "Falha ao salvar o item."
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
 
             dict_modelo = {
                 'unidade': Unidade,
@@ -1498,6 +1499,18 @@ def cadastroConteudoCursoView(request, id):
             formModelo = forms[remover_acentos(conteudo_tipo.lower())]
 
             max_ordem_objeto = 0
+            objeto = None
+
+            if conteudo_id > 0:
+                # Obtém a instância do conteúdo
+                try:
+                    objeto = modelo.objects.get(pk=conteudo_id)
+                except:
+                    status_response = 500
+                    response_data['resultado'] = "Falha ao salvar ao item."
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
 
             if conteudo_tipo == 'unidade':
                 unidade_titulo = request.POST['titulo-unidade']
@@ -1506,17 +1519,19 @@ def cadastroConteudoCursoView(request, id):
 
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'curso': curso.id,
                     'titulo': unidade_titulo,
                     'descricao': unidade_descricao,
                     'ordem': objeto_ordem
                 }
 
-                #if unidade_titulo == "":
-                #    response_data[f"titulo-unidade-{unidade_ordem}"] = 'O título da unidade é obrigatório'
-                #    status_response = 500
-                #    return HttpResponse(
-                #        json.dumps(response_data), status=status_response
-                #    )
+                if unidade_titulo == "":
+                    response_data[f"titulo-unidade-{unidade_ordem}"] = 'O título da unidade é obrigatório'
+                    response_data['resultado'] = "Falha ao salvar o item."
+                    status_response = 500
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
 
                 # Tenta obter o objeto da ordem atual
                 objeto_ordem_atual = modelo.objects.filter(
@@ -1532,8 +1547,13 @@ def cadastroConteudoCursoView(request, id):
                 objeto_ordem = request.POST['conteudo_ordem']
                 conteudo_titulo = request.POST['titulo']
 
-                if conteudo_tipo == 'video':
-                    conteudo_url = request.POST['url']
+                if conteudo_titulo == "":
+                    response_data[f"titulo-{conteudo_tipo}-{objeto_ordem}-unidade-{unidade_ordem}"] = f"O Título do {conteudo_tipo} é obrigatório."
+                    response_data['resultado'] = "Falha ao salvar o item."
+                    status_response = 500
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
 
                 max_ordem_objeto = modelo.objects.obtem_ultima_ordem(
                     unidade
@@ -1547,6 +1567,21 @@ def cadastroConteudoCursoView(request, id):
 
             # Monta dicionário com as informações do conteudo
             if conteudo_tipo == 'video':
+                if conteudo_tipo == 'video':
+                    conteudo_url = request.POST['url']
+
+                file_len = request.FILES.__len__()
+
+                if (conteudo_url == None or len(conteudo_url) == 0) and \
+                        ((objeto != None and objeto.caminho == "" and
+                         file_len == 0) or (objeto == None and file_len == 0)):
+
+                    response_data['resultado'] = "Configure uma URL ou selecione um arquivo de vídeo."
+                    status_response = 500
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
+
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'unidade': unidade.id,
@@ -1556,6 +1591,16 @@ def cadastroConteudoCursoView(request, id):
                 }
 
             if conteudo_tipo == 'arquivo':
+                file_len = request.FILES.__len__()
+
+                if (objeto != None and objeto.caminho == "" and file_len == 0) or (objeto == None and file_len == 0):
+                    response_data[
+                        f"path-{conteudo_tipo}-{objeto_ordem}-unidade-{unidade_ordem}"] = "Selecione um arquivo."
+                    status_response = 500
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
+
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'unidade': unidade.id,
@@ -1573,6 +1618,16 @@ def cadastroConteudoCursoView(request, id):
 
             if conteudo_tipo == 'questao':
                 questionario_ordem = request.POST['questionario_ordem']
+                questao_enunciado = request.POST['questao']
+                objeto_ordem = request.POST['questao_ordem']
+
+                if questao_enunciado == "":
+                    response_data[f"titulo-questao-{objeto_ordem}-questionario-{questionario_ordem}-unidade-{unidade_ordem}"] = f"Enunciado da questão é obrigatório."
+                    response_data['resultado'] = "Falha ao salvar o item."
+                    status_response = 500
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
 
                 questionario = Questionario.objects.filter(
                     unidade=unidade,
@@ -1581,14 +1636,13 @@ def cadastroConteudoCursoView(request, id):
 
                 if questionario.count() == 0:
                     status_response = 500
-                    response_data['resultado'] = "Falha ao salvar este item"
+                    response_data['resultado'] = "Falha ao salvar o item."
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
 
                 questao_questionario = questionario[0]
-                questao_enunciado = request.POST['questao']
-                objeto_ordem = request.POST['questao_ordem']
+
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'questionario': questionario[0].id,
@@ -1609,6 +1663,17 @@ def cadastroConteudoCursoView(request, id):
             if conteudo_tipo == 'alternativa':
 
                 questionario_ordem = request.POST['questionario_ordem']
+                questao_ordem = request.POST['questao_ordem']
+                alternativa_descricao = request.POST['alternativa']
+                objeto_ordem = request.POST['alternativa_ordem']
+
+                if alternativa_descricao == "":
+                    response_data[f"titulo-alternativa-{objeto_ordem}-questao-{questao_ordem}-questionario-{questionario_ordem}-unidade-{unidade_ordem}"] = f"Descrição da alternativa é obrigatória."
+                    response_data['resultado'] = "Falha ao salvar o item."
+                    status_response = 500
+                    return HttpResponse(
+                        json.dumps(response_data), status=status_response
+                    )
 
                 questionario = Questionario.objects.filter(
                     unidade=unidade,
@@ -1617,12 +1682,10 @@ def cadastroConteudoCursoView(request, id):
 
                 if questionario.count() == 0:
                     status_response = 500
-                    response_data['resultado'] = "Falha ao salvar este item"
+                    response_data['resultado'] = "Falha ao salvar o item."
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
-
-                questao_ordem = request.POST['questao_ordem']
 
                 questao = Questao.objects.filter(
                     questionario=questionario[0],
@@ -1631,15 +1694,13 @@ def cadastroConteudoCursoView(request, id):
 
                 if questao.count() == 0:
                     status_response = 500
-                    response_data['resultado'] = "Falha ao salvar este item"
+                    response_data['resultado'] = "Falha ao salvar o item."
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
 
                 questao_alternativa = questao[0]
 
-                alternativa_descricao = request.POST['alternativa']
-                objeto_ordem = request.POST['alternativa_ordem']
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'questao': questao[0].id,
@@ -1657,18 +1718,8 @@ def cadastroConteudoCursoView(request, id):
                     questao[0]
                 )
 
-            # Caso o conteudo já exista na base de dados
-            if conteudo_id > 0:
-
-                # Obtém a instância do conteúdo
-                try:
-                    objeto = modelo.objects.get(pk=conteudo_id)
-                except:
-                    status_response = 500
-                    response_data['resultado'] = "Falha ao salvar este item"
-                    return HttpResponse(
-                        json.dumps(response_data), status=status_response
-                    )
+            # Caso o objeto já exista na base de dados
+            if objeto != None:
 
                 # Verifica se mudou a ordem do conteúdo
                 if objeto.ordem != int(objeto_ordem):
@@ -1747,7 +1798,7 @@ def cadastroConteudoCursoView(request, id):
 
         except:
             status_response = 500
-            response_data['resultado'] = "Falha ao salvar este item"
+            response_data['resultado'] = "Falha ao salvar o item."
             return HttpResponse(
                 json.dumps(response_data), status=status_response
             )

@@ -247,7 +247,7 @@ class Unidade(models.Model):
     """
     objects = UnidadeManager()
 
-    titulo = models.CharField(unique=True, max_length=200)
+    titulo = models.CharField(max_length=200)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     descricao = models.TextField(blank=True, null=True, default=None)
     ordem = OrderField(blank=True, for_fields=['curso'])
@@ -256,7 +256,7 @@ class Unidade(models.Model):
         verbose_name = "Unidade"
         verbose_name_plural = "Unidades"
         ordering = ['ordem']
-        unique_together = (('titulo', 'curso'), ('curso', 'ordem'),)
+        unique_together = (('curso', 'ordem'),)
 
     def __str__(self):
         return self.titulo
@@ -272,7 +272,7 @@ class Video(models.Model):
     """
     objects = VideoManager()
 
-    titulo = models.CharField(unique=True, max_length=200)
+    titulo = models.CharField(max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     video_interno = models.BooleanField(default=False)
     url = models.URLField(max_length=200, null=True, blank=True)
@@ -283,7 +283,7 @@ class Video(models.Model):
         verbose_name = "Vídeo"
         verbose_name_plural = "Vídeos"
         ordering = ['ordem']
-        unique_together = (('titulo', 'unidade'),)
+        unique_together = (('unidade', 'ordem'))
 
     def __str__(self):
         return self.titulo
@@ -299,7 +299,7 @@ class Arquivo(models.Model):
     """
     objects = ArquivoManager()
 
-    titulo = models.CharField(unique=True, max_length=200)
+    titulo = models.CharField(max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     caminho = models.FileField(upload_to='arquivos')
     ordem = OrderField(blank=True, for_fields=['unidade'])
@@ -308,7 +308,7 @@ class Arquivo(models.Model):
         verbose_name = "Arquivo"
         verbose_name_plural = "Arquivos"
         ordering = ['ordem']
-        unique_together = (('titulo', 'unidade'),)
+        unique_together = (('ordem', 'unidade'),)
 
     def __str__(self):
         return self.titulo
@@ -345,7 +345,7 @@ class Questionario(models.Model):
     """
     objects = QuestionarioManager()
 
-    titulo = models.CharField(unique=True, max_length=200)
+    titulo = models.CharField(max_length=200)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
@@ -353,7 +353,7 @@ class Questionario(models.Model):
         verbose_name = "Questionário"
         verbose_name_plural = "Questionários"
         ordering = ['ordem']
-        unique_together = (('titulo', 'unidade'),)
+        unique_together = (('ordem', 'unidade'),)
 
     def __str__(self):
         return self.titulo
@@ -395,7 +395,7 @@ class Questao(models.Model):
         verbose_name = "Questão"
         verbose_name_plural = "Questões"
         ordering = ['ordem']
-        unique_together = (('enunciado', 'questionario'), ('questionario', 'ordem'),)
+        unique_together = (('questionario', 'ordem'),)
 
     def __str__(self):
         return self.enunciado
@@ -420,7 +420,7 @@ class Alternativa(models.Model):
         verbose_name = "Alternativa"
         verbose_name_plural = "Alternativas"
         ordering = ['ordem']
-        unique_together = (('descricao', 'questao'), ('questao', 'ordem'),)
+        unique_together = (('questao', 'ordem'),)
 
     def __str__(self):
         return self.descricao
