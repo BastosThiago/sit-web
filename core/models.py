@@ -249,6 +249,7 @@ class Unidade(models.Model):
 
     titulo = models.CharField(unique=True, max_length=200)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    descricao = models.TextField(blank=True, null=True, default=None)
     ordem = OrderField(blank=True, for_fields=['curso'])
 
     class Meta:
@@ -275,7 +276,7 @@ class Video(models.Model):
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     video_interno = models.BooleanField(default=False)
     url = models.URLField(max_length=200, null=True, blank=True)
-    path = models.FileField(upload_to='videos', null=True, blank=True)
+    caminho = models.FileField(upload_to='videos', null=True, blank=True, default=None)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:

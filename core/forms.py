@@ -53,7 +53,7 @@ class VideoForm(forms.ModelForm):
 
     class Meta:
         model = Video
-        fields = ('titulo', 'unidade', 'url', 'path', 'ordem',)
+        fields = ('titulo', 'unidade', 'url', 'caminho', 'ordem',)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -69,7 +69,7 @@ class VideoForm(forms.ModelForm):
 
         # extract the username and text field from the data
         url = self.cleaned_data.get('url')
-        path = self.cleaned_data.get('path')
+        path = self.cleaned_data.get('caminho')
 
         # conditions to be met for the username length
         if (url == None or len(url) == 0) and path == None:

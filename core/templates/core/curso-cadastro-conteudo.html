@@ -82,7 +82,7 @@
                                     <input type="hidden" name="conteudo_tipo" value="video">
                                     <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
                                     <input type="hidden" name="conteudo_ordem" value="{{ video.ordem }}">
-                                    <input type="hidden" name="path_arquivo" value="{{ video.path }}">
+                                    <input type="hidden" name="path_arquivo" value="{{ video.caminho }}">
                                     <div class="form-group">
                                         <label for="titulo-conteudo" id="label-titulo">Titulo</label>
                                         <input type="text" class="form-control" id="titulo-conteudo" value="{{ video.titulo  }}" aria-describedby="" placeholder="titulo" name="titulo">
@@ -95,8 +95,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="conteudo-path" id="label-path">Arquivo</label>
-                                        <span><a href="/media/{{ video.path }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.path }}</a></span>
-                                        <input type="file" class="form-control" id="conteudo-path" name="path">
+                                        <span><a href="/media/{{ video.path }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
+                                        <input type="file" class="form-control" id="conteudo-path" name="caminho">
                                         <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                     </div>
                                     <div class="resultado-video" id="resultado-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"></div>
@@ -147,7 +147,7 @@
                                     <div class="form-group">
                                         <label for="conteudo-path" id="label-path">Arquivo:</label>
                                         <span><a href="/media/{{ arquivo.caminho }}" target="_blank" id="link-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"> {{ arquivo.caminho }}</a></span>
-                                        <input type="file" class="form-control" id="conteudo-path" placeholder="caminho" name="path">
+                                        <input type="file" class="form-control" id="conteudo-path" placeholder="caminho" name="caminho">
                                         <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                     </div>
                                     <div class="resultado-arquivo" id="resultado-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"></div>
@@ -468,7 +468,7 @@
                             <div class="form-group">
                                 <label for="conteudo-path" id="label-path">Arquivo</label>
                                 <span><a href="" target="_blank" id="link-conteudo-0-unidade-0"></a></span>
-                                <input type="file" class="form-control" id="conteudo-path" placeholder="caminho" name="path">
+                                <input type="file" class="form-control" id="conteudo-path" placeholder="caminho" name="caminho">
                                 <span id="path-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
                             <div class="resultado-${tipo_conteudo}" id="resultado-${tipo_conteudo}-0-unidade-${unidade}"></div>
@@ -494,7 +494,7 @@
         var label_url    = $('.' + classe_card_conteudo).find('#label-url')[0]
         var input_url    = $('.' + classe_card_conteudo).find('input[name="url"]')[0]
         var label_path   = $('.' + classe_card_conteudo).find('#label-path')[0]
-        var input_path   = $('.' + classe_card_conteudo).find('input[name="path"]')[0]
+        var input_path   = $('.' + classe_card_conteudo).find('input[name="caminho"]')[0]
 
         var div_questoes = $('.' + "accordion-questoes-questionario-" + 0 + "-unidade-" +  (numero_unidade - 1))[0]
 
@@ -550,6 +550,7 @@
                     <div class="card-body  accordion${hash2}c">
                         <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
                         {% csrf_token %}
+                            <input type="hidden" name="conteudo_id" value="0">
                             <input type="hidden" name="conteudo_tipo" value="questao">
                             <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
                             <input type="hidden" name="questionario_ordem" value="${numero_questionario}">
@@ -602,6 +603,7 @@
                     <div class="card-body  accordion${hash3}d">
                         <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}">
                         {% csrf_token %}
+                            <input type="hidden" name="conteudo_id" value="0">
                             <input type="hidden" name="conteudo_tipo" value="alternativa">
                             <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
                             <input type="hidden" name="questionario_ordem" value="${numero_questionario}">
@@ -816,7 +818,7 @@
                         form_conteudo.id = form_novo_id
                         $(form_conteudo).addClass("dados-modificados")
                         if($(form_conteudo).find('input:file')[0]){
-                            $(form_conteudo).find('input:file').addClass("trocou-arquivo")
+                            //$(form_conteudo).find('input:file').addClass("trocou-arquivo")
                         }
                     }
 
@@ -940,16 +942,18 @@
 
       var form = forms_modificados[0]
 
-      if($(form).find('input:file')[0]){
+      if(form){
 
-        if($(form).find('input:file').hasClass("trocou-arquivo") == false) {
-          $(form).find('input:file').removeAttr("name")
-        }
-      }
+          if($(form).find('input:file')[0]){
 
-      formData = new FormData(form);
+            if($(form).find('input:file').hasClass("trocou-arquivo") == false) {
+              $(form).find('input:file').removeAttr("name")
+            }
+          }
 
-      $.ajax({
+        formData = new FormData(form);
+
+        $.ajax({
           url         : '/cadastro-conteudo-curso/{{ curso.id }}',
           data        : formData,
           type        : 'POST',
@@ -966,13 +970,14 @@
 
                   $(form).find('input[name="conteudo_id"]')[0].value = resposta['conteudo_id']
 
-                  if(resposta['path_conteudo'] != '') {
+                  if(resposta['path_conteudo'] && resposta['path_conteudo'] != '') {
                     $(form).find('a')[0].innerHTML = resposta['path_conteudo']
                     $(form).find('a').attr('href', "/media/" + resposta['path_conteudo'])
                     $(form).find('a')[0].hidden = false
                   }
                   else {
-                      $(form).find('a')[0].hidden = true
+                      if($(form).find('a')[0])
+                          $(form).find('a')[0].hidden = true
                 }
               }
               organizaUnidadesConteudos()
@@ -988,18 +993,27 @@
               }
 
               if(errors['resultado']) {
-                  $(form).find('.resultado-' + errors['conteudo_tipo'])[0].innerHTML = errors['resultado']
+                  if($(form).find('.resultado-' + errors['conteudo_tipo'])[0]) {
+                      $(form).find('.resultado-' + errors['conteudo_tipo'])[0].innerHTML = errors['resultado']
+                  }
               }
           }
-      });
+        });
+      }
     }
 
     function enviaForm(event){
         event.preventDefault();
+        event.stopImmediatePropagation();
 
-        enviaForms()
+        try {
+           enviaForms()
+        }
+        catch (e) {
+           return false;
+        }
 
-
+        return false;
     }
 
     function alterouDados(){
