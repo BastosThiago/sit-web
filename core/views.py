@@ -1467,6 +1467,7 @@ def cadastroConteudoCursoView(request, id):
         objeto_ordem = 0
 
         try:
+
             conteudo_id = int(request.POST['conteudo_id'])
             conteudo_tipo = request.POST['conteudo_tipo']
             unidade_ordem = request.POST['unidade_ordem']
