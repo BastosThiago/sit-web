@@ -1666,6 +1666,12 @@ def cadastroConteudoCursoView(request, id):
                 questionario_ordem = request.POST['questionario_ordem']
                 questao_ordem = request.POST['questao_ordem']
                 alternativa_descricao = request.POST['alternativa']
+
+                try:
+                    alternativa_correta = request.POST['alternativa-correta']
+                    alternativa_correta = True
+                except:
+                    alternativa_correta = False
                 objeto_ordem = request.POST['alternativa_ordem']
 
                 if alternativa_descricao == "":
@@ -1702,10 +1708,23 @@ def cadastroConteudoCursoView(request, id):
 
                 questao_alternativa = questao[0]
 
+                # Inicializa eventuais alternativas que estão marcadas como
+                # correta para a questão da alternativa que estã sendo avaliada.
+                if alternativa_correta == 'on':
+                    alternativas = Alternativa.objects.filter(
+                        questao=questao_alternativa,
+                        correta=True
+                    )
+
+                    for alternativa in alternativas:
+                        alternativa.correta = False
+                        alternativa.save()
+
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'questao': questao[0].id,
                     'descricao': alternativa_descricao,
+                    'correta': alternativa_correta,
                     'ordem': objeto_ordem
                 }
 
@@ -1777,6 +1796,7 @@ def cadastroConteudoCursoView(request, id):
                     if conteudo_tipo == 'alternativa':
                         objeto.questao = questao_alternativa
                         objeto.descricao = dict_objeto['descricao']
+                        objeto.correta = dict_objeto['correta']
                         objeto.ordem = dict_objeto['ordem']
                         objeto.save()
 

@@ -453,10 +453,19 @@
                                                                             <input type="hidden" name="questao_ordem" value="{{ questao.ordem }}">
                                                                             <input type="hidden" name="alternativa_ordem" value="{{ alternativa.ordem }}">
 
-                                                                            <div class="form-group">
-                                                                                <label for="titulo-alternativa" id="label-alternativa">Descrição:</label>
-                                                                                <input type="text" class="form-control" id="titulo-alternativa" value="{{ alternativa.descricao }} "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
-                                                                                <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                                                            <label for="titulo-alternativa" id="label-alternativa">Descrição:</label>
+                                                                            <div class="input-group mb-3">
+                                                                              <div class="input-group-prepend">
+                                                                                <div class="input-group-text">
+                                                                                  {% if alternativa.correta == True %}
+                                                                                      <input type="checkbox" aria-label="" name="alternativa-correta" checked>&nbspCorreta
+                                                                                  {% else %}
+                                                                                      <input type="checkbox" aria-label="" name="alternativa-correta">&nbspCorreta
+                                                                                  {% endif %}
+                                                                                </div>
+                                                                              </div>
+                                                                              <input type="text" class="form-control" id="titulo-alternativa" value="{{ alternativa.descricao }} "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
+                                                                              <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                                                             </div>
 
                                                                         </form>
@@ -866,10 +875,15 @@
                             <input type="hidden" name="questao_ordem" value="0">
                             <input type="hidden" name="alternativa_ordem" value="0">
 
-                            <div class="form-group">
-                                <label for="titulo-alternativa" id="label-alternativa">Descrição: </label>
-                                <input type="text" class="form-control" id="titulo-alternativa" aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
-                                <span id="titulo-alternativa-0-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                            <label for="titulo-alternativa" id="label-alternativa">Descrição:</label>
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <input type="checkbox" aria-label="" name="alternativa-correta">&nbspCorreta
+                                </div>
+                              </div>
+                              <input type="text" class="form-control" id="titulo-alternativa" "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
+                              <span id="titulo-alternativa-0-questao-0-questionario-0-unidade-0" style="color: red;"></span>
                             </div>
 
                         </form>
@@ -1151,7 +1165,7 @@
                                 alternativa = alternativas[l]
                                 numero_alternativa = l + 1
 
-                                $(alternativa).removeClass().addClass("card-alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade + " alternativa")
+                                $(alternativa).removeClass().addClass("card card-alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade + " alternativa")
 
                                 $(alternativa)[0].getElementsByClassName("link-conteudo")[0].innerText = "Alternativa" + " - " +  numero_alternativa;
 
@@ -1302,6 +1316,18 @@
 
     function alterouDados(){
         $(this).closest("form").addClass("dados-modificados")
+
+        if($(this).is('input[type="checkbox"]')) {
+
+            inputs = $(this).closest('.questao').find('form').find('input[type="checkbox"]')
+
+            for(let i = 0; i < inputs.length; i++){
+                if(inputs[i] !== this) {
+                    $(inputs[i]).prop('checked', false);
+                }
+            }
+        }
+
     }
 
     function alterouArquivo(){
