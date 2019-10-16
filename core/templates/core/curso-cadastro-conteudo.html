@@ -1307,8 +1307,24 @@
               console.log("teste")
               for (key in errors) {
                   if(document.getElementById(key)){
+                        var card_unidade = $('#' + errors['unidade-selector']).find('[data-parent]')[0]
+                        $(card_unidade).collapse('show')
                         document.getElementById(key).innerHTML = errors[key];
-                        $(document.getElementById(key)).closest("[data-parent]" ).collapse('show')
+
+                        if(errors['conteudo_tipo'] == 'questao' || errors['conteudo_tipo'] == 'alternativa'){
+                            var card_questionario = $('#' + errors['questionario-selector']).find('[data-parent]')[0]
+                            $(card_questionario).collapse('show')
+                        }
+
+                        if(errors['conteudo_tipo'] == 'alternativa'){
+                            var card_questao = $('#' + errors['questao-selector']).find('[data-parent]')[0]
+                            $(card_questao).collapse('show')
+                        }
+
+                        if(errors['conteudo_tipo'] != 'unidade'){
+                            $(document.getElementById(key)).closest("[data-parent]" ).collapse('show')
+                        }
+
                   }
               }
 

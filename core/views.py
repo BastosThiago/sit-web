@@ -1473,6 +1473,7 @@ def cadastroConteudoCursoView(request, id):
             unidade_ordem = request.POST['unidade_ordem']
 
             response_data['conteudo_tipo'] = conteudo_tipo
+            response_data['unidade-selector'] = f"unidade-{unidade_ordem}"
 
             # Tenta obter a unidade de acordo com sua ordem no curso
             unidade = Unidade.objects.filter(curso=curso, ordem=unidade_ordem)
@@ -1626,6 +1627,8 @@ def cadastroConteudoCursoView(request, id):
                 questao_enunciado = request.POST['questao']
                 objeto_ordem = request.POST['questao_ordem']
 
+                response_data['questionario-selector'] = f"questionario-{questionario_ordem}-unidade-{unidade_ordem}"
+
                 if questao_enunciado == "":
                     response_data[f"titulo-questao-{objeto_ordem}-questionario-{questionario_ordem}-unidade-{unidade_ordem}"] = f"Enunciado da questão é obrigatório."
                     response_data['resultado'] = "Falha ao salvar o item."
@@ -1670,6 +1673,9 @@ def cadastroConteudoCursoView(request, id):
                 questionario_ordem = request.POST['questionario_ordem']
                 questao_ordem = request.POST['questao_ordem']
                 alternativa_descricao = request.POST['alternativa']
+
+                response_data['questionario-selector'] = f"questionario-{questionario_ordem}-unidade-{unidade_ordem}"
+                response_data['questao-selector'] = f"questao-{questao_ordem}-questionario-{questionario_ordem}-unidade-{unidade_ordem}"
 
                 try:
                     request.POST['alternativa-correta']
