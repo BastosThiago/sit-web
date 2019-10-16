@@ -1568,8 +1568,11 @@ def cadastroConteudoCursoView(request, id):
 
             # Monta dicionário com as informações do conteudo
             if conteudo_tipo == 'video':
-                if conteudo_tipo == 'video':
-                    conteudo_url = request.POST['url']
+                conteudo_url = request.POST['url']
+                video_interno = False
+
+                if request.POST['tipo-video'] == 'arquivo':
+                    video_interno = True
 
                 file_len = request.FILES.__len__()
 
@@ -1588,6 +1591,7 @@ def cadastroConteudoCursoView(request, id):
                     'unidade': unidade.id,
                     'titulo': conteudo_titulo,
                     'url': conteudo_url,
+                    'video_interno': video_interno,
                     'ordem': objeto_ordem
                 }
 
@@ -1668,7 +1672,7 @@ def cadastroConteudoCursoView(request, id):
                 alternativa_descricao = request.POST['alternativa']
 
                 try:
-                    alternativa_correta = request.POST['alternativa-correta']
+                    request.POST['alternativa-correta']
                     alternativa_correta = True
                 except:
                     alternativa_correta = False
@@ -1710,7 +1714,7 @@ def cadastroConteudoCursoView(request, id):
 
                 # Inicializa eventuais alternativas que estão marcadas como
                 # correta para a questão da alternativa que estã sendo avaliada.
-                if alternativa_correta == 'on':
+                if alternativa_correta:
                     alternativas = Alternativa.objects.filter(
                         questao=questao_alternativa,
                         correta=True
@@ -1772,6 +1776,7 @@ def cadastroConteudoCursoView(request, id):
                         objeto.unidade = unidade
                         objeto.titulo = dict_objeto['titulo']
                         objeto.url = dict_objeto['url']
+                        objeto.video_interno = dict_objeto['video_interno']
                         objeto.ordem = dict_objeto['ordem']
                         objeto.save()
 

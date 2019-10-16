@@ -195,18 +195,18 @@
                                     <div class="form-check">
                                         <label class="form-check-label">
                                             {% if video.video_interno == False %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-url" name="tipo-video" checked>Vídeo - URL
+                                                <input type="radio" class="form-check-input" id="tipo-video-url" value="url" name="tipo-video" checked>Vídeo - URL
                                             {% else %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-url" name="tipo-video">Vídeo - URL
+                                                <input type="radio" class="form-check-input" id="tipo-video-url" value="url" name="tipo-video">Vídeo - URL
                                             {% endif %}
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <label class="form-check-label">
                                             {% if video.video_interno == True %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-arquivo" name="tipo-video" checked>Vídeo - Arquivo
+                                                <input type="radio" class="form-check-input" id="tipo-video-arquivo" value="arquivo" name="tipo-video" checked>Vídeo - Arquivo
                                             {% else %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-arquivo" name="tipo-video">Vídeo - Arquivo
+                                                <input type="radio" class="form-check-input" id="tipo-video-arquivo" value="arquivo" name="tipo-video">Vídeo - Arquivo
                                             {% endif %}
                                         </label>
                                     </div>
@@ -1308,6 +1308,7 @@
               for (key in errors) {
                   if(document.getElementById(key)){
                         document.getElementById(key).innerHTML = errors[key];
+                        $(document.getElementById(key)).closest("[data-parent]" ).collapse('show')
                   }
               }
 
@@ -1372,6 +1373,7 @@
             if(selecao.id == "tipo-video-url") {
                 grupo_url.hidden = false
                 grupo_arquivo.hidden =  true
+                $(grupo_arquivo).find('input[name=caminho]').removeClass('trocou-arquivo')
             }
             else {
                 grupo_url.hidden = true
