@@ -6,6 +6,7 @@
       <title>jQuery UI Accordion - Sortable</title>
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
       <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous">
   </head>
   <style>
         .icone {
@@ -69,6 +70,10 @@
             margin-top: 5px;
         }
 
+        .fa-angle-double-down, .fa-angle-double-up{
+          margin-right: 0.5rem;
+        }
+
   </style>
 <body>
 
@@ -79,7 +84,7 @@
       <div class="card-header" id="heading{{ unidade.ordem }}" style="text-align-last: justify;">
         <h5 class="mb-0">
 
-          <div class="btn btn-link link-unidade" data-toggle="collapse" data-target="#collapse{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse{{ unidade.ordem }}">
+          <div class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse{{ unidade.ordem }}">
               Unidade - {{ unidade.ordem }}
           </div>
 
@@ -151,7 +156,7 @@
                         <div class="card-header" id="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
                             <h5 class="mb-0">
 
-                                <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
+                                <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
                                     Vídeo - {{ video.ordem }}
                                 </div>
 
@@ -264,7 +269,7 @@
                         <div class="card-header" id="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
                             <h5 class="mb-0">
 
-                                <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
+                                <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
                                     Arquivo - {{ arquivo.ordem }}
                                 </div>
 
@@ -334,7 +339,7 @@
                         <div class="card-header" id="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
                             <h5 class="mb-0">
 
-                                <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
+                                <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
                                     Questionário - {{ questionario.ordem }}
                                 </div>
 
@@ -388,7 +393,7 @@
                                             <div class="card-header" id="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
                                                 <h5 class="mb-0">
 
-                                                    <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                    <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                         Questão - {{ questao.ordem }}
                                                     </div>
 
@@ -409,7 +414,7 @@
                                                 </h5>
                                             </div>
 
-                                            <div id="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse show" aria-labelledby="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                            <div id="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                 <div class="card-body  accordion-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                     <form id="form-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
 
@@ -442,7 +447,7 @@
                                                                 <div class="card-header" id="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
                                                                     <h5 class="mb-0">
 
-                                                                        <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                                             Alternativa - 0
                                                                         </div>
 
@@ -463,7 +468,7 @@
                                                                     </h5>
                                                                 </div>
 
-                                                                <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse show" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                                     <div class="card-body  accordion-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                                         <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
                                                                             <div class="resultado-alternativa" id="resultado-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"></div>
@@ -550,7 +555,7 @@
               <div class="card-header" id="heading${numero_unidade}" style="text-align-last: justify;">
                 <h5 class="mb-0">
 
-                  <div class="btn btn-link link-unidade" data-toggle="collapse" data-target="#collapse${numero_unidade}" aria-expanded="true" aria-controls="collapse${numero_unidade}">
+                  <div class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${numero_unidade}" aria-expanded="true" aria-controls="collapse${numero_unidade}">
                       Unidade - ${numero_unidade}
                   </div>
 
@@ -679,7 +684,7 @@
                 <div class="card-header" id="heading${hash1}b" style="text-align-last: justify;">
                     <h5 class="mb-0">
 
-                        <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse${hash1}b" aria-expanded="true" aria-controls="collapse${hash1}b">
+                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${hash1}b" aria-expanded="true" aria-controls="collapse${hash1}b">
                             ${titulo_card} - 0
                         </div>
 
@@ -807,7 +812,7 @@
                 <div class="card-header" id="heading${hash2}c" style="text-align-last: justify;">
                     <h5 class="mb-0">
 
-                        <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse${hash2}c" aria-expanded="true" aria-controls="collapse${hash2}c">
+                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)"data-toggle="collapse" data-target="#collapse${hash2}c" aria-expanded="true" aria-controls="collapse${hash2}c">
                             Questão - 0
                         </div>
 
@@ -876,7 +881,7 @@
                 <div class="card-header" id="heading${hash3}d" style="text-align-last: justify;">
                     <h5 class="mb-0">
 
-                        <div class="btn btn-link link-conteudo" data-toggle="collapse" data-target="#collapse${hash3}d" aria-expanded="true" aria-controls="collapse${hash3}d">
+                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${hash3}d" aria-expanded="true" aria-controls="collapse${hash3}d">
                             Alternativa - 0
                         </div>
 
@@ -1059,7 +1064,12 @@
 
             cards_conteudo = $("#" + cards_unidade[i].id).find(".card");
 
-            cards_unidade[i].getElementsByClassName("link-unidade")[0].innerText = "Unidade - " + (i + 1);
+            if($($($(cards_unidade[i]).find('.card-header')[0]).siblings()[0]).hasClass('show')){
+                cards_unidade[i].getElementsByClassName("link-unidade")[0].innerHTML = '<i class="fas fa-angle-double-up"></i>Unidade - ' + (i + 1);
+            }
+            else {
+                cards_unidade[i].getElementsByClassName("link-unidade")[0].innerHTML = '<i class="fas fa-angle-double-down"></i>Unidade - ' + (i + 1);
+            }
 
             $(cards_unidade[i]).find('i')[0].id = "elimina-unidade-" + numero_unidade
 
@@ -1109,7 +1119,12 @@
 
                     numero_conteudo = ordem_conteudo[numero_unidade][tipo_conteudo_id];
 
-                    card_conteudo.getElementsByClassName("link-conteudo")[0].innerText = titulo_secao + " - " +  numero_conteudo;
+                    if($($($(card_conteudo).find('.card-header')[0]).siblings()[0]).hasClass('show')){
+                        card_conteudo.getElementsByClassName("link-conteudo")[0].innerHTML = '<i class="fas fa-angle-double-up"></i>'+ titulo_secao + " - " +  numero_conteudo;
+                    }
+                    else {
+                        card_conteudo.getElementsByClassName("link-conteudo")[0].innerHTML = '<i class="fas fa-angle-double-down"></i>'+ titulo_secao + " - " +  numero_conteudo;
+                    }
 
                     card_conteudo.id = tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade;
                     $(card_conteudo).removeClass().addClass("card card-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade + " " + tipo_conteudo)
@@ -1161,10 +1176,14 @@
                             questao = questoes[k]
                             numero_questao = k + 1
 
-
                             $(questao).removeClass().addClass("card card-questao-"+ numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade + " questao")
 
-                            $(questao)[0].getElementsByClassName("link-conteudo")[0].innerText = "Questão" + " - " +  numero_questao;
+                            if($($($(questao).find('.card-header')[0]).siblings()[0]).hasClass('show')){
+                                $(questao)[0].getElementsByClassName("link-conteudo")[0].innerHTML = '<i class="fas fa-angle-double-up"></i>Questão' + ' - ' +  numero_questao;
+                            }
+                            else {
+                                $(questao)[0].getElementsByClassName("link-conteudo")[0].innerHTML = '<i class="fas fa-angle-double-down"></i>Questão' + ' - ' +  numero_questao;
+                            }
 
                             $(questao)[0].id = "questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
@@ -1202,7 +1221,12 @@
 
                                 $(alternativa).removeClass().addClass("card card-alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade + " alternativa")
 
-                                $(alternativa)[0].getElementsByClassName("link-conteudo")[0].innerText = "Alternativa" + " - " +  numero_alternativa;
+                                if($($($(questao).find('.card-header')[0]).siblings()[0]).hasClass('show')){
+                                    $(alternativa)[0].getElementsByClassName("link-conteudo")[0].innerHTML = '<i class="fas fa-angle-double-up"></i>Alternativa' + ' - ' +  numero_alternativa;
+                                }
+                                else {
+                                    $(alternativa)[0].getElementsByClassName("link-conteudo")[0].innerHTML = '<i class="fas fa-angle-double-down"></i>Alternativa' + ' - ' +  numero_alternativa;
+                                }
 
                                 $(alternativa)[0].id = "alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
@@ -1408,6 +1432,16 @@
         if(this && this.nextElementSibling && this.nextElementSibling.innerText){
             this.nextElementSibling.innerText=""
         }
+    }
+
+    function expandeArea(elemento){
+      if($($($(elemento).closest('.card-header')).siblings()[0]).hasClass('show')){
+        $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
+      }
+      else {
+        $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
+      }
+
     }
 
     $(document).ready(function() {
