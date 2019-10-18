@@ -85,6 +85,10 @@
           background-color: transparent;
           border: none;
         }
+
+        .card-body {
+            padding: 1rem;
+        }
   </style>
 <body>
 
@@ -505,8 +509,8 @@
                                                                                 </div>
                                                                               </div>
                                                                               <input type="text" class="form-control" id="titulo-alternativa" value="{{ alternativa.descricao }} "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
-                                                                              <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                                                             </div>
+                                                                            <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
 
                                                                         </form>
                                                                     </div>
@@ -542,13 +546,50 @@
 <br />
 <button class="btn btn-info btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
 
-<div class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+<div class="modal fade bd-example-modal-lg modal-aguarde" data-backdrop="static" data-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content" style="width: 48px">
             <span class="fa fa-spinner fa-spin fa-3x"></span>
+            <span><b>Aguarde...</b></span>
         </div>
     </div>
 </div>
+
+
+<div class="modal modal-sem-alteracoes" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cadastro de conteúdo de Curso</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Não existem alterações a serem salvas.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade modal-delete-item" id="confirmDeleteModal" id_elemento="" id_conteudo="" classe_elemento="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body confirm-delete">
+        Deseja realmente remover o item?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteButtonModal">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 </body>
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -942,8 +983,8 @@
                                 </div>
                               </div>
                               <input type="text" class="form-control" id="titulo-alternativa" "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
-                              <span id="titulo-alternativa-0-questao-0-questionario-0-unidade-0" style="color: red;"></span>
                             </div>
+                            <span id="titulo-alternativa-0-questao-0-questionario-0-unidade-0" style="color: red;"></span>
 
                         </form>
                     </div>
@@ -961,113 +1002,6 @@
         organizaUnidadesConteudos()
     }
 
-    function removeCard(elemento, classe_elemento, id_conteudo) {
-
-        var str = elemento.id
-
-        str = str.split("-")
-
-        msg = ""
-        for(let i = 1; i < str.length; i++){
-            msg = msg + str[i] + " "
-        }
-
-        msg = "Deseja remover o item: " + msg + "?"
-        var resposta = confirm(msg);
-
-        id_resultado = elemento.id.replace("elimina", "resultado");
-
-        if(resposta == true) {
-            if (id_conteudo > 0) {
-                $.ajax(
-                    {
-                        type: "GET",
-                        url: "/remove-conteudo-curso",
-                        data: {
-                            tipo_conteudo: classe_elemento,
-                            conteudo_id: id_conteudo,
-                            id_resultado: id_resultado,
-                        },
-                        success: function (data) {
-                            $(elemento).parents('.' + classe_elemento).get(0).remove();
-                            organizaUnidadesConteudos()
-
-                        },
-                        error: function (data) {
-                            var errors = jQuery.parseJSON(data.responseText)
-                            for (key in errors) {
-                                document.getElementById(key).innerHTML = errors[key];
-
-                            }
-                        }
-                    }
-                )
-            }
-            else {
-                $(elemento).parents('.' + classe_elemento).get(0).remove();
-                organizaUnidadesConteudos()
-            }
-          }
-        }
-
-    $( function() {
-        $( "#accordion" ).sortable({
-            stop : function(event,ui) {
-                organizaUnidadesConteudos()
-            }
-          }
-        );
-    });
-
-    function ordenaConteudo() {
-        $( ".card-videos" ).sortable({
-            stop : function(event,ui){
-                organizaUnidadesConteudos();
-
-            }
-        });
-    }
-
-    function ordenaConteudoArquivo() {
-        $( ".card-arquivos" )
-        .sortable(
-          {
-            stop         : function(event,ui){
-
-              organizaUnidadesConteudos();
-
-            }
-          }
-
-        );
-    }
-
-    function ordenaConteudoQuestionario() {
-        $( ".card-questionarios" ).sortable({
-            stop : function(event,ui){
-                organizaUnidadesConteudos();
-
-            }
-        });
-    }
-
-    function ordenaConteudoQuestao() {
-        $( ".card-questoes" ).sortable({
-            stop : function(event,ui){
-                organizaUnidadesConteudos();
-
-            }
-        });
-    }
-
-    function ordenaConteudoAlternativa() {
-        $( ".card-alternativas" ).sortable({
-            stop : function(event,ui){
-                organizaUnidadesConteudos();
-
-            }
-        });
-    }
 
     function organizaUnidadesConteudos(){
         cards_unidade = $(".card-unidade")
@@ -1346,7 +1280,7 @@
               organizaUnidadesConteudos()
               enviaForms()
               $('body').removeClass('disabledbutton')
-              $('.modal').modal('hide');
+              $('.modal-aguarde').modal('hide');
           },
           error: function(data){
               var errors = jQuery.parseJSON(data.responseText)
@@ -1386,7 +1320,7 @@
                   }
               }
               $('body').removeClass('disabledbutton')
-              $('.modal').modal('hide');
+              $('.modal-aguarde').modal('hide');
           }
         });
 
@@ -1399,12 +1333,24 @@
       }
     }
 
+
     function enviaForm(event){
         event.preventDefault();
         event.stopImmediatePropagation();
 
         try {
-           enviaForms()
+            var focused = $(':focus').blur();
+
+            var forms_modificados = $('.dados-modificados')
+
+            var form = forms_modificados[0]
+            if(form) {
+                enviaForms()
+            }
+            else {
+                $('.modal-sem-alteracoes').modal('show');
+            }
+
         }
         catch (e) {
            return false;
@@ -1413,13 +1359,16 @@
         return false;
     }
 
+
     function modal(){
-         $('.modal').modal('show');
+         $('.modal-aguarde').modal('show');
          setTimeout(function () {
          	console.log('hejsan');
-         	$('.modal').modal('hide');
+         	$('.modal-aguarde').modal('hide');
          }, 2000);
       }
+
+
     function alterouDados(){
         $(this).closest("form").addClass("dados-modificados")
 
@@ -1452,11 +1401,138 @@
         }
     }
 
+
     function alterouArquivo(){
         if($(this).val() != ""){
             $(this).addClass("trocou-arquivo")
         }
     }
+
+
+    $(document).on('click', '#confirmDeleteButtonModal', function () {
+        id_elemento = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_elemento")
+        id_conteudo = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_conteudo")
+        classe_elemento = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("classe_elemento")
+
+        elemento = $('#' + id_elemento)[0]
+
+        id_resultado = elemento.id.replace("elimina", "resultado");
+
+        if (id_conteudo > 0) {
+            $.ajax(
+                {
+                    type: "GET",
+                    url: "/remove-conteudo-curso",
+                    data: {
+                        tipo_conteudo: classe_elemento,
+                        conteudo_id: id_conteudo,
+                        id_resultado: id_resultado,
+                    },
+                    success: function (data) {
+                        $(elemento).parents('.' + classe_elemento).get(0).remove();
+                        organizaUnidadesConteudos()
+
+                    },
+                    error: function (data) {
+                        var errors = jQuery.parseJSON(data.responseText)
+                        for (key in errors) {
+                            document.getElementById(key).innerHTML = errors[key];
+
+                        }
+                    }
+                }
+            )
+        }
+        else {
+            $(elemento).parents('.' + classe_elemento).get(0).remove();
+            organizaUnidadesConteudos()
+        }
+    });
+
+
+    function removeCard(elemento, classe_elemento, id_conteudo) {
+
+        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_elemento", elemento.id)
+        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_conteudo", id_conteudo)
+        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("classe_elemento", classe_elemento)
+
+        var str = elemento.id
+
+        str = str.split("-")
+
+        msg = ""
+        for(let i = 1; i < str.length; i++){
+            msg = msg + str[i] + " "
+        }
+
+        msg = "Deseja remover o item: " + msg + "?"
+
+        $('.confirm-delete')[0].innerHTML = "<b>" + msg + "</b>";
+
+        $('.modal-delete-item').modal('show');
+
+    }
+
+
+    $( function() {
+        $( "#accordion" ).sortable({
+            stop : function(event,ui) {
+                organizaUnidadesConteudos()
+            }
+          }
+        );
+    });
+
+    function ordenaConteudo() {
+        $( ".card-videos" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
+    function ordenaConteudoArquivo() {
+        $( ".card-arquivos" )
+        .sortable(
+          {
+            stop         : function(event,ui){
+
+              organizaUnidadesConteudos();
+
+            }
+          }
+
+        );
+    }
+
+    function ordenaConteudoQuestionario() {
+        $( ".card-questionarios" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
+    function ordenaConteudoQuestao() {
+        $( ".card-questoes" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
+    function ordenaConteudoAlternativa() {
+        $( ".card-alternativas" ).sortable({
+            stop : function(event,ui){
+                organizaUnidadesConteudos();
+
+            }
+        });
+    }
+
 
     function removeErro(){
         if(this && this.nextElementSibling && this.nextElementSibling.innerText){
@@ -1474,6 +1550,7 @@
 
     }
 
+
     $(document).ready(function() {
         $('form').on('submit', enviaForm);
         $('input').on('focus', removeErro)
@@ -1487,6 +1564,21 @@
         organizaUnidadesConteudos()
     });
 
+
+    window.onbeforeunload = function (e) {
+        e = e || window.event;
+
+        var focused = $(':focus').blur();
+        if ($('body').find('.dados-modificados')[0]){
+            // For IE and Firefox prior to version 4
+            if (e) {
+                //e.returnValue = 'Existem dados alterados não salvos. Deseja sair mesmo assim?';
+            }
+
+           // For Safari
+           //return 'Existem dados alterados não salvos. Deseja sair mesmo assim?';
+        }
+    };
 
    </script>
 </html>
