@@ -74,6 +74,17 @@
           margin-right: 0.5rem;
         }
 
+       .bd-example-modal-lg .modal-dialog{
+          display: table;
+          position: relative;
+          margin: 0 auto;
+          top: calc(50% - 24px);
+        }
+
+        .bd-example-modal-lg .modal-dialog .modal-content{
+          background-color: transparent;
+          border: none;
+        }
   </style>
 <body>
 
@@ -530,6 +541,14 @@
 
 <br />
 <button class="btn btn-info btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
+
+<div class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 48px">
+            <span class="fa fa-spinner fa-spin fa-3x"></span>
+        </div>
+    </div>
+</div>
 
 </body>
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -1071,7 +1090,7 @@
                 cards_unidade[i].getElementsByClassName("link-unidade")[0].innerHTML = '<i class="fas fa-angle-double-down"></i>Unidade - ' + (i + 1);
             }
 
-            $(cards_unidade[i]).find('i')[0].id = "elimina-unidade-" + numero_unidade
+            $(cards_unidade[i]).find('i')[2].id = "elimina-unidade-" + numero_unidade
 
             var form_unidade = $(cards_unidade[i]).find('form')[0]
             var form_novo_id  = "form-unidade-" + numero_unidade
@@ -1129,7 +1148,7 @@
                     card_conteudo.id = tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade;
                     $(card_conteudo).removeClass().addClass("card card-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade + " " + tipo_conteudo)
 
-                    $(card_conteudo).find('i')[0].id = "elimina-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
+                    $(card_conteudo).find('i')[2].id = "elimina-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
 
                     var form_conteudo = $(card_conteudo).find('form')[0]
                     var form_novo_id  = "form-" + tipo_conteudo + "-" + numero_conteudo + "-unidade-" + numero_unidade
@@ -1187,7 +1206,7 @@
 
                             $(questao)[0].id = "questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
-                            $(questao).find('i')[0].id = "elimina-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
+                            $(questao).find('i')[2].id = "elimina-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
                             var form_questao = $(questao).find('form')[0]
                             var form_novo_id = "form-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
@@ -1230,7 +1249,7 @@
 
                                 $(alternativa)[0].id = "alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
-                                $(alternativa).find('i')[0].id = "elimina-alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
+                                $(alternativa).find('i')[2].id = "elimina-alternativa-" + numero_alternativa + "-questao-"+ numero_questao + "-questionario-" + numero_conteudo +"-unidade-"+ numero_unidade
 
                                 var form_alternativa = $(alternativa).find('form')[0]
                                 var form_novo_id = "form-alternativa-" + numero_alternativa + "-questao-" + numero_questao + "-questionario-" + numero_conteudo + "-unidade-" + numero_unidade
@@ -1266,8 +1285,9 @@
 
       var formData;
 
-      var forms_modificados = $('.dados-modificados')
+      var focused = $(':focus').blur();
 
+      var forms_modificados = $('.dados-modificados')
 
       var form = forms_modificados[0]
 
@@ -1283,6 +1303,7 @@
         formData = new FormData(form);
 
         $('body').addClass('disabledbutton')
+        modal();
 
         $.ajax({
           url         : '/cadastro-conteudo-curso/{{ curso.id }}',
@@ -1325,6 +1346,7 @@
               organizaUnidadesConteudos()
               enviaForms()
               $('body').removeClass('disabledbutton')
+              $('.modal').modal('hide');
           },
           error: function(data){
               var errors = jQuery.parseJSON(data.responseText)
@@ -1364,6 +1386,7 @@
                   }
               }
               $('body').removeClass('disabledbutton')
+              $('.modal').modal('hide');
           }
         });
 
@@ -1390,6 +1413,13 @@
         return false;
     }
 
+    function modal(){
+         $('.modal').modal('show');
+         setTimeout(function () {
+         	console.log('hejsan');
+         	$('.modal').modal('hide');
+         }, 2000);
+      }
     function alterouDados(){
         $(this).closest("form").addClass("dados-modificados")
 
