@@ -1,28 +1,22 @@
-{% extends  'base.html' %}
+{% extends  'pagina-inicial.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}Entrar{% endblock %}
 
-{% block content %}
-<div class="row">
-    <div class="col-md-4 offset-md-4">
-        <div class="card  auth-card">
-            <div class="card-body">
-                <h4 class="card-title text-center">Informações de cadastro</h4>
+{% block content_page %}
+    <div class="card-body">
+        <h4 class="card-title text-center">Informações de cadastro</h4>
 
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
 
-                    {{ form|crispy }}
+            {{ form|crispy }}
 
-                    <label>Senha de acesso</label>
-                    <p><a href="/accounts/password_change">Clique aqui para acesser o formuário de troca de senha</a></p>
+            <label>Senha de acesso</label>
+            <p><a href="/accounts/password_change">Clique aqui para acesser o formuário de troca de senha</a></p>
 
-                    <button type="submit" class="btn btn-primary btn-block">Confirmar alterações</button>
-                </form>
-            </div>
-        </div>
+            <button type="submit" class="btn btn-primary">Confirmar alterações</button>
+        </form>
     </div>
-</div>
 {% endblock %}

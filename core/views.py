@@ -180,7 +180,7 @@ def paginaInicialView(request):
 
     return render(
         request,
-        'index.html',
+        'pagina-inicial.html',
         {
             'perfil_administrador': perfil_administrador,
             'perfil_instrutor': perfil_instrutor,
@@ -472,11 +472,76 @@ def cursosListView(request):
 
             cursos = paginator.get_page(page)
 
+    lista_cursos = []
+
+    for curso in cursos:
+        dict_curso = {}
+        dict_curso['curso'] = curso
+        dict_curso['categoria'] = curso.categoria.titulo
+        dict_curso['numero_avaliacoes'] = curso.obtem_numero_avaliacoes()
+        nota_media = curso.obtem_nota_media()
+        dict_curso['nota_media'] = nota_media
+
+        dict_curso['nota_0_5'] = ''
+        dict_curso['nota_1'] = ''
+        dict_curso['nota_1_5'] = ''
+        dict_curso['nota_2'] = ''
+        dict_curso['nota_2_5'] = ''
+        dict_curso['nota_3'] = ''
+        dict_curso['nota_3_5'] = ''
+        dict_curso['nota_4'] = ''
+        dict_curso['nota_4_5'] = ''
+        dict_curso['nota_5'] = ''
+
+        if nota_media >= 0.25 and nota_media <= 0.75:
+            dict_curso['nota_1'] = 'half'
+        if nota_media > 0.75 and nota_media <= 1.25:
+            dict_curso['nota_1'] = 'on'
+        if nota_media > 1.25 and nota_media <= 1.75:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'half'
+        if nota_media > 1.75 and nota_media <= 2.25:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'on'
+        if nota_media > 2.25 and nota_media <= 2.75:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'on'
+            dict_curso['nota_3'] = 'half'
+        if nota_media > 2.75 and nota_media <= 3.25:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'on'
+            dict_curso['nota_3'] = 'on'
+        if nota_media > 3.25 and nota_media <= 3.75:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'on'
+            dict_curso['nota_3'] = 'on'
+            dict_curso['nota_4'] = 'half'
+        if nota_media > 3.75 and nota_media <= 4.25:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'on'
+            dict_curso['nota_3'] = 'on'
+            dict_curso['nota_4'] = 'on'
+        if nota_media > 4.25 and nota_media <= 4.75:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'on'
+            dict_curso['nota_3'] = 'on'
+            dict_curso['nota_4'] = 'on'
+            dict_curso['nota_5'] = 'half'
+        if nota_media > 4.75:
+            dict_curso['nota_1'] = 'on'
+            dict_curso['nota_2'] = 'on'
+            dict_curso['nota_3'] = 'on'
+            dict_curso['nota_4'] = 'on'
+            dict_curso['nota_5'] = 'on'
+
+        lista_cursos.append(dict_curso)
+
     return render(
         request,
         'core/cursos-lista.html',
         {
             'objetos': cursos,
+            'lista_cursos': lista_cursos,
         }
     )
 

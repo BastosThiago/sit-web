@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Avg
 from sistema_treinamentos.settings import AUTH_USER_MODEL
+import math
 
 from .fields import OrderField
 from .managers import *
@@ -50,11 +51,18 @@ class Curso(models.Model):
     def __str__(self):
         return self.titulo
 
+    def obtem_numero_avaliacoes(self):
+        avaliacoes = Avaliacao.objects.filter(
+            curso=self
+        )
+
+        return avaliacoes.count()
+
     def obtem_nota_media(self):
         """
             Método para obter a nota média das avaliações de um curso
         """
-        nota_media_curso = "SEM NOTA"
+        nota_media_curso = 0
         avaliacoes = Avaliacao.objects.filter(
             curso=self
         )
@@ -63,6 +71,13 @@ class Curso(models.Model):
             nota_media_curso = avaliacoes.aggregate(
                 Avg('nota')
             )['nota__avg']
+
+        #if (float(nota_media_curso) % 1) >= 0.5:
+        #    nota_media_curso = math.ceil(nota_media_curso)
+        #else:
+        #    nota_media_curso = round(nota_media_curso)
+
+        nota_media_curso = float("{0:.1f}".format(nota_media_curso, 1))
 
         return nota_media_curso
 

@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'pagina-inicial.html' %}
 
 {% block title %} Lista de Cursos {% endblock %}
 
-{% block content %}
-<div class="offset-1 col-10 list-div">
+{% block content_page %}
 
-    <h2>Lista de Cursos</h2>
+
+    <h2 class="text-center">Lista de Cursos</h2>
 
     <div class="col-12 search-div">
         <form method="GET" id="search-form">
@@ -16,20 +16,7 @@
         </form>
     </div>
 
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li
-                    {% if message.tags %}
-                        class="alert alert-{{ message.tags }}"
-                    {% endif %}
-                >
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
+    <!--
     <ul class="itens-lista">
         {% for objeto in objetos %}
             <li class="item-lista">
@@ -38,6 +25,36 @@
             </li>
         {% endfor %}
     </ul>
+    -->
+    <div class="row">
+    {% for elemento in lista_cursos %}
+        <div class="col-sm-4">
+            <div class="card card-curso">
+                <div class="card-body">
+                    <h5 class="card-title text-center">{{elemento.curso.titulo}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
+                    <p class="card-text">{{elemento.curso.descricao}}</p>
+                    <p>
+                        <div class="stars">
+                            <span class="star {{ elemento.nota_1 }}"></span>
+                            <span class="star {{ elemento.nota_2 }}"></span>
+                            <span class="star {{ elemento.nota_3 }}"></span>
+                            <span class="star {{ elemento.nota_4 }}"></span>
+                            <span class="star {{ elemento.nota_5 }}"></span>
+                            <span><b>({{elemento.nota_media}})</b></span>
+                            <span>({{elemento.numero_avaliacoes}})</span>
+                        </div>
+                    </p>
+                    <p>
+                    <div class="card text-center">
+                        <a href="/informacoes-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button">Detalhes</a>
+                    </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
 
     <div class="pagination">
         <span class="step-links">
@@ -58,5 +75,5 @@
             </span>
         </span>
     </div>
-</div>
+
 {% endblock %}

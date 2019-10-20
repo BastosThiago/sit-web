@@ -253,10 +253,6 @@
             console.log("HashChange")
         });
 
-        $(window).unload(function () {
-           console.log("unload")
-        });
-
         window.addEventListener("popstate", event => {
             console.log( "popstate" )
             if(event && event.state && event.state.route) {

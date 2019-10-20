@@ -1,13 +1,5 @@
-<!doctype html>
-<html lang="en">
-  <head>
-      <meta http-equiv="content-type" content="text/html; charset=utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>jQuery UI Accordion - Sortable</title>
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous">
-  </head>
+{% extends  'pagina-inicial.html' %}
+{% block content_page %}
   <style>
         .icone {
             display:inline;
@@ -90,7 +82,7 @@
             padding: 1rem;
         }
   </style>
-<body>
+
 
     <div class="panel-group" id="accordion">
 
@@ -591,11 +583,6 @@
 </div>
 
 
-</body>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script>
 
     var numero_unidade  = 1;
@@ -1581,4 +1568,4 @@
     };
 
    </script>
-</html>
+{% endblock %}

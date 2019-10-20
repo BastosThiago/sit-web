@@ -1,18 +1,15 @@
-{% extends 'base.html' %}
-
-{% load crispy_forms_tags %}
+{% extends 'pagina-inicial.html' %}
 
 {% load static %}
 
 {% block title %} {{video.titulo}} {% endblock %}
 
-{% block content %}
+{% block content_page %}
 
-<div class="offset-1 col-10 list-div">
+    <div class="offset-1 col-10 list-div">
 
-    {% include  'core/video-conteudo.html' %}
+        {% include  'core/video-conteudo.html' %}
 
-</div>
+    </div>
 
-</script>
 {% endblock %}
