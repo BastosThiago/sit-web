@@ -5,22 +5,28 @@
 
 {% block conteudo-home-page %}
 
-    <div class="row h-100">
+    <div class="row h-100" style="margin: 0;">
        <div class="col-md-4 offset-md-4 my-auto">
-         <div class="card card-block">
-             <h4 class="card-title text-center">Entrar no Sistema de Treinamentos</h4>
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next }}">
+         <div class="card">
+             <div class="card-header text-center">
+                 <h4>Entrar no Sistema de Treinamentos</h4>
+             </div>
+             <div class="card-body">
+                 <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
 
-                {{ form|crispy }}
+                    {{ form|crispy }}
 
-                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
-            </form>
-            <p class="change-form-p">
-                Quer criar uma conta?
-                <a href="/accounts/register">Clique aqui</a>
-            </p>
+                    <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+                 </form>
+             </div>
+			<div class="card-footer">
+				<div class="d-flex justify-content-center links">
+					Não tem uma conta?<a href="/accounts/register"> Clique aqui</a>
+				</div>
+			</div>
+
          </div>
        </div>
     </div>

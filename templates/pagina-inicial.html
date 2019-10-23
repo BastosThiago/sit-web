@@ -1,10 +1,16 @@
 {% extends  'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock %}
 
 {% block title %}Lista de cadastros{% endblock %}
 
-{% block content %}
+{% block body %}
 
+<body>
     <div class="wrapper">
 
         <nav id="sidebar">
@@ -107,7 +113,7 @@
         </nav>
 
         <!-- Conteúdo da página  -->
-        <div id="content" class="container-fluid">
+        <div id="content" class="container-fluid" style="padding-top: 0; padding-left: 0; padding-right: 0;">
 
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <div class="container-fluid">
@@ -139,8 +145,9 @@
                 </div>
             </nav>
 
-            {% block content_page %}{% endblock %}
-
+            <div class="container-fluid">
+                {% block content_page %}{% endblock %}
+            </div>
         </div>
     </div>
     <script type="text/javascript">
@@ -150,5 +157,5 @@
             });
         });
     </script>
-
+</body>
 {% endblock %}

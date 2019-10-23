@@ -9,9 +9,10 @@
         <div class="row" style="margin: 0;">
             <div class="col-md-4 offset-md-4">
                 <div class="card" style="margin: 0;">
-                    <div class="card-body" style="padding: 1rem;">
+                    <div class="card-header text-center">
                         <h4 class="card-title text-center" style="font-size: 1.3rem; margin: 0;">Registrar no Sistema de Treinamentos</h4>
-
+                    </div>
+                    <div class="card-body" style="padding: 1rem;">
                         <form method="post">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{{ next }}">
