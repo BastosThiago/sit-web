@@ -1,25 +1,28 @@
-{% extends  'base.html' %}
+{% extends  'base-home-page.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}Registrar no Sistema{% endblock %}
 
-{% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card  auth-card">
-            <div class="card-body">
-                <h4 class="card-title text-center">Registrar no Sistema de Treinamentos</h4>
+{% block conteudo-home-page %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}">
+    <section class="py-4" style="margin-top: 40px;">
+        <div class="row" style="margin: 0;">
+            <div class="col-md-4 offset-md-4">
+                <div class="card" style="margin: 0;">
+                    <div class="card-body" style="padding: 1rem;">
+                        <h4 class="card-title text-center" style="font-size: 1.3rem; margin: 0;">Registrar no Sistema de Treinamentos</h4>
 
-                    {{ form|crispy }}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ next }}">
 
-                    <button type="submit" class="btn btn-primary btn-block">Registrar</button>
-                </form>
+                            {{ form|crispy }}
+
+                            <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </section>
 {% endblock %}

@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
         <!-- Estilos customizados CSS -->
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <!-- <link rel="stylesheet" href="{% static 'css/styles.css' %}"> -->
 
         <!-- jQuery CDN - (=with AJAX) -->
         <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
@@ -30,12 +30,14 @@
         <!-- Bootstrap JS -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
+        {% block head %}{% endblock %}
+
         <title>{% block title %}{% endblock %}</title>
     </head>
-    <body>
+    {% block body %}
 
-        {% block content %}{% endblock %}
 
-        <script src="{% static 'js/scripts.js' %}"></script>
-    </body>
+    {% endblock %}
+
+    <script src="{% static 'js/scripts.js' %}"></script>
 </html>

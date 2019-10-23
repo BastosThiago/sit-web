@@ -144,7 +144,6 @@ def remover_acentos(txt):
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
 
 
-@login_required
 def paginaInicialView(request):
     """
       View responsável por fornecer o template da página inicial
@@ -167,27 +166,33 @@ def paginaInicialView(request):
     #template_name = 'index.html'
 
     # Obtém qual o perfil do usuário que acessou a página inicial do sistema
-    perfil_administrador = request.user.tem_perfil_administrador()
-    perfil_instrutor = request.user.tem_perfil_instrutor()
-    perfil_aluno = request.user.tem_perfil_aluno()
+    if request.user.is_anonymous:
+        return render(
+            request,
+            'home-page.html',
+        )
+    else:
+        perfil_administrador = request.user.tem_perfil_administrador()
+        perfil_instrutor = request.user.tem_perfil_instrutor()
+        perfil_aluno = request.user.tem_perfil_aluno()
 
-    inscricao = None
-    if perfil_aluno:
-        inscricao = Inscricao.objects.filter(usuario=request.user).order_by('-data_ultimo_conteudo_acessado')[:1]
+        inscricao = None
+        if perfil_aluno:
+            inscricao = Inscricao.objects.filter(usuario=request.user).order_by('-data_ultimo_conteudo_acessado')[:1]
 
-        if inscricao.count() == 1:
-            inscricao = inscricao[0]
+            if inscricao.count() == 1:
+                inscricao = inscricao[0]
 
-    return render(
-        request,
-        'pagina-inicial.html',
-        {
-            'perfil_administrador': perfil_administrador,
-            'perfil_instrutor': perfil_instrutor,
-            'perfil_aluno': perfil_aluno,
-            'inscricao': inscricao,
-        }
-    )
+        return render(
+            request,
+            'pagina-inicial.html',
+            {
+                'perfil_administrador': perfil_administrador,
+                'perfil_instrutor': perfil_instrutor,
+                'perfil_aluno': perfil_aluno,
+                'inscricao': inscricao,
+            }
+        )
 
 
 @login_required

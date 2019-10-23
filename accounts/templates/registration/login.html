@@ -1,29 +1,28 @@
-{% extends  'base.html' %}
+{% extends  'base-home-page.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Entrar{% endblock %}
+{% block title %}Registrar no Sistema{% endblock %}
 
-{% block content %}
-<div class="row">
-    <div class="col-md-4 offset-md-4">
-        <div class="card  auth-card">
-            <div class="card-body">
-                <h4 class="card-title text-center">Entrar no Sistema de Treinamentos</h4>
+{% block conteudo-home-page %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}">
+    <div class="row h-100">
+       <div class="col-md-4 offset-md-4 my-auto">
+         <div class="card card-block">
+             <h4 class="card-title text-center">Entrar no Sistema de Treinamentos</h4>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
 
-                    {{ form|crispy }}
+                {{ form|crispy }}
 
-                    <button type="submit" class="btn btn-primary btn-block">Entrar</button>
-                </form>
-                <p class="change-form-p">
-                    Quer criar uma conta?
-                    <a href="/accounts/register">Clique aqui</a>
-                </p>
-            </div>
-        </div>
+                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+            </form>
+            <p class="change-form-p">
+                Quer criar uma conta?
+                <a href="/accounts/register">Clique aqui</a>
+            </p>
+         </div>
+       </div>
     </div>
-</div>
+
 {% endblock %}
