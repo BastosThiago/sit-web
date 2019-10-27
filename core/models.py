@@ -39,6 +39,7 @@ class Curso(models.Model):
     palavras_chaves = models.CharField(max_length=150, null=True, blank=True)
     descricao = models.TextField(max_length=150, null=True, blank=True)
     publicado = models.BooleanField(default=False)
+    data_publicado = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Curso"
@@ -130,6 +131,18 @@ class Curso(models.Model):
 
         return videos_curso
 
+    def obtem_arquivos(self):
+        """
+            Método para obter todos os arquivos cadastrados para um curso
+        """
+        unidades_curso = self.obtem_unidades()
+
+        arquivos_curso = Arquivo.objects.filter(
+            unidade__in=unidades_curso
+        )
+
+        return arquivos_curso
+
     def obtem_questionarios(self):
         """
             Método para obter todos os questionários cadastrados para um curso
@@ -186,6 +199,12 @@ class Curso(models.Model):
         except:
             return 0
 
+    def obtem_numero_inscritos(self):
+        """
+            Método para obter o número de inscritos no curso
+        """
+        numero_inscritos = Inscricao.objects.filter(curso=self).count()
+        return numero_inscritos
 
 class Inscricao(models.Model):
     """
@@ -354,6 +373,24 @@ class UsuarioVideo(models.Model):
         return f"{self.usuario} - {self.video}"
 
 
+class UsuarioArquivo(models.Model):
+    """
+        Modelo associado a relação entre os usuários e videos
+    """
+    objects = UsuarioVideoManager()
+
+    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    arquivo = models.ForeignKey(Arquivo, on_delete=models.CASCADE)
+    acessado = models.BooleanField(default=False)
+    data_acesso = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Registros Usuários - Arquivos"
+
+    def __str__(self):
+        return f"{self.usuario} - {self.arquivo}"
+
+
 class Questionario(models.Model):
     """
         Modelo associado aos questionários de um curso
@@ -387,6 +424,7 @@ class UsuarioQuestionario(models.Model):
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1)
+    respondido = models.BooleanField(default=False)
     data_execucao = models.DateTimeField(auto_now=True)
 
     class Meta:

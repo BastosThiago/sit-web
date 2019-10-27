@@ -31,29 +31,44 @@
           background-size: cover;
         }
 
+        .navbar-dark {
+            background-color: rgba(0,0,0,0.2);
+        }
+
       </style>
 
 {% endblock %}
+
 {% block body %}
 
   <body class="d-flex flex-column">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
 
-        <a class="navbar-brand" style="color: #f8f9fa; font-size: 1.5rem; font-weight: bold;" href="#"><i class="fas fa-university class-icone"></i>SIT - WEB</a>
+        <a class="navbar-brand" style="color: #f8f9fa; font-size: 1.5rem; font-weight: bold; " href="/">
+            <i class="fas fa-university class-icone"></i>SIT - WEB
+        </a>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
         <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto" style="float:right;">
-            <li class="nav-item">
-              <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem; font-weight: bold; padding-right: 20px;" href="/accounts/register"><i class="fas fa-user-plus class-icone"></i>Registrar-se</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem; font-weight: bold;" href="/accounts/login"><i class="fas fa-sign-in-alt class-icone"></i>Entrar</a>
-            </li>
-          </ul>
+            <ul class="navbar-nav " style="float:left;">
+                <li class="nav-item">
+                  <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;  padding-right: 20px;" href="/cursos"><i class="fas fa-list-alt class-icone"></i>Cursos</a>
+                </li>
+            </ul>
+
+              <ul class="navbar-nav ml-auto" style="float:right;">
+                <li class="nav-item">
+                  <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem; padding-right: 20px;" href="/accounts/register"><i class="fas fa-user-plus class-icone"></i>Registrar-se</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/accounts/login"><i class="fas fa-sign-in-alt class-icone"></i>Entrar</a>
+                </li>
+              </ul>
         </div>
 
     </nav>

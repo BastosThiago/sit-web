@@ -436,26 +436,70 @@ def removeRegistroView(request, id, modelo):
         return trata_usuario_sem_permissao(request)
 
 
-@login_required
+def obtem_classe_notas(nota_media):
+    dict_classe_nota = {}
+    dict_classe_nota['nota_0_5'] = ''
+    dict_classe_nota['nota_1'] = ''
+    dict_classe_nota['nota_1_5'] = ''
+    dict_classe_nota['nota_2'] = ''
+    dict_classe_nota['nota_2_5'] = ''
+    dict_classe_nota['nota_3'] = ''
+    dict_classe_nota['nota_3_5'] = ''
+    dict_classe_nota['nota_4'] = ''
+    dict_classe_nota['nota_4_5'] = ''
+    dict_classe_nota['nota_5'] = ''
+
+    if nota_media >= 0.25 and nota_media <= 0.75:
+        dict_classe_nota['nota_1'] = 'half'
+    if nota_media > 0.75 and nota_media <= 1.25:
+        dict_classe_nota['nota_1'] = 'on'
+    if nota_media > 1.25 and nota_media <= 1.75:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'half'
+    if nota_media > 1.75 and nota_media <= 2.25:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'on'
+    if nota_media > 2.25 and nota_media <= 2.75:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'on'
+        dict_classe_nota['nota_3'] = 'half'
+    if nota_media > 2.75 and nota_media <= 3.25:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'on'
+        dict_classe_nota['nota_3'] = 'on'
+    if nota_media > 3.25 and nota_media <= 3.75:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'on'
+        dict_classe_nota['nota_3'] = 'on'
+        dict_classe_nota['nota_4'] = 'half'
+    if nota_media > 3.75 and nota_media <= 4.25:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'on'
+        dict_classe_nota['nota_3'] = 'on'
+        dict_classe_nota['nota_4'] = 'on'
+    if nota_media > 4.25 and nota_media <= 4.75:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'on'
+        dict_classe_nota['nota_3'] = 'on'
+        dict_classe_nota['nota_4'] = 'on'
+        dict_classe_nota['nota_5'] = 'half'
+    if nota_media > 4.75:
+        dict_classe_nota['nota_1'] = 'on'
+        dict_classe_nota['nota_2'] = 'on'
+        dict_classe_nota['nota_3'] = 'on'
+        dict_classe_nota['nota_4'] = 'on'
+        dict_classe_nota['nota_5'] = 'on'
+
+    return dict_classe_nota
+
+
 def cursosListView(request):
     """
     View responsável pelo tratamento de obtenção da lista de cursos cadastrados no sistema
     """
 
     # Verifica o perfil do usuário para retornar a lista de cursos
-    cursos = None
-
-    # Para usuários de perfil ALUNO, exibe todos os cursos com o status de PUBLICADOS.
-    if request.user.tem_perfil_aluno():
-        cursos = Curso.objects.filter(publicado=True).order_by('titulo')
-    else:
-        # Caso o usuário seja do perfil de INSTRUTOR, retorna apenas a lista dos cursos
-        # por ele criado
-        if request.user.tem_perfil_instrutor():
-            cursos = Curso.objects.filter(usuario=request.user).order_by('titulo')
-        else:
-            # Caso o usuário seja admistrador, retorna a lista de todos os dados
-            cursos = Curso.objects.all().order_by('titulo')
+    cursos = Curso.objects.filter(publicado=True).order_by('titulo')
 
     if cursos:
 
@@ -487,15 +531,10 @@ def cursosListView(request):
         nota_media = curso.obtem_nota_media()
         dict_curso['nota_media'] = nota_media
 
-        dict_curso['nota_0_5'] = ''
         dict_curso['nota_1'] = ''
-        dict_curso['nota_1_5'] = ''
         dict_curso['nota_2'] = ''
-        dict_curso['nota_2_5'] = ''
         dict_curso['nota_3'] = ''
-        dict_curso['nota_3_5'] = ''
         dict_curso['nota_4'] = ''
-        dict_curso['nota_4_5'] = ''
         dict_curso['nota_5'] = ''
 
         if nota_media >= 0.25 and nota_media <= 0.75:
@@ -551,29 +590,46 @@ def cursosListView(request):
     )
 
 
-@login_required
 def informacoesCursoView(request, id):
     """
     View responsável pelo tratamento de apresentação das informações de um curso
     """
-    exibe_botao_inscricao = False
-    exibe_botao_conteudo = False
-    perfil_aluno = False
-    avaliacao_usuario = None
+
     curso_sem_conteudo = False
     unidades = None
     avaliacoes = None
     nota_media_curso = None
+    numero_unidades = 0
+    numero_videos = 0
+    numero_arquivos = 0
+    numero_questionarios = 0
+    numero_avaliacoes = 0
 
-    # Obtém o curso associado a requisição e verifica o perfil de usuário
-    # para validar o curso a ser obtido
-    if request.user.tem_perfil_aluno():
-        curso = get_object_or_404(Curso, pk=id, publicado=True)
-    else:
-        if request.user.tem_perfil_instrutor():
-            curso = get_object_or_404(Curso, pk=id, usuario=request.user)
-        else:
-            curso = get_object_or_404(Curso, pk=id)
+    numero_avaliacoes_nota_1 = 0
+    numero_avaliacoes_nota_2 = 0
+    numero_avaliacoes_nota_3 = 0
+    numero_avaliacoes_nota_4 = 0
+    numero_avaliacoes_nota_5 = 0
+
+    percentual_nota_1 = 0
+    percentual_nota_2 = 0
+    percentual_nota_3 = 0
+    percentual_nota_4 = 0
+    percentual_nota_5 = 0
+
+    classe_nota_1 = ''
+    classe_nota_2 = ''
+    classe_nota_3 = ''
+    classe_nota_4 = ''
+    classe_nota_5 = ''
+
+    curso = get_object_or_404(Curso, pk=id, publicado=True)
+
+    categoria = curso.categoria.titulo
+
+    instrutor = curso.usuario.get_full_name()
+
+    numero_inscritos = curso.obtem_numero_inscritos()
 
     # Verifica se o curso tem algum conteúdo
     if curso.tem_conteudo():
@@ -582,40 +638,54 @@ def informacoesCursoView(request, id):
         unidades = Unidade.objects.filter(curso=curso)
 
         # Obtém as avaliações associadas ao curso
-        avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
+        avaliacoes = Avaliacao.objects.filter(curso=curso)
+
+        numero_avaliacoes = avaliacoes.count()
+
+        for avaliacao in avaliacoes:
+
+            if avaliacao.nota == 1:
+                numero_avaliacoes_nota_1 = numero_avaliacoes_nota_1 + 1
+            if avaliacao.nota == 2:
+                numero_avaliacoes_nota_2 = numero_avaliacoes_nota_2 + 1
+            if avaliacao.nota == 3:
+                numero_avaliacoes_nota_3 = numero_avaliacoes_nota_3 + 1
+            if avaliacao.nota == 4:
+                numero_avaliacoes_nota_4 = numero_avaliacoes_nota_4 + 1
+            if avaliacao.nota == 5:
+                numero_avaliacoes_nota_5 = numero_avaliacoes_nota_5 + 1
+
+        percentual_nota_1 = (numero_avaliacoes_nota_1 * 100) / numero_avaliacoes
+        percentual_nota_2 = (numero_avaliacoes_nota_2 * 100) / numero_avaliacoes
+        percentual_nota_3 = (numero_avaliacoes_nota_3 * 100) / numero_avaliacoes
+        percentual_nota_4 = (numero_avaliacoes_nota_4 * 100) / numero_avaliacoes
+        percentual_nota_5 = (numero_avaliacoes_nota_5 * 100) / numero_avaliacoes
+
+        percentual_nota_1 = "{:.2f}".format(percentual_nota_1)
+        percentual_nota_2 = "{:.2f}".format(percentual_nota_2)
+        percentual_nota_3 = "{:.2f}".format(percentual_nota_3)
+        percentual_nota_4 = "{:.2f}".format(percentual_nota_4)
+        percentual_nota_5 = "{:.2f}".format(percentual_nota_5)
 
         # Obtém a nota média das avaliações associadas a curso(caso exista alguma)
         nota_media_curso = "SEM NOTA"
         if avaliacoes.count() > 0:
             nota_media_curso = curso.obtem_nota_media()
-            nota_media_curso = "{:.2f}".format(nota_media_curso)
+            nota_media_curso = "{:.1f}".format(nota_media_curso)
 
-        #verifica se o curso possui alguma unidade cadastrada
-        if unidades.count() > 0:
+        numero_unidades = curso.obtem_unidades().count()
+        numero_videos = curso.obtem_videos().count()
+        numero_arquivos = curso.obtem_arquivos().count()
+        numero_questionarios = curso.obtem_questionarios().count()
 
-            # Caso o usuário seja do pefil ALUNO
-            if request.user.tem_perfil_aluno():
+        dict_classe_nota = obtem_classe_notas(float(nota_media_curso))
 
-                perfil_aluno = True
+        classe_nota_1 = dict_classe_nota['nota_1']
+        classe_nota_2 = dict_classe_nota['nota_2']
+        classe_nota_3 = dict_classe_nota['nota_3']
+        classe_nota_4 = dict_classe_nota['nota_4']
+        classe_nota_5 = dict_classe_nota['nota_5']
 
-                # Verifica se o usuário já está inscrito no curso acessado
-                inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
-
-                if(inscricao.count() == 0):
-                    exibe_botao_inscricao = True
-                else:
-                    exibe_botao_conteudo = True
-
-                # Verifica se o usuário da requisição já avaliou o curso acessado
-                try:
-                    avaliacao_usuario = Avaliacao.objects.get(
-                        curso=curso,
-                        usuario=request.user
-                    )
-                except:
-                    avaliacao_usuario = None
-            else:
-                exibe_botao_conteudo = True
     else:
         curso_sem_conteudo = True
 
@@ -624,31 +694,49 @@ def informacoesCursoView(request, id):
         'core/curso-informacoes.html',
         {
             'curso': curso,
+            'categoria': categoria,
+            'instrutor': instrutor,
+            'numero_inscritos': numero_inscritos,
             'curso_sem_conteudo': curso_sem_conteudo,
             'unidades': unidades,
             'avaliacoes': avaliacoes,
             'nota_media_curso': nota_media_curso,
-            'avaliacao_usuario': avaliacao_usuario,
-            'exibe_botao_inscricao': exibe_botao_inscricao,
-            'exibe_botao_conteudo': exibe_botao_conteudo,
-            'perfil_aluno': perfil_aluno
+            'numero_unidades': numero_unidades,
+            'numero_videos': numero_videos,
+            'numero_arquivos': numero_arquivos,
+            'numero_questionarios': numero_questionarios,
+            'numero_avaliacoes': numero_avaliacoes,
+            'numero_avaliacoes_nota_1': numero_avaliacoes_nota_1,
+            'numero_avaliacoes_nota_2': numero_avaliacoes_nota_2,
+            'numero_avaliacoes_nota_3': numero_avaliacoes_nota_3,
+            'numero_avaliacoes_nota_4': numero_avaliacoes_nota_4,
+            'numero_avaliacoes_nota_5': numero_avaliacoes_nota_5,
+            'percentual_nota_1': percentual_nota_1,
+            'percentual_nota_2': percentual_nota_2,
+            'percentual_nota_3': percentual_nota_3,
+            'percentual_nota_4': percentual_nota_4,
+            'percentual_nota_5': percentual_nota_5,
+            'classe_nota_1': classe_nota_1,
+            'classe_nota_2': classe_nota_2,
+            'classe_nota_3': classe_nota_3,
+            'classe_nota_4': classe_nota_4,
+            'classe_nota_5': classe_nota_5,
         }
     )
 
 
 @login_required
-def inscricaoCursoView(request):
+def inscricaoCursoView(request, id):
     """
     View responsável pelo tratamento de inscrição de um usuário no curso selecionado
     """
+
     # Caso o usuário seja do pefil ALUNO
     if request.user.tem_perfil_aluno():
         resposta = "Falha ao realizar a inscrição."
         if request.method == 'GET':
             try:
-                curso_id = request.GET['curso_id']
-
-                curso = Curso.objects.get(pk=curso_id)
+                curso = get_object_or_404(Curso, pk=id)
 
                 inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
 
@@ -658,7 +746,8 @@ def inscricaoCursoView(request):
                 else:
                     resposta ="Inscrição já realizada."
 
-                return HttpResponse(resposta)
+                return redirect(f"/conteudo-curso/{curso.id}")
+
             except:
                 return HttpResponse(resposta)
         else:
@@ -675,7 +764,7 @@ def avaliacaoCursoView(request, id):
     """
 
     # Permite a avaliação de um curso apenas para usuário com perfil ALUNO
-    if request.user.tem_perfil_aluno():
+    if request.user.tem_perfil_aluno() == False:
 
         try:
             curso = Curso.objects.get(pk=id)
@@ -687,14 +776,7 @@ def avaliacaoCursoView(request, id):
                 # Chama tratamento padrão para usuário sem permissão
                 return trata_usuario_sem_permissao(request)
 
-            curso_sem_conteudo = not(curso.tem_conteudo())
-
             inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
-
-            # Obtém as avaliações associadas ao curso
-            avaliacoes = Avaliacao.objects.filter(~Q(usuario=request.user), curso=curso)
-
-            avaliacao_usuario = None
 
             # Caso a requisição seja uma POST, atualiza a avaliação ou cria uma
             # nova caso não exista
@@ -721,26 +803,14 @@ def avaliacaoCursoView(request, id):
                         comentario=comentario,
                         data_avaliacao=datetime.now()
                     )
-
-            # Obtém a nota média de avaliação do curso
-            nota_media_curso = curso.obtem_nota_media()
-            nota_media_curso = "{:.2f}".format(nota_media_curso)
         except:
-            curso = None
-            inscricao = None
-            avaliacoes = None
+            resposta = HttpResponse('FALHA')
+            resposta.status_code = 404
 
-        return render(
-            request,
-            'core/avaliacao-conteudo.html',
-            {
-                'avaliacao_usuario': avaliacao_usuario,
-                'avaliacoes': avaliacoes,
-                'curso': curso,
-                'curso_sem_conteudo': curso_sem_conteudo,
-                'nota_media_curso': nota_media_curso,
-            },
-        )
+        resposta = HttpResponse('SUCESSO')
+        resposta.status_code = 200
+
+        return resposta
 
     else:
         # Chama tratamento padrão para usuário sem permissão
@@ -756,6 +826,17 @@ def conteudoCursoView(request, id):
     curso = None
     perfil_aluno = False
 
+    situacao_aluno_curso = None
+    percentual_andamento = None
+    percentual_acertos = None
+    data_inicio = None
+    data_conclusao = None
+    data_ultimo_acesso = None
+
+    lista_unidades = []
+
+    avaliacao = None
+
     # Verifica o perfil do usuário para obter o curso associado ao ID da requisição
     if request.user.tem_perfil_aluno():
         perfil_aluno = True
@@ -763,38 +844,101 @@ def conteudoCursoView(request, id):
 
         # Verifica se o usuário está inscrito no curso associado ao recurso acessado
         # Caso não esteja inscrito, retorna uma mensagem associada
-        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, curso)
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(
+            request.user,
+            curso
+        )
         if usuario_inscrito == False:
             # Chama tratamento padrão para usuário sem permissão
             return trata_usuario_sem_permissao(request)
+
+        avaliacao = Avaliacao.objects.filter(curso=curso, usuario=request.user)
+        if avaliacao.count() == 1:
+            avaliacao = avaliacao[0]
     else:
-        try:
-            if request.user.tem_perfil_aluno():
-                curso = Curso.objects.get(pk=id, usuario=request.user)
-            else:
-                curso = Curso.objects.get(pk=id)
-        except:
-            curso = None
+        curso = get_object_or_404(Curso, pk=id)
 
     # Caso tenha obtido o curso com sucesso, obtém seus conteúdos
     if curso:
         unidades = Unidade.objects.filter(curso=curso)
 
-        videos = Video.objects.filter(unidade__in=unidades)
+        for unidade in unidades:
+            dict_unidade = {}
+            lista_videos = []
+            lista_arquivos = []
+            lista_questionarios = []
+            dict_unidade['unidade'] = unidade
 
-        arquivos = Arquivo.objects.filter(unidade__in=unidades)
+            videos = Video.objects.filter(unidade=unidade)
 
-        questionarios = Questionario.objects.filter(unidade__in=unidades)
+            for video in videos:
+                dict_video = {}
+                dict_video['video'] = video
+                usuario_video = UsuarioVideo.objects.filter(
+                    usuario=request.user,
+                    video=video
+                )
+
+                dict_video['assistido'] = False
+                if usuario_video.count() == 1:
+                    if usuario_video[0].assistido:
+                        dict_video['assistido'] = True
+
+                lista_videos.append(dict_video)
+            dict_unidade['videos'] = lista_videos
+
+            arquivos = Arquivo.objects.filter(unidade=unidade)
+
+            for arquivo in arquivos:
+                dict_arquivo = {}
+                dict_arquivo['arquivo'] = arquivo
+
+                usuario_arquivo = UsuarioArquivo.objects.filter(
+                    usuario=request.user,
+                    arquivo=arquivo
+                )
+
+                dict_arquivo['acessado'] = False
+                if usuario_arquivo.count() == 1:
+                    if usuario_arquivo[0].acessado:
+                        dict_arquivo['acessado'] = True
+
+                lista_arquivos.append(dict_arquivo)
+            dict_unidade['arquivos'] = lista_arquivos
+
+            questionarios = Questionario.objects.filter(unidade=unidade)
+
+            for questionario in questionarios:
+                dict_questionario = {}
+                dict_questionario['questionario'] = questionario
+
+                usuario_questionario = UsuarioQuestionario.objects.filter(
+                    usuario=request.user,
+                    questionario=questionario
+                )
+
+                dict_questionario['respondido'] = False
+                if usuario_arquivo.count() == 1:
+                    if usuario_questionario[0].respondido:
+                        dict_questionario['respondido'] = True
+
+                lista_questionarios.append(dict_questionario)
+            dict_unidade['questionarios'] = lista_questionarios
+
+            lista_unidades.append(dict_unidade)
 
         # Verifica se o usuário da requisição é de perfil ALUNO e caso seja
         # obtém a inscrição do usuário curso
-        inscricao = None
-        curso_concluido = False
         if perfil_aluno:
             try:
                 inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
-                if inscricao.situacao == "APROVADO":
-                    curso_concluido = True
+
+                situacao_aluno_curso = inscricao.situacao
+                percentual_andamento = "{:.1f}".format(inscricao.percentual_andamento)
+                percentual_acertos = "{:.1f}".format(inscricao.percentual_acertos)
+                data_inicio = inscricao.data_inscricao
+                data_conclusao = inscricao.data_conclusao
+                data_ultimo_acesso = inscricao.data_ultimo_conteudo_acessado
             except:
                 inscricao = None
 
@@ -803,12 +947,14 @@ def conteudoCursoView(request, id):
         'core/curso-conteudo.html',
         {
             'curso': curso,
-            'unidades': unidades,
-            'videos': videos,
-            'arquivos': arquivos,
-            'questionarios': questionarios,
-            'inscricao': inscricao,
-            'curso_concluido': curso_concluido,
+            'lista_unidades': lista_unidades,
+            'avaliacao': avaliacao,
+            'situacao_aluno_curso': situacao_aluno_curso,
+            'percentual_andamento': percentual_andamento,
+            'percentual_acertos': percentual_acertos,
+            'data_inicio': data_inicio,
+            'data_conclusao': data_conclusao,
+            'data_ultimo_acesso': data_ultimo_acesso,
             'perfil_aluno': perfil_aluno,
         }
     )

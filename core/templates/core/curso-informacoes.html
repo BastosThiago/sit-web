@@ -1,88 +1,461 @@
-{% extends 'pagina-inicial.html' %}
+{% extends  'base-home-page.html' %}
+{% load static %}
 
-{% block title %} Lista de Cursos {% endblock %}
+{% block head %}
+    <style>
 
-{% block content_page %}
-<div class="offset-1 col-10 list-div">
-    <h2>{{curso.titulo}}</h2>
+            html,
+            body {
+              height: 100%;
+            }
 
-    </br>
+            #page-content {
+              flex: 1 0 auto;
+              margin-top: 40px;
+            }
 
-    <h3>Informações sobre o curso</h3>
-    <p>
-        {{curso.categoria.titulo}}
-    </p>
-    <p>
-        Instrutor: {{curso.usuario.username}}
-    </p>
-    <p>
-        Palavras chaves: {{curso.palavras_chaves}}
-    </p>
-     <p>
-        Descrição: {{curso.descricao}}
-    </p>
+            #sticky-footer {
+              flex-shrink: none;
+            }
 
-    </br>
+            .class-icone {
+              margin-right: 10px;
+            }
 
-    <h3>Unidades do curso</h3>
-    {% if unidades != None %}
-        <ul class="itens-lista">
+            .navbar-dark {
+                background-color: #343a40;
+            }
 
-            {% for unidade in unidades %}
-                <li>
-                    <p>{{unidade.titulo}}</p>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Curso sem unidades cadastradas</p>
-    {% endif %}
+            .fa-angle-double-down, .fa-angle-double-up{
+                margin-right: 0.5rem;
+             }
 
-    </br>
+            .fa-trash-alt {
+                color: red;
+                font-size: 1.7rem;
+            }
 
-    {% if exibe_botao_inscricao == False and perfil_aluno == True %}
+            .fa-save {
+                color: green;
+                font-size: 1.7rem;
+            }
 
-        {% include  'core/avaliacao-conteudo.html' %}
+             .tab-content-body {
+                margin-left: 10px;
+                padding: 10px;
+            }
+            .tab-content {
+                border-bottom: 1px solid #dee2e6;
+                border-left: 1px solid #dee2e6;
+                border-right: 1px solid #dee2e6;
+            }
 
-    {% endif %}
+          .star {
+              font-size: 1.5rem;
+              width: 20px;
+              display: inline-block;
+              color: black;
+          }
+          .star:last-child {
+              margin-right: 0;
+          }
+          .star:before {
+              content:'\2605';
+          }
+          .star.on {
+              color: orange;
+              font-size: 1.5rem;
+          }
+          .star.half:after {
+              content:'\2605';
+              color: orange;
+              position: absolute;
+              margin-left: -20px;
+              width: 10px;
+              overflow: hidden;
+          }
 
-    {% if exibe_botao_inscricao %}
-        <a class="botao_inscricao" id="add-link" href="#" data-curso_id="{{ curso.id }}">
-        <div class="col-4 add-div">
-            <i class="fas fa-plus"></i> Inscrever-se
-        </div>
-    {% endif %}
+          .nav-tabs-content{
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+          }
 
-    {% if exibe_botao_conteudo %}
-        <a id="add-link" href="/conteudo-curso/{{ curso.id }}">
-        <div class="col-4 add-div">
-            <i class="fas fa-plus"></i> Acessar
-        </div>
-    {% endif %}
+          .nav-link-content {
+            border: 1px solid gray !important;
+            color: black;
+            background-color: white;
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-radius: .3rem !important;
+            font-family: inherit !important;
+            margin-right: 5px !important;
+            margin-bottom: 5px !important;
+            margin-top: 5px !important;
+          }
 
-    <p id="message"></p>
+          .nav-link-content.active {
+            color: white !important;
+            background-color: #007bff !important;
+            border: 1px solid #007bff !important;
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-radius: .3rem !important;
+            font-family: inherit !important;
+          }
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script type="text/javascript">
-        $('.botao_inscricao').click(function(){
-            var curso_id;
-            curso_id = $(this).attr("data-curso_id");
-            $.ajax(
-            {
-                type:"GET",
-                url: "/inscricao-curso",
-                data:{
-                         curso_id: curso_id
-                },
-                success: function( data )
-                {
-                    window.location = '/conteudo-curso/' + curso_id;
-                },
-                error: function(data){
-                    $( '#message' ).text(data);
-                }
-            })
-        });
-    </script>
-</div>
+          .nav-link-content.active > i{
+            color: white !important;
+          }
+
+          .progress {
+            margin-top: 10px;
+            height: 1.1rem;
+          }
+
+          .checked {
+            color: orange;
+          }
+
+          .perc-nota {
+              margin-left: 10px;
+              color: black;
+              font-weight: bold;
+              font-size: 0.85rem;
+          }
+
+          .pb-color {
+              background-color: orange;
+          }
+
+          .class-icone-content {
+              margin-right: 10px;
+              color: darkblue;
+          }
+
+          .class-icone-button{
+              margin-right: 10px;
+              color: white;
+          }
+
+          .btn-link {
+            font-weight: bold;
+          }
+
+    </style>
+
+{% endblock %}
+
+{% block conteudo-home-page %}
+
+    <div id="page-content">
+        <section class="py-4">
+
+            <div id="content" class="container-fluid">
+
+              <div class="card">
+                  <h4 class="card-header text-center">{{ curso.titulo }}</h4>
+                  <div class="card-body">
+                      <hr/>
+
+                      <h4 class="card-title text-center">Descrição</h4>
+
+                      <hr/>
+                      <p class="card-text text-center" style="font-size: 1.5rem;">
+                          {{ curso.descricao }}
+                      </p>
+
+                      <div class="col text-center">
+                          <a href="/inscricao-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button">
+                              <i class="fas fa-user-graduate class-icone-button"></i>
+                                  Inscreva-se
+                          </a>
+                      </div>
+
+                      <div class="col text-center">
+                          <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button">
+                              <i class="fas fa-angle-double-right class-icone-button"></i>
+                                  Acessar curso
+                          </a>
+                      </div>
+
+
+                      <!-- <ul class="nav nav-pills justify-content-center" id="pills-tab" role="tablist"> -->
+                      <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
+                          <li class="nav-item">
+                              <a class="nav-link nav-link-content active" id="informacoes-tab" data-toggle="tab" href="#informacoes-curso" role="tab" aria-controls="informacoes-curso" aria-selected="false">
+                                  <i class="fa fa-info-circle class-icone-content"></i>Informações
+                              </a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link nav-link-content" id="conteudo-tab" data-toggle="tab" href="#conteudo-curso" role="tab" aria-controls="conteudo-curso" aria-selected="false">
+                                  <i class="fab fa-contao class-icone-content"></i>Conteúdo
+                              </a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false">
+                                  <i class="fa fa-star class-icone-content"></i>Avaliações
+                              </a>
+                          </li>
+                      </ul>
+
+                      <div class="tab-content" id="navegacao-conteudo">
+
+                          <div class="tab-pane fade show active" id="informacoes-curso" role="tabpanel" aria-labelledby="informacoes-tab">
+                            <div class="tab-content-body">
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-bookmark class-icone-content"></i>Categoria: <b>{{ categoria }}</b></h5>
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-chalkboard-teacher class-icone-content"></i>Criado por: <b>{{ instrutor }}</b></h5>
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-upload class-icone-content"></i>Publicado em: <b>{{ curso.data_publicado|date:"d/m/Y"}}</b></h5>
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-star class-icone-content"></i>Nota média: <span class="text-center" style="color:orange;"><b>{{ nota_media_curso }}</b></span></h5>
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-users class-icone-content"></i>Inscrições: <b>{{ numero_inscritos }} alunos</b></h5>
+                                <hr/>
+
+                            </div>
+                          </div>
+
+                          <div class="tab-pane fade" id="conteudo-curso" role="tabpanel" aria-labelledby="conteudo-tab">
+                            <div class="tab-content-body">
+
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-layer-group class-icone-content"></i>Unidades: {{ numero_unidades }}</h5>
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-video class-icone-content"></i>Vídeos: {{ numero_videos }}</h5>
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-file-alt class-icone-content"></i>Arquivos: {{ numero_arquivos }}</h5>
+                                <hr/>
+                                <h5 class="text-center"><i class="fas fa-tasks class-icone-content"></i>Questionários: {{ numero_questionarios }}</h5>
+                                <hr/>
+                                <h5 class="text-center">Descrição das Unidades</h5>
+                                <hr/>
+                                <div class="panel-group" id="accordion-conteudos">
+
+                                    {% for unidade in unidades %}
+                                    <div class="card" style="margin-top: 10px;">
+                                        <div class="card-header" id="heading-unidade-{{ unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                          <h5 class="mb-0">
+                                            <button class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-unidade-{{ unidade.ordem }}">
+                                              <i class="fas fa-angle-double-down"></i>
+                                              Unidade - {{ unidade.ordem }}
+                                            </button>
+
+                                          </h5>
+                                        </div>
+                                        <div id="collapse-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-unidade-{{ unidade.ordem }}" data-parent="#accordion-conteudos">
+                                          <div class="tab-content-body">
+                                              {% if unidade.descricao == None %}
+                                                  <p></p>
+                                              {% else %}
+                                                  <p>{{ unidade.descricao }}</p>
+                                              {% endif %}
+                                          </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+
+                          </div>
+
+                          <div class="tab-pane fade" id="avaliacoes-curso" role="tabpanel" aria-labelledby="avaliacoes-tab">
+
+                            <div class="tab-content-body">
+                                <hr/>
+                                <h5 class="text-center">Nota geral: <span style="font-size: 2rem;">{{ nota_media_curso }}</span></h5>
+                                <div class="stars text-center">
+                                    <div class="stars">
+                                        <span class="star {{ classe_nota_1 }}"></span>
+                                        <span class="star {{ classe_nota_2 }}"></span>
+                                        <span class="star {{ classe_nota_3 }}"></span>
+                                        <span class="star {{ classe_nota_4 }}"></span>
+                                        <span class="star {{ classe_nota_5 }}"></span>
+                                    </div>
+                                    <span>({{ numero_avaliacoes }} avaliações)</span>
+                                </div>
+
+                                <hr/>
+                                <h5 class="text-center">Detalhes</h5>
+                                <hr/>
+                                <div class="container">
+                                    <div>
+                                      <div style="float: right; line-height: 0; margin-left: 10px;">
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span><b>({{ numero_avaliacoes_nota_5 }})</b></span>
+                                      </div>
+                                      <div class="progress">
+                                        <div class="progress-bar pb-color" role="progressbar" style="width: {{ percentual_nota_5 }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="perc-nota">{{ percentual_nota_5 }}%</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div style="float: right; line-height: 0; margin-left: 10px;">
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span><b>({{ numero_avaliacoes_nota_4 }})</b></span>
+                                      </div>
+                                      <div class="progress">
+                                        <div class="progress-bar pb-color" role="progressbar" style="width: {{ percentual_nota_4 }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="perc-nota">{{ percentual_nota_4 }}%</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div style="float: right; line-height: 0; margin-left: 10px;">
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span><b>({{ numero_avaliacoes_nota_3 }})</b></span>
+                                      </div>
+                                      <div class="progress">
+                                        <div class="progress-bar pb-color" role="progressbar" style="width: {{ percentual_nota_3 }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="perc-nota">{{ percentual_nota_3 }}%</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div style="float: right; line-height: 0; margin-left: 10px;">
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span><b>({{ numero_avaliacoes_nota_2 }})</b></span>
+                                      </div>
+                                      <div class="progress">
+                                        <div class="progress-bar pb-color" role="progressbar" style="width: {{ percentual_nota_2 }}%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="perc-nota">{{ percentual_nota_2 }}%</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div style="float: right; line-height: 0; margin-left: 10px;">
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span class="fa fa-star"></span>
+                                        <span><b>({{ numero_avaliacoes_nota_1 }})</b></span>
+                                      </div>
+                                      <div class="progress">
+                                        <div class="progress-bar pb-color" role="progressbar" style="width: {{ percentual_nota_1 }}%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                            <span class="perc-nota">{{ percentual_nota_1 }}%</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>
+
+                                <hr/>
+                                <h5 class="text-center">Comentários</h5>
+                                <hr/>
+
+                                <div class="panel-group" id="accordion-avaliacoes">
+
+                                    {% for avaliacao in avaliacoes %}
+                                    <div class="card" style="margin-top: 10px;">
+                                        <div class="card-header" id="heading-avaliacao-{{ avaliacao.id }}" style="padding: .2rem 1rem">
+                                          <h5>
+                                            <div style="display: inline-block;">
+                                                {% if avaliacao.usuario.get_full_name == "" %}
+                                                    {{ avaliacao.usuario.username }}
+                                                {% else %}
+                                                    {{ avaliacao.usuario.get_full_name }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="stars" style="display: inline-block; margin-left: 10px">
+
+                                                {% if avaliacao.nota == 1 %}
+                                                <span class="star on"></span>
+                                                <span class="star "></span>
+                                                <span class="star "></span>
+                                                <span class="star "></span>
+                                                <span class="star "></span>
+                                                {% endif %}
+                                                {% if avaliacao.nota == 2 %}
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star "></span>
+                                                <span class="star "></span>
+                                                <span class="star "></span>
+                                                {% endif %}
+                                                {% if avaliacao.nota == 3 %}
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star "></span>
+                                                <span class="star "></span>
+                                                {% endif %}
+                                                {% if avaliacao.nota == 4 %}
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star "></span>
+                                                {% endif %}
+                                                {% if avaliacao.nota == 7 %}
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                <span class="star on"></span>
+                                                {% endif %}
+                                                <span><b>({{ avaliacao.nota  }})</b></span>
+                                            </div>
+                                            <div style="display: inline-block; margin-left: 10px;">
+                                              <span style="font-size: 1.1rem; color:gray;">em {{ avaliacao.data_avaliacao|date:"d/m/Y"}}</span>
+                                            </div>
+                                            <button class="btn btn-link link-avaliacao" onclick="expandeArea(this)" style="float: right; "data-toggle="collapse" data-target="#collapse-avaliacao-{{ avaliacao.id }}" aria-expanded="true" aria-controls="collapse-avaliacao-{{ avaliacao.id }}">
+                                              <i class="fas fa-angle-double-down" style="font-size: 1.3rem"></i>
+                                            </button>
+                                          </h5>
+                                        </div>
+                                        <div id="collapse-avaliacao-{{ avaliacao.id }}" class="collapse" aria-labelledby="heading-avaliacao-{{ avaliacao.id }}" data-parent="#accordion-avaliacoes">
+                                          <div class="tab-content-body">
+                                          <p>{{ avaliacao.comentario }}</p>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+            </div>
+
+
+          <script>
+            function expandeArea(elemento){
+              if($($($(elemento).closest('.card-header')).siblings()[0]).hasClass('show')){
+                $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
+              }
+              else {
+                $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
+              }
+
+            }
+          </script>
+
+
+         </section>
+    </div>
 {% endblock %}

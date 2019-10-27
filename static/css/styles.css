@@ -396,37 +396,3 @@ ul.messages li {
       }
     }
 
-    .star {
-        font-size: x-large;
-        width: 20px;
-        display: inline-block;
-        color: gray;
-    }
-    .star:last-child {
-        margin-right: 0;
-    }
-    .star:before {
-        content:'\2605';
-    }
-    .star.on {
-        color: gold;
-    }
-    .star.half:after {
-        content:'\2605';
-        color: gold;
-        position: absolute;
-        margin-left: -20px;
-        width: 10px;
-        overflow: hidden;
-    }
-
-    .card-curso {
-        padding: 0;
-        margin-bottom: 5px;
-        margin-right: 2.5px;
-
-    }
-
-    #content {
-        padding: 15px;
-    }

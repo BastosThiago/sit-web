@@ -1,79 +1,178 @@
-{% extends 'pagina-inicial.html' %}
+{% extends  'base-home-page.html' %}
+{% load static %}
 
-{% block title %} Lista de Cursos {% endblock %}
+{% block head %}
+    <style>
 
-{% block content_page %}
+            html,
+            body {
+              height: 100%;
+            }
+
+            #page-content {
+              flex: 1 0 auto;
+              margin-top: 40px;
+            }
+
+            #sticky-footer {
+              flex-shrink: none;
+            }
+
+            .class-icone {
+              margin-right: 10px;
+            }
+
+            .navbar-dark {
+                background-color: #343a40;
+            }
+
+            .star {
+                font-size: x-large;
+                width: 20px;
+                display: inline-block;
+                color: gray;
+            }
+            .star:last-child {
+                margin-right: 0;
+            }
+            .star:before {
+                content:'\2605';
+            }
+            .star.on {
+                color: gold;
+            }
+            .star.half:after {
+                content:'\2605';
+                color: gold;
+                position: absolute;
+                margin-left: -20px;
+                width: 10px;
+                overflow: hidden;
+            }
+
+            .card-curso {
+                padding: 0;
+                margin-bottom: 5px;
+                margin-right: 2.5px;
+
+            }
+
+            #content {
+                padding: 15px;
+            }
+
+            /* Search */
+            .fas.fa-search {
+                position: absolute;
+                top: 12px;
+                right: 26px;
+                cursor: pointer;
+            }
+
+            .search-div {
+                padding: 0px;
+                margin-top: 15px;
+                margin-bottom: 15px;
+                display: inline-block;
+            }
 
 
-    <h2 class="text-center">Lista de Cursos</h2>
 
-    <div class="col-12 search-div">
-        <form method="GET" id="search-form">
-            <input class="form-control" type="text" id="search" name="search"
-                   placeholder="Digite um nome para buscar"
-                   value="{{ request.GET.search }}">
-            <i class="fas fa-search" id="search-btn"></i>
-        </form>
-    </div>
+    </style>
 
-    <!--
-    <ul class="itens-lista">
-        {% for objeto in objetos %}
-            <li class="item-lista">
-                <span><a href="/informacoes-curso/{{objeto.id}}">{{ objeto }}</a></span>
-                <a href="informacoes-curso/{{ objeto.id }}"><span><i class="fas fa-arrow-right"></i></span></a>
-            </li>
-        {% endfor %}
-    </ul>
-    -->
-    <div class="row">
-    {% for elemento in lista_cursos %}
-        <div class="col-sm-4">
-            <div class="card card-curso">
-                <div class="card-body">
-                    <h5 class="card-title text-center">{{elemento.curso.titulo}}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
-                    <p class="card-text">{{elemento.curso.descricao}}</p>
-                    <p>
-                        <div class="stars">
-                            <span class="star {{ elemento.nota_1 }}"></span>
-                            <span class="star {{ elemento.nota_2 }}"></span>
-                            <span class="star {{ elemento.nota_3 }}"></span>
-                            <span class="star {{ elemento.nota_4 }}"></span>
-                            <span class="star {{ elemento.nota_5 }}"></span>
-                            <span><b>({{elemento.nota_media}})</b></span>
-                            <span>({{elemento.numero_avaliacoes}})</span>
-                        </div>
-                    </p>
-                    <p>
-                    <div class="card text-center">
-                        <a href="/informacoes-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button">Detalhes</a>
-                    </div>
-                    </p>
+{% endblock %}
+
+{% block conteudo-home-page %}
+
+    <div id="page-content">
+        <section class="py-4">
+
+            <h2 class="text-center" style="margin-top: 20px;">Lista de Cursos</h2>
+
+            <div style="margin: 20px">
+                <div class="col-12 search-div">
+                    <form method="GET" id="search-form">
+                        <input class="form-control" type="text" id="search" name="search"
+                               placeholder="Digite um nome para buscar"
+                               value="{{ request.GET.search }}">
+                        <i class="fas fa-search" id="search-btn"></i>
+                    </form>
                 </div>
+
+                <!--
+                <ul class="itens-lista">
+                    {% for objeto in objetos %}
+                        <li class="item-lista">
+                            <span><a href="/informacoes-curso/{{objeto.id}}">{{ objeto }}</a></span>
+                            <a href="informacoes-curso/{{ objeto.id }}"><span><i class="fas fa-arrow-right"></i></span></a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                -->
+                <div class="row">
+                {% for elemento in lista_cursos %}
+                    <div class="col-sm-3">
+                        <div class="card card-curso">
+
+                            <div class="card-header">
+                                <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
+                            </div>
+
+                            <div class="card-body">
+
+                                <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
+
+                                <hr/>
+
+                                <p class="card-text text-center">{{elemento.curso.descricao}}</p>
+                                <p>
+                                    <div class="stars text-center">
+                                        <span class="star {{ elemento.nota_1 }}"></span>
+                                        <span class="star {{ elemento.nota_2 }}"></span>
+                                        <span class="star {{ elemento.nota_3 }}"></span>
+                                        <span class="star {{ elemento.nota_4 }}"></span>
+                                        <span class="star {{ elemento.nota_5 }}"></span>
+                                        <span><b>({{elemento.nota_media}})</b></span>
+                                        <span>({{elemento.numero_avaliacoes}})</span>
+                                    </div>
+                                </p>
+                                <p>
+
+                                <div class="col text-center">
+                                    <a href="/informacoes-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button">
+                                        <i class="fas fa-info-circle class-icone-button"></i>
+                                            Mais informações
+                                    </a>
+                                </div>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+
+                <!--
+                <div class="pagination">
+                    <span class="step-links">
+                        <span>
+                            {% if objetos.has_previous %}
+                                <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-arrow-left"></i></a>
+                            {% endif %}
+
+                            {% if objetos.paginator.num_pages %}
+                            <span class="current">
+                                {{ objetos.number }} de {{ objetos.paginator.num_pages }}
+                            </span>
+                            {% endif %}
+
+                            {% if objetos.has_next %}
+                                <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-arrow-right"></i></a>
+                            {% endif %}
+                        </span>
+                    </span>
+                </div>
+                -->
             </div>
-        </div>
-    {% endfor %}
+         </section>
     </div>
-
-    <div class="pagination">
-        <span class="step-links">
-            <span>
-                {% if objetos.has_previous %}
-                    <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-arrow-left"></i></a>
-                {% endif %}
-
-                {% if objetos.paginator.num_pages %}
-                <span class="current">
-                    {{ objetos.number }} de {{ objetos.paginator.num_pages }}
-                </span>
-                {% endif %}
-
-                {% if objetos.has_next %}
-                    <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-arrow-right"></i></a>
-                {% endif %}
-            </span>
-        </span>
-    </div>
-
 {% endblock %}

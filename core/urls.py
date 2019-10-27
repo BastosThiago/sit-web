@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('cursos',                              cursosListView,                                 name='cursos'),
     path('informacoes-curso/<int:id>',          informacoesCursoView,                           name='informacoes-curso'),
-    path('inscricao-curso/',                    inscricaoCursoView,                             name='inscricao-curso'),
+    path('inscricao-curso/<int:id>',            inscricaoCursoView,                             name='inscricao-curso'),
     path('conteudo-curso/<int:id>',             conteudoCursoView,                              name='conteudo-curso'),
     path('visualizacao-video/<int:id>',         visualizacaoVideoView,                          name='visualizacao-video'),
     path('visualizacao-arquivo/<int:id>',       visualizacaoArquivoView,                        name='visualizacao-arquivo'),
