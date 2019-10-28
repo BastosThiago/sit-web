@@ -961,6 +961,44 @@ def conteudoCursoView(request, id):
 
 
 @login_required
+def atualizaAcessoConteudoView(request):
+    """
+    View responsável pelo tratamento de avaliacao de um curso
+    """
+
+    # Permite a avaliação de um curso apenas para usuário com perfil ALUNO
+    if request.user.tem_perfil_aluno() == True:
+
+        try:
+            if request.method == 'GET':
+
+                tipo_conteudo = request.GET['tipo_conteudo']
+                id_conteudo = int(request.GET['id_conteudo'])
+                conteudo_status = bool(request.GET['conteudo_status'])
+
+                if tipo_conteudo == "video":
+                    usuario_video = UsuarioVideo.objects.get(
+                        usuario=request.user,
+                        video_id=id_conteudo
+                    )
+
+                    usuario_video.assistido = conteudo_status
+                    usuario_video.save()
+        except:
+            resposta = HttpResponse('FALHA')
+            resposta.status_code = 404
+
+        resposta = HttpResponse('SUCESSO')
+        resposta.status_code = 200
+
+        return resposta
+
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
+
+
+@login_required
 @never_cache
 def visualizacaoVideoView(request, id):
     """

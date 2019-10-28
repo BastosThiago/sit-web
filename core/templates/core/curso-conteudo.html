@@ -159,6 +159,18 @@
             -ms-transform: rotate(45deg);
             transform: rotate(45deg);
         }
+
+       .bd-example-modal-lg .modal-dialog{
+          display: table;
+          position: relative;
+          margin: 0 auto;
+          top: calc(50% - 24px);
+        }
+
+        .bd-example-modal-lg .modal-dialog .modal-content{
+          background-color: transparent;
+          border: none;
+        }
     </style>
 
 {% endblock %}
@@ -237,10 +249,8 @@
 
                           <div class="tab-pane fade" id="conteudo-curso" role="tabpanel" aria-labelledby="conteudo-tab">
                             <div class="tab-content-body">
-
-                                <div class="panel-group" id="accordion-conteudos">
-
-                                    {% for elemento in lista_unidades %}
+                                {% for elemento in lista_unidades %}
+                                <div class="panel-group" id="accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
                                     <div class="card" style="margin-top: 10px;">
                                         <div class="card-header" id="heading-unidade-{{elemento.unidade.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
                                           <h5 class="mb-0">
@@ -251,106 +261,160 @@
 
                                           </h5>
                                         </div>
-                                        <div id="collapse-unidade-{{elemento.unidade.ordem}}" class="collapse" aria-labelledby="heading-unidade-{{elemento.unidade.ordem}}" data-parent="#accordion-conteudos">
+                                        <div id="collapse-unidade-{{elemento.unidade.ordem}}" class="collapse" aria-labelledby="heading-unidade-{{elemento.unidade.ordem}}" data-parent="#accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
 
                                             <div class="tab-content-body">
                                                 <p>{{elemento.unidade.descricao}}</p>
 
-                                                <div class="panel-group" id="accordion-videos">
 
-                                                    {% for video in elemento.videos %}
+                                                <div class="panel-group" id="accordion-videos-unidade-{{elemento.unidade.ordem}}">
+
+
                                                     <div class="card" style="margin-top: 10px;">
-                                                        <div class="card-header" id="heading-video-{{video.video.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                        <div class="card-header" id="heading-videos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                           <h5 class="mb-0">
-                                                            <label class="container-check">
-                                                                <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}">
-                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
-                                                            </label>
-                                                            <button style="margin-left: 25px;" class="btn btn-link link-video" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{video.video.ordem}}" aria-expanded="true" aria-controls="collapse-video-{{video.video.ordem}}">
+                                                            <button style="margin-left: 5px;" class="btn btn-link link-videos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-videos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-videos-unidade-{{ elemento.unidade.ordem }}">
                                                               <i class="fas fa-angle-double-down"></i>
                                                               <i class="fas fa-video"></i>
-                                                              - {{ video.video.titulo }}
+                                                              - Vídeos
                                                             </button>
-
-                                                            <a href="/visualizacao-video/{{ video.video.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
-
                                                           </h5>
                                                         </div>
-                                                        <div id="collapse-video-{{video.video.ordem}}" class="collapse" aria-labelledby="heading-video-{{video.video.ordem}}" data-parent="#accordion-videos">
+                                                        <div id="collapse-videos-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-videos-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-videos-unidade-{{elemento.unidade.ordem}}">
                                                           <div class="tab-content-body">
-                                                          <p>{{ video.video.descricao }}</p>
+
+                                                                {% for video in elemento.videos %}
+                                                                <div class="panel-group" id="accordion-video-unidade-{{elemento.unidade.ordem}}">
+                                                                    <div class="card" style="margin-top: 10px;">
+                                                                        <div class="card-header" id="heading-video-{{video.video.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                                          <h5 class="mb-0">
+                                                                            <label class="container-check">
+                                                                                <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
+                                                                            </label>
+                                                                            <button style="margin-left: 25px;" class="btn btn-link link-video" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{video.video.ordem}}" aria-expanded="true" aria-controls="collapse-video-{{video.video.ordem}}">
+                                                                              <i class="fas fa-angle-double-down"></i>
+                                                                              {{ video.video.titulo }}
+                                                                            </button>
+
+                                                                            <a href="/visualizacao-video/{{ video.video.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
+
+                                                                          </h5>
+                                                                        </div>
+                                                                        <div id="collapse-video-{{video.video.ordem}}" class="collapse" aria-labelledby="heading-video-{{video.video.ordem}}" data-parent="#accordion-video-unidade-{{elemento.unidade.ordem}}">
+                                                                          <div class="tab-content-body">
+                                                                          <p>{{ video.video.descricao }}</p>
+                                                                          </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
                                                           </div>
                                                         </div>
                                                     </div>
-                                                    {% endfor %}
                                                 </div>
 
-                                                <div class="panel-group" id="accordion-arquivos">
 
-                                                    {% for arquivo in elemento.arquivos %}
+                                                <div class="panel-group" id="accordion-arquivos-unidade-{{elemento.unidade.ordem}}">
+
+
                                                     <div class="card" style="margin-top: 10px;">
-                                                        <div class="card-header" id="heading-arquivo-{{ arquivo.arquivo.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                        <div class="card-header" id="heading-arquivos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                           <h5 class="mb-0">
-                                                            <label class="container-check">
-                                                                <input type="checkbox" checked="checked" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
-                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
-                                                            </label>
-                                                            <button style="margin-left: 25px;" class="btn btn-link link-arquivo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.arquivo.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                            <button style="margin-left: 5px;" class="btn btn-link link-arquivos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}">
                                                               <i class="fas fa-angle-double-down"></i>
                                                               <i class="fas fa-file-alt"></i>
-                                                              - {{ arquivo.arquivo.titulo }}
+                                                              - Arquivos
                                                             </button>
-
-                                                            <a href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
-
                                                           </h5>
                                                         </div>
-                                                        <div id="collapse-arquivo-{{ arquivo.arquivo.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.arquivo.ordem }}" data-parent="#accordion-arquivos">
+                                                        <div id="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-arquivos-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-arquivos-unidade-{{elemento.unidade.ordem}}">
                                                           <div class="tab-content-body">
-                                                          <p>{{ arquivo.arquivo.descricao }}</p>
+
+                                                                {% for arquivo in elemento.arquivos %}
+                                                                <div class="panel-group" id="accordion-arquivo-unidade-{{elemento.unidade.ordem}}">
+                                                                    <div class="card" style="margin-top: 10px;">
+                                                                        <div class="card-header" id="heading-arquivo-{{ arquivo.arquivo.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                                          <h5 class="mb-0">
+                                                                            <label class="container-check">
+                                                                                <input type="checkbox" checked="checked" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
+                                                                            </label>
+                                                                            <button style="margin-left: 25px;" class="btn btn-link link-arquivo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.arquivo.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                              <i class="fas fa-angle-double-down"></i>
+                                                                              {{ arquivo.arquivo.titulo }}
+                                                                            </button>
+
+                                                                            <a href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
+
+                                                                          </h5>
+                                                                        </div>
+                                                                        <div id="collapse-arquivo-{{ arquivo.arquivo.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.arquivo.ordem }}" data-parent="#accordion-arquivo-unidade-{{elemento.unidade.ordem}}">
+                                                                          <div class="tab-content-body">
+                                                                              <p>{{ arquivo.arquivo.descricao }}</p>
+                                                                          </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
                                                           </div>
                                                         </div>
                                                     </div>
-                                                    {% endfor %}
                                                 </div>
 
-                                                <div class="panel-group" id="accordion-questionarios">
+                                                <div class="panel-group" id="accordion-questionarios-unidade-{{elemento.unidade.ordem}}">
 
-                                                    {% for questionario in elemento.questionarios %}
+
                                                     <div class="card" style="margin-top: 10px;">
-                                                        <div class="card-header" id="heading-questionario-{{ questionario.questionario.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                        <div class="card-header" id="heading-questionarios-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                           <h5 class="mb-0">
-                                                            <label class="container-check">
-                                                                <input type="checkbox" checked="checked" id="input-questionario-{{ questionario.questionario.ordem }}">
-                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
-                                                            </label>
-                                                            <button style="margin-left: 25px;" class="btn btn-link link-questionario" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.questionario.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.questionario.ordem }}">
+                                                            <button style="margin-left: 5px;" class="btn btn-link link-questionarios" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}">
                                                               <i class="fas fa-angle-double-down"></i>
                                                               <i class="fas fa-tasks"></i>
-                                                              - {{ questionario.questionario.titulo }}
+                                                              - Questionários
                                                             </button>
-
-                                                            <a href="/visualizacao-questionario/{{ questionario.questionario.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
-
                                                           </h5>
                                                         </div>
-                                                        <div id="collapse-questionario-{{ questionario.questionario.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.questionario.ordem }}" data-parent="#accordion-questionarios">
+                                                        <div id="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-questionarios-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-questionarios-unidade-{{elemento.unidade.ordem}}">
                                                           <div class="tab-content-body">
-                                                          <p>{{ questionario.questionario.descricao }}</p>
+
+                                                                {% for questionario in elemento.questionarios %}
+                                                                <div class="panel-group" id="accordion-questionario-unidade-{{elemento.unidade.ordem}}">
+                                                                    <div class="card" style="margin-top: 10px;">
+                                                                        <div class="card-header" id="heading-questionario-{{ questionario.questionario.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                                          <h5 class="mb-0">
+                                                                            <label class="container-check">
+                                                                                <input type="checkbox" checked="checked" id="input-questionario-{{ questionario.questionario.ordem }}">
+                                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
+                                                                            </label>
+                                                                            <button style="margin-left: 25px;" class="btn btn-link link-questionario" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.questionario.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.questionario.ordem }}">
+                                                                              <i class="fas fa-angle-double-down"></i>
+                                                                              {{ questionario.questionario.titulo }}
+                                                                            </button>
+
+                                                                            <a href="/visualizacao-questionario/{{ questionario.questionario.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
+
+                                                                          </h5>
+                                                                        </div>
+                                                                        <div id="collapse-questionario-{{ questionario.questionario.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.questionario.ordem }}" data-parent="#accordion-questionario-unidade-{{elemento.unidade.ordem}}">
+                                                                          <div class="tab-content-body">
+                                                                              <p>{{ questionario.questionario.descricao }}</p>
+                                                                          </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
                                                           </div>
                                                         </div>
                                                     </div>
-                                                    {% endfor %}
                                                 </div>
 
                                             </div>
 
                                         </div>
                                     </div>
-                                    {% endfor %}
                                 </div>
-
-
+                                {% endfor %}
                             </div>
 
                           </div>
@@ -473,7 +537,7 @@
               </div>
             </div>
 
-            <div class="modal fade modal-delete-item" id="confirmDeleteModal" id_elemento="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+            <div class="modal fade modal-delete-item" id="confirmDeleteModal" id_elemento="" id_conteudo="" tipo_conteudo="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-body confirm-conteudo">
@@ -485,6 +549,35 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+
+            <div class="modal modal-sem-alteracoes" tabindex="-1" role="dialog">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de conteúdo de Curso</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Atualização realizada com sucesso.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade bd-example-modal-lg" id="modal-aguarde" id_conteudo="" tipo_conteudo="" status_conteudo="" data-backdrop="static" data-keyboard="false" tabindex="-1">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content" style="width: 48px">
+                        <span class="fa fa-spinner fa-spin fa-3x"></span>
+                        <span><b>Aguarde...</b></span>
+                    </div>
+                </div>
             </div>
 
           <script>
@@ -511,21 +604,60 @@
                 $('.confirm-conteudo')[0].innerText = msg;
 
                 $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_elemento", this.id)
+                $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_conteudo", $(this).attr("id_conteudo"))
+                $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("tipo_conteudo", $(this).attr("tipo_conteudo"))
                 $('.modal-delete-item').modal('show');
 
             });
 
             $(document).on('click', '#confirmDeleteButtonModal', function () {
                 id_elemento = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_elemento")
+                id_conteudo = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_conteudo")
+                tipo_conteudo = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("tipo_conteudo")
                 elemento = $('#' + id_elemento)[0]
+
+                var conteudo_status = false;
 
                 if($(elemento).prop("checked")) {
                     $(elemento).prop("checked", false)
+                    status_conteudo = false;
                 }
                 else {
                     $(elemento).prop("checked", true)
+                    status_conteudo = true;
                 }
+
+                $("#modal-aguarde").attr("id_conteudo", id_conteudo)
+                $("#modal-aguarde").attr("tipo_conteudo", tipo_conteudo)
+                $("#modal-aguarde").attr("status_conteudo", status_conteudo)
+                $('#modal-aguarde').modal('show');
+
             });
+
+            $('#modal-aguarde').on('shown.bs.modal', function () {
+                id_conteudo     = $("#modal-aguarde").attr("id_conteudo")
+                tipo_conteudo   = $("#modal-aguarde").attr("tipo_conteudo")
+                status_conteudo = $("#modal-aguarde").attr("status_conteudo")
+
+                $.ajax(
+                {
+                    type:"GET",
+                    url: "/atualiza-acesso-conteudo/",
+                    data:{
+                        id_conteudo:  id_conteudo,
+                        tipo_conteudo: tipo_conteudo,
+                        conteudo_status: status_conteudo
+                    },
+                    success     : function(data, textStatus, jqXHR){
+                        $('#modal-aguarde').modal('hide');
+                        $('.modal-sem-alteracoes').modal('show');
+                    },
+                    error: function(data){
+                        $('#modal-aguarde').modal('hide');
+                    }
+                })
+            })
+
 
             // Submit post on submit
             $('#avaliacao-form').on('submit', function(event){
