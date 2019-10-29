@@ -1,25 +1,60 @@
 <div class="conteudo-curso-container">
 
-    <p id="botao-anterior-container">
-        <span>
-            <i class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')"></i>
-        </span>
-    </p>
+    <h4 class="text-center" id="titulo-video">{{ arquivo.titulo }}</h4>
 
-    <p id="botao-proximo-container">
-        <span>
-            <i class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')"></i>
-        </span>
-    </p>
+    <div class="container" style="padding: 0; margin-top: 20px;">
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="col text-center" id="botao-anterior-container" style="margin-bottom: 10px; padding: 0;">
+              <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')">
+                  <i class="fas fa-angle-double-left" ></i>
+                   Anterior
+              </span>
+            </div>
 
-    <h2>{{arquivo.titulo}}</h2>
-
-    <a href="/download/{{ arquivo.caminho }}"><span><i class="fas fa-download"></i></span></a>
-
-
-    <div class="embed-responsive embed-responsive-16by9">
-        <iframe class="embed-responsive-item" src="../media/{{ arquivo.caminho}}" allowfullscreen></iframe>
+            <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 20px; padding: 0;">
+              <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')">
+                  Próximo
+                  <i class="fas fa-angle-double-right"></i>
+              </span>
+            </div>
+        </div>
     </div>
+
+    {% if arquivo_existe %}
+
+        <div class="col text-center" id="botao-download" style="margin-bottom: 10px; padding: 0;">
+            <a class="btn btn-primary" href="/download/{{ arquivo.caminho }}" role="button" style="font-size: 1.2rem;">
+              Download
+              <i class="fas fa-download"></i>
+            </a>
+        </div>
+
+        <div class="alert alert-danger alert-dismissable" id="arquivo-nao-existe" hidden>
+            <a href="#" data-dismiss="alert" aria-label="close"></a>
+            <strong>Arquivo não existe.</strong>
+        </div>
+
+        <div class="embed-responsive embed-responsive-16by9" id="arquivo-embed">
+            <iframe class="embed-responsive-item" src="../media/{{ arquivo.caminho}}" allowfullscreen></iframe>
+        </div>
+    {% else %}
+
+        <div class="col text-center" id="botao-download" style="margin-bottom: 10px; padding: 0;" hidden>
+            <a class="btn btn-primary" href="/download/{{ arquivo.caminho }}" role="button" style="font-size: 1.2rem;">
+              Download
+              <i class="fas fa-download"></i>
+            </a>
+        </div>
+
+        <div class="alert alert-danger alert-dismissable" id="arquivo-nao-existe">
+            <a href="#" data-dismiss="alert" aria-label="close"></a>
+            <strong>Arquivo não existe.</strong>
+        </div>
+
+        <div class="embed-responsive embed-responsive-16by9" id="arquivo-embed" hidden>
+            <iframe class="embed-responsive-item" src="../media/{{ arquivo.caminho}}" allowfullscreen></iframe>
+        </div>
+    {% endif %}
 
     <script>
 

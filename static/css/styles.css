@@ -35,7 +35,7 @@
 /* Lista de tarefas */
 
 .list-div {
-    padding: 0;
+    padding: 0 !important;
 }
 
 .itens-lista {
@@ -186,7 +186,7 @@ ul.messages li {
       background: #fff;
       border: none;
       border-radius: 0;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
   }
 

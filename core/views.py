@@ -15,6 +15,7 @@ from wsgiref.util import FileWrapper
 from datetime import datetime
 from django.utils import timezone
 import json
+from django.contrib.staticfiles import finders
 
 
 from sistema_treinamentos.settings import MEDIA_ROOT
@@ -1318,6 +1319,11 @@ def visualizacaoArquivoView(request, id):
         arquivo.id
     )
 
+    # Verifica se o arquivo estático existe
+    arquivo_existe = False
+    if finders.find(arquivo.caminho.name) is not None:
+        arquivo_existe = True
+
     if not request.is_ajax():
         template_name = 'core/arquivo-visualizacao.html'
     else:
@@ -1330,6 +1336,7 @@ def visualizacaoArquivoView(request, id):
             'arquivo': arquivo,
             'conteudo_anterior_url': conteudo_anterior_url,
             'proximo_conteudo_url': proximo_conteudo_url,
+            'arquivo_existe': arquivo_existe
         },
     )
 

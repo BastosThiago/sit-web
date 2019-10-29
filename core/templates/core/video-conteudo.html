@@ -1,17 +1,25 @@
 
 <div class="conteudo-curso-container">
-    <p id="titulo-video">{{ titulo_video }}</p>
-    <p id="botao-anterior-container">
-        <span>
-            <i id="botao-anterior" class="fas fa-arrow-left" onclick="atualizaConteudo('{{ conteudo_anterior_url }}', -1)"></i>
-        </span>
-    </p>
 
-    <p id="botao-proximo-container">
-        <span>
-            <i id="botao-proximo" class="fas fa-arrow-right" onclick="atualizaConteudo('{{ proximo_conteudo_url }}', 1)"></i>
-        </span>
-    </p>
+    <h4 class="text-center" id="titulo-video">{{ titulo_video }}</h4>
+
+    <div class="container" style="padding: 0; margin-top: 20px;">
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="col text-center" id="botao-anterior-container" style="margin-bottom: 10px; padding: 0;">
+              <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}', -1)">
+                  <i class="fas fa-angle-double-left" ></i>
+                   Anterior
+              </span>
+            </div>
+
+            <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 20px; padding: 0;">
+              <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}', 1)">
+                  Próximo
+                  <i class="fas fa-angle-double-right"></i>
+              </span>
+            </div>
+        </div>
+    </div>
 
     <div class="embed-responsive embed-responsive-16by9" id="player-container">
 
@@ -164,7 +172,7 @@
         function onYouTubePlayerAPIReady() {
 
             $('#player-container').append(
-                '<iframe class="player-iframe" id="media-player" src="' + youtube_video_link + '?enablejsapi=1" allowfullscreen"></iframe>'
+                '<iframe class="player-iframe" id="media-player" src="' + youtube_video_link + '?enablejsapi=1" allowfullscreen="true"></iframe>'
             );
 
             player_youtube = new YT.Player('media-player' , {
