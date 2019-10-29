@@ -4,85 +4,89 @@
 {% block head %}
     <style>
 
-            html,
-            body {
-              height: 100%;
-            }
+        html,
+        body {
+          height: 100%;
+        }
 
-            #page-content {
-              flex: 1 0 auto;
-              margin-top: 40px;
-            }
+        #page-content {
+          flex: 1 0 auto;
+          margin-top: 40px;
+        }
 
-            #sticky-footer {
-              flex-shrink: none;
-            }
+        #sticky-footer {
+          flex-shrink: none;
+        }
 
-            .class-icone {
-              margin-right: 10px;
-            }
+        .class-icone {
+          margin-right: 10px;
+        }
 
-            .navbar-dark {
-                background-color: #343a40;
-            }
+        .icone-usuario {
+            margin-right: 10px !important;
+        }
 
-            .fa-angle-double-down, .fa-angle-double-up{
-                margin-right: 0.5rem;
-             }
+        .navbar-dark {
+            background-color: #343a40;
+        }
 
-            .fa-trash-alt {
-                color: red;
-                font-size: 1.7rem;
-            }
+        .fa-angle-double-down, .fa-angle-double-up{
+            margin-right: 0.5rem;
+         }
 
-            .fa-save {
-                color: green;
-                font-size: 1.7rem;
-            }
+        .fa-trash-alt {
+            color: red;
+            font-size: 1.7rem;
+        }
 
-             .tab-content-body {
-                margin-left: 10px;
-                padding: 10px;
-            }
-            .tab-content {
-                border-bottom: 1px solid #dee2e6;
-                border-left: 1px solid #dee2e6;
-                border-right: 1px solid #dee2e6;
-            }
+        .fa-save {
+            color: green;
+            font-size: 1.7rem;
+        }
 
-          .star {
-              font-size: 1.5rem;
-              width: 20px;
-              display: inline-block;
-              color: black;
-          }
-          .star:last-child {
-              margin-right: 0;
-          }
-          .star:before {
-              content:'\2605';
-          }
-          .star.on {
-              color: orange;
-              font-size: 1.5rem;
-          }
-          .star.half:after {
-              content:'\2605';
-              color: orange;
-              position: absolute;
-              margin-left: -20px;
-              width: 10px;
-              overflow: hidden;
-          }
+         .tab-content-body {
+            margin-left: 10px;
+            padding: 10px;
+        }
+        .tab-content {
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+        }
 
-          .nav-tabs-content{
+        .star {
+          font-size: 1.5rem;
+          width: 20px;
+          display: inline-block;
+          color: black;
+        }
+        .star:last-child {
+          margin-right: 0;
+        }
+        .star:before {
+          content:'\2605';
+        }
+        .star.on {
+          color: orange;
+          font-size: 1.5rem;
+        }
+        .star.half:after {
+          content:'\2605';
+          color: orange;
+          position: absolute;
+          margin-left: -20px;
+          width: 10px;
+          overflow: hidden;
+        }
+
+        .nav-tabs-content{
             border: 1px solid #dee2e6;
             background-color: #f8f9fa;
-          }
+        }
 
-          .nav-link-content {
+        .nav-link-content {
             border: 1px solid gray !important;
-            color: black;
+            color: color: #007bff;;
             background-color: white;
             border-top-left-radius: 0 !important;
             border-top-right-radius: 0 !important;
@@ -91,9 +95,9 @@
             margin-right: 5px !important;
             margin-bottom: 5px !important;
             margin-top: 5px !important;
-          }
+        }
 
-          .nav-link-content.active {
+        .nav-link-content.active {
             color: white !important;
             background-color: #007bff !important;
             border: 1px solid #007bff !important;
@@ -101,45 +105,45 @@
             border-top-right-radius: 0 !important;
             border-radius: .3rem !important;
             font-family: inherit !important;
-          }
+        }
 
-          .nav-link-content.active > i{
+        .nav-link-content.active > i{
             color: white !important;
-          }
+        }
 
-          .progress {
+        .progress {
             margin-top: 10px;
             height: 1.1rem;
-          }
+        }
 
-          .checked {
+        .checked {
             color: orange;
-          }
+        }
 
-          .perc-nota {
-              margin-left: 10px;
-              color: black;
-              font-weight: bold;
-              font-size: 0.85rem;
-          }
+        .perc-nota {
+          margin-left: 10px;
+          color: black;
+          font-weight: bold;
+          font-size: 0.85rem;
+        }
 
-          .pb-color {
-              background-color: orange;
-          }
+        .pb-color {
+            background-color: orange;
+        }
 
-          .class-icone-content {
-              margin-right: 10px;
-              color: darkblue;
-          }
+        .class-icone-content {
+            margin-right: 10px;
+            color: #007bff;
+        }
 
-          .class-icone-button{
-              margin-right: 10px;
-              color: white;
-          }
+        .class-icone-button{
+            margin-right: 10px;
+            color: white;
+        }
 
-          .btn-link {
-            font-weight: bold;
-          }
+        .btn-link {
+           font-weight: bold;
+        }
 
     </style>
 
@@ -164,20 +168,21 @@
                           {{ curso.descricao }}
                       </p>
 
-                      <div class="col text-center">
+                      {% if perfil_aluno == True and aluno_inscrito_curso == False %}
+                      <div class="col text-center" style="margin-bottom: 20px;">
                           <a href="/inscricao-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button">
                               <i class="fas fa-user-graduate class-icone-button"></i>
                                   Inscreva-se
                           </a>
                       </div>
-
-                      <div class="col text-center">
+                      {% else %}
+                      <div class="col text-center" style="margin-bottom: 20px;">
                           <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button">
                               <i class="fas fa-angle-double-right class-icone-button"></i>
                                   Acessar curso
                           </a>
                       </div>
-
+                      {% endif %}
 
                       <!-- <ul class="nav nav-pills justify-content-center" id="pills-tab" role="tablist"> -->
                       <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
@@ -207,8 +212,13 @@
                                 <hr/>
                                 <h5 class="text-center"><i class="fas fa-chalkboard-teacher class-icone-content"></i>Criado por: <b>{{ instrutor }}</b></h5>
                                 <hr/>
+                                {%if curso.data_publicado != None %}
                                 <h5 class="text-center"><i class="fas fa-upload class-icone-content"></i>Publicado em: <b>{{ curso.data_publicado|date:"d/m/Y"}}</b></h5>
                                 <hr/>
+                                {% else %}
+                                <h5 class="text-center"><i class="fas fa-upload class-icone-content"></i>Não publicado</h5>
+                                <hr/>
+                                {% endif %}
                                 <h5 class="text-center"><i class="fas fa-star class-icone-content"></i>Nota média: <span class="text-center" style="color:orange;"><b>{{ nota_media_curso }}</b></span></h5>
                                 <hr/>
                                 <h5 class="text-center"><i class="fas fa-users class-icone-content"></i>Inscrições: <b>{{ numero_inscritos }} alunos</b></h5>
@@ -232,6 +242,10 @@
                                 <h5 class="text-center">Descrição das Unidades</h5>
                                 <hr/>
                                 <div class="panel-group" id="accordion-conteudos">
+
+                                    {% if unidades == None %}
+                                        <p class="text-center">Sem unidades cadastradas</p>
+                                    {% endif %}
 
                                     {% for unidade in unidades %}
                                     <div class="card" style="margin-top: 10px;">
@@ -367,6 +381,10 @@
                                 <hr/>
 
                                 <div class="panel-group" id="accordion-avaliacoes">
+
+                                    {% if avaliacoes == None %}
+                                        <p class="text-center">Sem avaliações cadastradas</p>
+                                    {% endif %}
 
                                     {% for avaliacao in avaliacoes %}
                                     <div class="card" style="margin-top: 10px;">

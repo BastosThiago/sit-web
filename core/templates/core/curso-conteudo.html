@@ -22,6 +22,10 @@
             background-color: #343a40;
         }
 
+        .icone-usuario {
+            margin-right: 10px !important;
+        }
+
         .fa-angle-double-down, .fa-angle-double-up{
             margin-right: 0.5rem;
         }
@@ -264,11 +268,9 @@
                                         <div id="collapse-unidade-{{elemento.unidade.ordem}}" class="collapse" aria-labelledby="heading-unidade-{{elemento.unidade.ordem}}" data-parent="#accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
 
                                             <div class="tab-content-body">
-                                                <p>{{elemento.unidade.descricao}}</p>
-
+                                                <p class="text-center">{{elemento.unidade.descricao}}</p>
 
                                                 <div class="panel-group" id="accordion-videos-unidade-{{elemento.unidade.ordem}}">
-
 
                                                     <div class="card" style="margin-top: 10px;">
                                                         <div class="card-header" id="heading-videos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
@@ -297,13 +299,13 @@
                                                                               {{ video.video.titulo }}
                                                                             </button>
 
-                                                                            <a href="/visualizacao-video/{{ video.video.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
+                                                                            <a href="/visualizacao-video/{{ video.video.id }}"><i class="fas fa-eye" style="font-size: 1.2rem; font-weight: bold;"> Acessar</i></a>
 
                                                                           </h5>
                                                                         </div>
                                                                         <div id="collapse-video-{{video.video.ordem}}" class="collapse" aria-labelledby="heading-video-{{video.video.ordem}}" data-parent="#accordion-video-unidade-{{elemento.unidade.ordem}}">
                                                                           <div class="tab-content-body">
-                                                                          <p>{{ video.video.descricao }}</p>
+                                                                          <p class="text-center">{{ video.video.descricao }}</p>
                                                                           </div>
                                                                         </div>
                                                                     </div>
@@ -345,13 +347,13 @@
                                                                               {{ arquivo.arquivo.titulo }}
                                                                             </button>
 
-                                                                            <a href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
+                                                                            <a href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}"><i class="fas fa-eye" style="font-size: 1.2rem; font-weight: bold;"> Acessar</i></a>
 
                                                                           </h5>
                                                                         </div>
                                                                         <div id="collapse-arquivo-{{ arquivo.arquivo.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.arquivo.ordem }}" data-parent="#accordion-arquivo-unidade-{{elemento.unidade.ordem}}">
                                                                           <div class="tab-content-body">
-                                                                              <p>{{ arquivo.arquivo.descricao }}</p>
+                                                                              <p class="text-center">{{ arquivo.arquivo.descricao }}</p>
                                                                           </div>
                                                                         </div>
                                                                     </div>
@@ -392,13 +394,13 @@
                                                                               {{ questionario.questionario.titulo }}
                                                                             </button>
 
-                                                                            <a href="/visualizacao-questionario/{{ questionario.questionario.id }}"><i class="fas fa-eye" style="font-size: 1.1rem; font-weight: bold;"> Acessar</i></a>
+                                                                            <a href="/visualizacao-questionario/{{ questionario.questionario.id }}"><i class="fas fa-eye" style="font-size: 1.2rem; font-weight: bold;"> Acessar</i></a>
 
                                                                           </h5>
                                                                         </div>
                                                                         <div id="collapse-questionario-{{ questionario.questionario.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.questionario.ordem }}" data-parent="#accordion-questionario-unidade-{{elemento.unidade.ordem}}">
                                                                           <div class="tab-content-body">
-                                                                              <p>{{ questionario.questionario.descricao }}</p>
+                                                                              <p class="text-center">{{ questionario.questionario.descricao }}</p>
                                                                           </div>
                                                                         </div>
                                                                     </div>

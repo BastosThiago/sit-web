@@ -1,9 +1,46 @@
-{% extends  'base.html' %}
-{% load crispy_forms_tags %}
+{% extends  'base-home-page.html' %}
+{% load static %}
 
+{% block head %}
+    <style>
 
-{% block content %}
+        html,
+        body {
+          height: 100%;
+        }
 
-    <p>Página não encontrada.</p>
+        #page-content {
+          flex: 1 0 auto;
+          margin-top: 40px;
+        }
 
+        #sticky-footer {
+          flex-shrink: none;
+        }
+
+        .class-icone {
+          margin-right: 10px;
+        }
+
+        .icone-usuario {
+            margin-right: 10px !important;
+        }
+
+        .navbar-dark {
+            background-color: #343a40;
+        }
+    </style>
+
+{% endblock %}
+
+{% block conteudo-home-page %}
+
+    <div id="page-content">
+        <section class="py-4">
+
+            <div id="content" class="container-fluid">
+                <p>Página não encontrada</p>
+            </div>
+         </section>
+    </div>
 {% endblock %}

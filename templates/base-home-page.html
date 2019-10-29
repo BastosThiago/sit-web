@@ -35,6 +35,10 @@
             background-color: rgba(0,0,0,0.2);
         }
 
+        .icone-usuario {
+            margin-right: 10px !important;
+        }
+
       </style>
 
 {% endblock %}
@@ -55,19 +59,37 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav " style="float:left;">
+            <ul class="navbar-nav " style="float: left;">
                 <li class="nav-item">
-                  <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;  padding-right: 20px;" href="/cursos"><i class="fas fa-list-alt class-icone"></i>Cursos</a>
+                  <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;  padding-right: 20px;" href="/cursos">
+                      <i class="fas fa-list-alt class-icone"></i>Cursos
+                  </a>
                 </li>
             </ul>
 
-              <ul class="navbar-nav ml-auto" style="float:right;">
+              <ul class="navbar-nav ml-auto" style="float: right;">
+                {% if not user.is_authenticated %}
                 <li class="nav-item">
                   <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem; padding-right: 20px;" href="/accounts/register"><i class="fas fa-user-plus class-icone"></i>Registrar-se</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/accounts/login"><i class="fas fa-sign-in-alt class-icone"></i>Entrar</a>
                 </li>
+                {% else %}
+
+                    <ul class="navbar-nav ml-auto">
+                          <li class="nav-item active dropdown">
+                            <a class="nav-link dropdown-toggle" style="font-size: 1.2rem;" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <i class="fas fa-user class-icon icone-usuario"></i>{{ user.username }}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                              <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-circle class-icon icone-usuario"></i>Minha conta</a>
+                              <a class="dropdown-item" href="/accounts/logout"><i class="fas fa-sign-out-alt class-icon icone-usuario"></i>Sair</a>
+                            </div>
+                          </li>
+                    </ul>
+
+                {% endif %}
               </ul>
         </div>
 

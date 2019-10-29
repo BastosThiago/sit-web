@@ -166,33 +166,10 @@ def paginaInicialView(request):
     #template_name = 'index.html'
 
     # Obtém qual o perfil do usuário que acessou a página inicial do sistema
-    if request.user.is_anonymous:
-        return render(
-            request,
-            'home-page.html',
-        )
-    else:
-        perfil_administrador = request.user.tem_perfil_administrador()
-        perfil_instrutor = request.user.tem_perfil_instrutor()
-        perfil_aluno = request.user.tem_perfil_aluno()
-
-        inscricao = None
-        if perfil_aluno:
-            inscricao = Inscricao.objects.filter(usuario=request.user).order_by('-data_ultimo_conteudo_acessado')[:1]
-
-            if inscricao.count() == 1:
-                inscricao = inscricao[0]
-
-        return render(
-            request,
-            'pagina-inicial.html',
-            {
-                'perfil_administrador': perfil_administrador,
-                'perfil_instrutor': perfil_instrutor,
-                'perfil_aluno': perfil_aluno,
-                'inscricao': inscricao,
-            }
-        )
+    return render(
+        request,
+        'home-page.html',
+    )
 
 
 @login_required
@@ -598,7 +575,9 @@ def informacoesCursoView(request, id):
     curso_sem_conteudo = False
     unidades = None
     avaliacoes = None
-    nota_media_curso = None
+    aluno_inscrito_curso = False
+    perfil_aluno = False
+    nota_media_curso = "Sem nota"
     numero_unidades = 0
     numero_videos = 0
     numero_arquivos = 0
@@ -630,6 +609,16 @@ def informacoesCursoView(request, id):
     instrutor = curso.usuario.get_full_name()
 
     numero_inscritos = curso.obtem_numero_inscritos()
+
+    # Verifica se o usuário da requisição é de perfil ALUNO e se está inscrito
+    # no curso acessado
+    if request.user.tem_perfil_aluno():
+        perfil_aluno = True
+        if Inscricao.objects.usuario_inscrito_curso(
+                usuario=request.user,
+                curso=curso
+        ):
+            aluno_inscrito_curso = True
 
     # Verifica se o curso tem algum conteúdo
     if curso.tem_conteudo():
@@ -698,6 +687,8 @@ def informacoesCursoView(request, id):
             'instrutor': instrutor,
             'numero_inscritos': numero_inscritos,
             'curso_sem_conteudo': curso_sem_conteudo,
+            'perfil_aluno': perfil_aluno,
+            'aluno_inscrito_curso': aluno_inscrito_curso,
             'unidades': unidades,
             'avaliacoes': avaliacoes,
             'nota_media_curso': nota_media_curso,
@@ -733,25 +724,21 @@ def inscricaoCursoView(request, id):
 
     # Caso o usuário seja do pefil ALUNO
     if request.user.tem_perfil_aluno():
-        resposta = "Falha ao realizar a inscrição."
         if request.method == 'GET':
             try:
                 curso = get_object_or_404(Curso, pk=id)
 
                 inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
 
-                if(inscricao.count() == 0):
+                if inscricao.count() == 0:
                     Inscricao.objects.create(curso=curso, usuario=request.user)
-                    resposta = "Inscrição realizada com sucesso."
-                else:
-                    resposta ="Inscrição já realizada."
 
                 return redirect(f"/conteudo-curso/{curso.id}")
 
             except:
-                return HttpResponse(resposta)
+                return trata_erro_404(request, None)
         else:
-            return HttpResponse(resposta)
+            return trata_usuario_sem_permissao(request)
     else:
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
