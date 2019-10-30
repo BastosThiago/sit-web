@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <form action="/teste" method="POST" id="form-questionario-{{ questionario.id }}">
+    <form action="/teste" method="POST" id="form-questionario">
         {% csrf_token %}
 
         {% for questao in questoes %}
@@ -62,8 +62,9 @@
                                         <span style="float: left; margin-top: 3px;"class="checkmark"></span>
                                     </label>
                                     <div style="margin-left: 25px;">
-                                        {{ alternativa.descricao }}
+                                        {{ alternativa.descricao }}<i class="icone-alternativa"></i>
                                     </div>
+
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -92,11 +93,14 @@
 
                         if($(inputs[i]).attr('correta') == "False") {
                             $(inputs[i]).closest('.alert').addClass('alternativa-incorreta')
+                            $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-times-circle icone-incorreto')
+
                         }
                         else {
 
                             if($(inputs[i]).attr('correta') == "True") {
                                 $(inputs[i]).closest('.alert').addClass('alternativa-correta')
+                                $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-check-circle icone-correto')
                             }
                             else {
                                 $(inputs[i]).closest('.alert').addClass('alternativa-padrao')
@@ -140,6 +144,10 @@
                 inputs[i].disabled = false;
                 inputs[i].checked = false;
                 $(inputs[i]).closest('label').removeClass('label-input-class-disabled')
+                $(inputs[i]).closest('.alert').removeClass('alternativa-incorreta')
+                $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-times-circle icone-incorreto')
+                $(inputs[i]).closest('.alert').removeClass('alternativa-correta')
+                $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-check-circle icone-correto')
             }
             $("#refazer")[0].hidden = true
             $("#enviar")[0].hidden = false
@@ -153,11 +161,10 @@
 
         //__ Tratamento para envio de informações ao backend via AJAX
         function enviaForm() {
-            var $formData = $(this).serialize()
+            var $formData = $('#form-questionario').serialize()
 
             var $thisURL = $(this).attr('data-url') || window.location.href
 
-            /*
             $.ajax({
                 method: "POST",
                 url: $thisURL,
@@ -183,7 +190,7 @@
                 console.log(jqXHR)
                 console.log(textStatus)
                 console.log(errorThrown)
-            }*/
+            }
         };
 
         //__ Atualiza algumas informações na página
