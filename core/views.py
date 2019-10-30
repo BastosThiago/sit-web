@@ -16,7 +16,7 @@ from datetime import datetime
 from django.utils import timezone
 import json
 from django.contrib.staticfiles import finders
-from requests import get
+#from requests import get
 
 from sistema_treinamentos.settings import MEDIA_ROOT
 from .forms import *
@@ -613,13 +613,14 @@ def informacoesCursoView(request, id):
 
     # Verifica se o usuário da requisição é de perfil ALUNO e se está inscrito
     # no curso acessado
-    if request.user.tem_perfil_aluno():
-        perfil_aluno = True
-        if Inscricao.objects.usuario_inscrito_curso(
-                usuario=request.user,
-                curso=curso
-        ):
-            aluno_inscrito_curso = True
+    if not request.user.is_anonymous:
+        if request.user.tem_perfil_aluno():
+            perfil_aluno = True
+            if Inscricao.objects.usuario_inscrito_curso(
+                    usuario=request.user,
+                    curso=curso
+            ):
+                aluno_inscrito_curso = True
 
     # Verifica se o curso tem algum conteúdo
     if curso.tem_conteudo():
