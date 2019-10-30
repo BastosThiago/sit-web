@@ -16,7 +16,7 @@ from datetime import datetime
 from django.utils import timezone
 import json
 from django.contrib.staticfiles import finders
-
+from requests import get
 
 from sistema_treinamentos.settings import MEDIA_ROOT
 from .forms import *
@@ -1116,6 +1116,15 @@ def visualizacaoVideoView(request, id):
             usuario_video.video.unidade.curso,
             f"visualizacao-video/{video.id}"
         )
+
+    #try:
+    #    request_teste = get(video.url)
+    #    if request_teste.status_code == 200:
+    #        print('Web site exists')
+    #    else:
+    #        print('Web site does not exist')
+    #except Exception as e:
+    #    'not found'
 
     # Caso a requisição seja via AJAX de uma página de video
     if request.is_ajax() and request.GET['origem'] == 'video':

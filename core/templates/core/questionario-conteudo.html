@@ -33,6 +33,62 @@
         {% endif %}
 
         {% for questao in questoes %}
+        <div class="panel-group" id="accordion-questao-{{ questao.id }}">
+
+            <div class="card" style="margin-top: 10px;">
+                <div class="card-header" id="heading-questao-{{ questao.id }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questao-{{ questao.id }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.id }}">
+                      <i class="fas fa-angle-double-down"></i>
+                      Questão - {{ questao.ordem }}
+                    </button>
+
+                  </h5>
+                </div>
+                <div id="collapse-questao-{{ questao.id }}" class="collapse" aria-labelledby="heading-questao-{{ questao.id }}" data-parent="#accordion-questao-{{ questao.id }}">
+
+                      <p>{{ questao.enunciado }}</p>
+
+                      <div class="alert alert-secondary" role="alert">
+                          <label class="container-check">
+                              <input type="checkbox" checked="" id="input-questao-{{ questao.id }}-alternativa-1" questao_id="{{ questao.id }}" >
+                              <span style="float: left; margin-top: 3px;"class="checkmark"></span>
+                          </label>
+                          <div style="margin-left: 25px;">
+                              Primeira alternativa da primeira questão do primeiro questionário do curso de programação em javascript para iniciantes.
+                          </div>
+                      </div>
+                      <div class="alert alert-secondary" role="alert">
+                          <label class="container-check">
+                              <input type="checkbox" checked="" id="input-questao-{{ questao.id }}-alternativa-2" questao_id="{{ questao.id }}">
+                              <span style="float: left; margin-top: 3px;"class="checkmark"></span>
+                          </label>
+                          <div style="margin-left: 25px;">
+                              Primeira alternativa da primeira questão do primeiro questionário do curso de programação em javascript para iniciantes.
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!--
         <p><strong>{{questao.ordem}} - {{ questao.enunciado }}</strong></p>
             <ul>
             {% for alternativa in alternativas %}
@@ -56,6 +112,7 @@
                 {% endif %}
             {% endfor %}
             </ul>
+            -->
         {% endfor %}
 
         <input id="refazer" type="button" name="refazer" class="btn btn-success" value="Refazer" hidden="true" onclick="atualizaDados()">
