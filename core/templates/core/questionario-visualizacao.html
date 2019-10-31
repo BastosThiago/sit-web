@@ -13,13 +13,13 @@
         }
 
         .class-icone-content  {
-            margin-right: 10px;
-            color: #007bff;
+            margin-right: 10px !important;;
+            color: #007bff !important;;
         }
 
         .class-icone-button{
-            margin-right: 10px;
-            color: white;
+            margin-right: 10px !important;
+            color: white !important;;
         }
 
         .btn-link {
@@ -139,6 +139,19 @@
             margin-top: 4px;
             color: red;
         }
+
+       .bd-example-modal-lg .modal-dialog{
+          display: table;
+          position: relative;
+          margin: 0 auto;
+          top: calc(50% - 24px);
+        }
+
+        .bd-example-modal-lg .modal-dialog .modal-content{
+          background-color: transparent;
+          border: none;
+        }
+
     </style>
 
 {% endblock %}
@@ -146,6 +159,15 @@
 {% block title %} {{questionario.titulo}} {% endblock %}
 
 {% block content_page %}
+
+    <div class="modal fade bd-example-modal-lg" id="modal-aguarde" id_conteudo="" tipo_conteudo="" status_conteudo="" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content" style="width: 48px">
+                <span class="fa fa-spinner fa-spin fa-3x"></span>
+                <span><b>Aguarde...</b></span>
+            </div>
+        </div>
+    </div>
 
     <div class="offset-1 col-10 list-div">
 

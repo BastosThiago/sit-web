@@ -21,6 +21,53 @@
         </div>
     </div>
 
+    {% if usuario_questionario is not none %}
+
+        <div class="panel-group" id="accordion-resultado">
+
+            <div class="card" style="margin-top: 10px;">
+                <div class="card-header" id="heading-1" style="padding: .2rem 1rem; text-align-last: justify;">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link link-unidade" style="font-size: 1.1rem;" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+                      <i class="fas fa-angle-double-down"></i>
+                      Resultado atual
+                    </button>
+
+                  </h5>
+                </div>
+                <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-resultado">
+
+                    <h5 class="text-center" style="margin-top: 12px;"><i class="fas fa-star class-icone-content"></i>Percentual de acertos: <span class="text-center" style="color:orange;"><b>{{ usuario_questionario.percentual_acertos}}</b></span></h5>
+
+                    <hr/>
+
+                    <h5 class="text-center" style="margin-bottom: 12px;"><i class="fas fa-edit class-icone-content"></i>Realizado em: <b>{{ usuario_questionario.data_execucao|date:"d/m/Y h:m:s"}}</b></h5>
+
+                </div>
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    <div class="container" style="padding: 0; margin-top: 20px;">
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="col text-center" style="margin-bottom: 10px; padding: 0;">
+              <span class="btn btn-primary"  id="refazer" role="button" style="float: left; font-size: 1.2rem;" onclick="atualizaDados()">
+                  <i class="fas fa-undo-alt" ></i>
+                   Refazer
+              </span>
+            </div>
+
+            <div class="col text-center" style="margin-bottom: 20px; padding: 0;">
+              <span class="btn btn-primary" id="enviar" role="button" style="float: right; font-size: 1.2rem;"  onclick="enviaForm()">
+                  Enviar
+                  <i class="fas fa-share-square"></i>
+              </span>
+            </div>
+        </div>
+    </div>
+
     <form action="/teste" method="POST" id="form-questionario">
         {% csrf_token %}
 
@@ -73,168 +120,170 @@
             </div>
         {% endfor %}
 
-        <input id="refazer" type="button" name="refazer" class="btn btn-success" value="Refazer"  onclick="atualizaDados()">
-        <input id="enviar" type="button" name="enviar" class="btn btn-success" value="Enviar"  onclick="enviaForm()">
+
     </form>
 
-    <script>
+</div>
 
-        //__ Obtém o tempo corrente do video que será exibido
-        $(document).ready(function(){
-            var inputs = document.getElementsByClassName("input-radio");
-            {% if usuario_questionario is not none and perfil_aluno == True%}
+<script>
 
-                {% if questionario_sem_questoes == False%}
-                    $("#enviar")[0].hidden = true;
-                    $("#refazer")[0].hidden = false;
-                    for(let i = 0; i < inputs.length; i++){
-                        inputs[i].disabled = true;
-                        $(inputs[i]).closest('label').addClass('label-input-class-disabled')
+    //__ Obtém o tempo corrente do video que será exibido
+    $(document).ready(function(){
+        var inputs = document.getElementsByClassName("input-radio");
+        {% if usuario_questionario is not none and perfil_aluno == True%}
 
-                        if($(inputs[i]).attr('correta') == "False") {
-                            $(inputs[i]).closest('.alert').addClass('alternativa-incorreta')
-                            $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-times-circle icone-incorreto')
+            {% if questionario_sem_questoes == False%}
+                $("#enviar")[0].hidden = true;
+                $("#refazer")[0].hidden = false;
+                for(let i = 0; i < inputs.length; i++){
+                    inputs[i].disabled = true;
+                    $(inputs[i]).closest('label').addClass('label-input-class-disabled')
 
+                    if($(inputs[i]).attr('correta') == "False") {
+                        $(inputs[i]).closest('.alert').addClass('alternativa-incorreta')
+                        $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-times-circle icone-incorreto')
+
+                    }
+                    else {
+
+                        if($(inputs[i]).attr('correta') == "True") {
+                            $(inputs[i]).closest('.alert').addClass('alternativa-correta')
+                            $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-check-circle icone-correto')
                         }
                         else {
-
-                            if($(inputs[i]).attr('correta') == "True") {
-                                $(inputs[i]).closest('.alert').addClass('alternativa-correta')
-                                $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-check-circle icone-correto')
-                            }
-                            else {
-                                $(inputs[i]).closest('.alert').addClass('alternativa-padrao')
-                            }
+                            $(inputs[i]).closest('.alert').addClass('alternativa-padrao')
                         }
                     }
-                {% endif %}
-
-            {% else %}
-
-                {% if questionario_sem_questoes == False and perfil_aluno == True %}
-                    $("#enviar")[0].hidden = false;
-                    $("#refazer")[0].hidden = true
-                    for(let i = 0; i < inputs.length; i++){
-                        inputs[i].disabled = false;
-                        inputs[i].checked = false;
-                    }
-                {% endif %}
-
+                }
             {% endif %}
 
-            if('{{ conteudo_anterior_url }}' != '') {
-                $('#botao-anterior-container')[0].hidden = false;
-            }
-            else {
-                $('#botao-anterior-container')[0].hidden = true;
-            }
+        {% else %}
 
-            if('{{ proximo_conteudo_url }}' != '') {
-                $('#botao-proximo-container')[0].hidden = false;
-            }
-            else {
-                $('#botao-proximo-container')[0].hidden = true;
-            }
-        })
+            {% if questionario_sem_questoes == False and perfil_aluno == True %}
+                $("#enviar")[0].hidden = false;
+                $("#refazer")[0].hidden = true
+                for(let i = 0; i < inputs.length; i++){
+                    inputs[i].disabled = false;
+                    inputs[i].checked = false;
+                }
+            {% endif %}
 
-        //__ Atualiza algumas informações na página
-        function atualizaDados(){
-            var inputs = document.getElementsByClassName("input-radio");
-            for(let i = 0; i < inputs.length; i++){
-                inputs[i].disabled = false;
-                inputs[i].checked = false;
-                $(inputs[i]).closest('label').removeClass('label-input-class-disabled')
-                $(inputs[i]).closest('.alert').removeClass('alternativa-incorreta')
-                $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-times-circle icone-incorreto')
-                $(inputs[i]).closest('.alert').removeClass('alternativa-correta')
-                $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-check-circle icone-correto')
-            }
-            $("#refazer")[0].hidden = true
-            $("#enviar")[0].hidden = false
+        {% endif %}
+
+        if('{{ conteudo_anterior_url }}' != '') {
+            $('#botao-anterior-container')[0].hidden = false;
+        }
+        else {
+            $('#botao-anterior-container')[0].hidden = true;
         }
 
+        if('{{ proximo_conteudo_url }}' != '') {
+            $('#botao-proximo-container')[0].hidden = false;
+        }
+        else {
+            $('#botao-proximo-container')[0].hidden = true;
+        }
+    })
 
-        $('form').submit(function(e) {
-            e.preventDefault();
-            event.stopImmediatePropagation();
-        });
+    //__ Atualiza algumas informações na página
+    function atualizaDados(){
+        var inputs = document.getElementsByClassName("input-radio");
+        for(let i = 0; i < inputs.length; i++){
+            inputs[i].disabled = false;
+            inputs[i].checked = false;
+            $(inputs[i]).closest('label').removeClass('label-input-class-disabled')
+            $(inputs[i]).closest('.alert').removeClass('alternativa-incorreta')
+            $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-times-circle icone-incorreto')
+            $(inputs[i]).closest('.alert').removeClass('alternativa-correta')
+            $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-check-circle icone-correto')
+        }
+        $("#refazer")[0].hidden = true
+        $("#enviar")[0].hidden = false
+    }
 
-        //__ Tratamento para envio de informações ao backend via AJAX
-        function enviaForm() {
-            var $formData = $('#form-questionario').serialize()
 
-            var $thisURL = $(this).attr('data-url') || window.location.href
+    $('form').submit(function(e) {
+        e.preventDefault();
+        event.stopImmediatePropagation();
+    });
 
-            $.ajax({
-                method: "POST",
-                url: $thisURL,
-                data: $formData,
-                success: handleFormSuccess,
-                error: handleFormError,
-            })
+    //__ Tratamento para envio de informações ao backend via AJAX
+    function enviaForm() {
+        $('#modal-aguarde').modal('show');
 
-            function handleFormSuccess(data, textStatus, jqXHR){
-                console.log(data)
-                console.log(textStatus)
-                console.log(jqXHR)
+    };
+
+    //__ Atualiza algumas informações na página
+    function atualizaConteudo(url){
+
+        $.ajax(
+        {
+            type:"GET",
+            url: url,
+            data:{
+                'origem': 'questionario'
+            },
+            success: function( data )
+            {
                 $(".conteudo-curso-container").replaceWith(data);
+                window.history.pushState({route: url}, "Questionário", url);
+            }
+        })
+    }
+
+    $('#modal-aguarde').on('shown.bs.modal', function () {
+        var $formData = $('#form-questionario').serialize()
+
+        var $thisURL = $(this).attr('data-url') || window.location.href
+
+        $.ajax({
+            method: "POST",
+            url: $thisURL,
+            data: $formData,
+            success: function (data, textStatus, jqXHR) {
+                $(".conteudo-curso-container").replaceWith(data);
+
                 var inputs = document.getElementsByClassName("input-radio");
-                for(let i = 0; i < inputs.length; i++){
+                for (let i = 0; i < inputs.length; i++) {
                     inputs[i].disabled = true;
                 }
                 $("#refazer")[0].hidden = false
                 $("#enviar")[0].hidden = true
-            }
+                $('#modal-aguarde').modal('hide');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
 
-            function handleFormError(jqXHR, textStatus, errorThrown){
                 console.log(jqXHR)
                 console.log(textStatus)
                 console.log(errorThrown)
+                $('#modal-aguarde').modal('hide');
             }
-        };
-
-        //__ Atualiza algumas informações na página
-        function atualizaConteudo(url){
-
-            $.ajax(
-            {
-                type:"GET",
-                url: url,
-                data:{
-                    'origem': 'questionario'
-                },
-                success: function( data )
-                {
-                    $(".conteudo-curso-container").replaceWith(data);
-                    window.history.pushState({route: url}, "Questionário", url);
-                }
-            })
-        }
+        })
+    })
 
 
-        function expandeArea(elemento){
-          if($($($(elemento).closest('.card-header')).siblings()[0]).hasClass('show')){
-            $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
-          }
-          else {
-            $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
-          }
+    function expandeArea(elemento){
+      if($($($(elemento).closest('.card-header')).siblings()[0]).hasClass('show')){
+        $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
+      }
+      else {
+        $($(elemento).find('.fas')[0]).removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
+      }
 
-        }  
+    }  
 
-        $('input[type="checkbox"]').on('click', function(event) {
+    $('input[type="checkbox"]').on('click', function(event) {
 
-            inputs = $('#collapse-questao-'+ $(this).attr('questao_id')).find('input[type="checkbox"]')
-           
-            for(let i = 0; i < inputs.length; i++){
-                if(inputs[i] !== this) {
-                    $(inputs[i]).prop('checked', false);
-                }
-            }        
-           
-
-        });
+        inputs = $('#collapse-questao-'+ $(this).attr('questao_id')).find('input[type="checkbox"]')
+       
+        for(let i = 0; i < inputs.length; i++){
+            if(inputs[i] !== this) {
+                $(inputs[i]).prop('checked', false);
+            }
+        }        
        
 
-    </script>
-</div>
+    });
+       
+
+</script>
