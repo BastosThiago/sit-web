@@ -1,3 +1,178 @@
+<style>
+
+    .fa-angle-double-down, .fa-angle-double-up{
+        margin-right: 0.5rem;
+    }
+
+    .class-icone-content  {
+        margin-right: 10px !important;;
+        color: #007bff !important;;
+    }
+
+    .class-icone-button{
+        margin-right: 10px !important;
+        color: white !important;;
+    }
+
+    .btn-link {
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+    }
+
+    .container-check {
+      position: relative;
+      cursor: pointer;
+      font-size: 22px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      float: left;
+    }
+
+    /* Hide the browser's default checkbox */
+    .container-check input {
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    /* Create a custom checkbox */
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 18px;
+      width: 18px;
+      background-color: #eee;
+      border: 1px solid gray;
+    }
+
+
+    /* When the checkbox is checked, add a blue background */
+    .label-input-class input:checked ~ .checkmark {
+      background-color: #007bff;
+      border: 1px solid #007bff;
+    }
+
+    /* When the checkbox is checked, add a blue background */
+    .label-input-class-disabled input:checked ~ .checkmark {
+      background-color: gray;
+      border: 1px solid gray;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    /* Show the checkmark when checked */
+    .container-check input:checked ~ .checkmark:after {
+      display: block;
+    }
+
+    /* Style the checkmark/indicator */
+    .container-check .checkmark:after {
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+
+    .alternativa-padrao{
+        margin-top: 10px;
+        padding: .4rem 1rem;
+        color: #383d41;
+        background-color: rgba(0,0,0,.03);
+        border-color: #d6d8db;
+        margin-top: 10px;
+        padding: .4rem 1rem;
+    }
+
+    .alternativa-incorreta {
+        margin-top: 10px;
+        padding: .4rem 1rem;
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        margin-top: 10px;
+        padding: .4rem 1rem;
+        //background-color: rgba(0,0,0,.03);
+    }
+
+    .alternativa-correta {
+        margin-top: 10px;
+        padding: .4rem 1rem;
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        margin-top: 10px;
+        padding: .4rem 1rem;
+    }
+
+    .icone-correto {
+        float: right;
+        margin-top: 4px;
+        color: green;
+    }
+
+    .icone-incorreto {
+        float: right;
+        margin-top: 4px;
+        color: red;
+    }
+
+   .bd-example-modal-lg .modal-dialog{
+      display: table;
+      position: relative;
+      margin: 0 auto;
+      top: calc(50% - 24px);
+    }
+
+    .bd-example-modal-lg .modal-dialog .modal-content{
+      background-color: transparent;
+      border: none;
+    }
+
+</style>
+
+<div class="modal fade bd-example-modal-lg" id="modal-aguarde" id_conteudo="" tipo_conteudo="" status_conteudo="" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 48px">
+            <span class="fa fa-spinner fa-spin fa-3x"></span>
+            <span><b>Aguarde...</b></span>
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-sem-alteracoes" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Questionário</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Responda todas as perguntas antes de enviar o questionário.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="conteudo-curso-container">
 
@@ -50,17 +225,18 @@
 
     {% endif %}
 
-    <div class="container" style="padding: 0; margin-top: 20px;">
+    <div class="container" style="padding: 0; margin-top: 15px;">
         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-            <div class="col text-center" style="margin-bottom: 10px; padding: 0;">
-              <span class="btn btn-primary"  id="refazer" role="button" style="float: left; font-size: 1.2rem;" onclick="atualizaDados()">
+            <div class="col text-center" style="margin-bottom: 5px; padding: 0;">
+              <span class="btn btn-primary"  id="refazer" role="button" style="font-size: 1.2rem;" onclick="atualizaDados()">
                   <i class="fas fa-undo-alt" ></i>
                    Refazer
               </span>
             </div>
-
-            <div class="col text-center" style="margin-bottom: 20px; padding: 0;">
-              <span class="btn btn-primary" id="enviar" role="button" style="float: right; font-size: 1.2rem;"  onclick="enviaForm()">
+        </div>
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="col text-center" style="margin-bottom: 5px; padding: 0;">
+              <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem;"  onclick="enviaForm()">
                   Enviar
                   <i class="fas fa-share-square"></i>
               </span>
@@ -74,7 +250,7 @@
         {% for questao in questoes %}
             <div class="panel-group" id="accordion-questao-{{ questao.id }}">
 
-                <div class="card" style="margin-top: 10px;">
+                <div class="card card-questao" style="margin-top: 10px;">
                     <div class="card-header" id="heading-questao-{{ questao.id }}" style="padding: .2rem 1rem; text-align-last: justify;">
                       <h5 class="mb-0">
                         <button class="btn btn-link link-unidade"  style="margin-top: 5px; font-size: 1.1rem;" onclick="expandeArea(this)"  data-toggle="collapse" data-target="#collapse-questao-{{ questao.id }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.id }}">
@@ -209,8 +385,31 @@
 
     //__ Tratamento para envio de informações ao backend via AJAX
     function enviaForm() {
-        $('#modal-aguarde').modal('show');
+        $($($('.card-questao')[0]).find('.alert')[1]).find('input').attr('checked')
+        questoes = $('.card-questao')
+        tem_resposta = false
+        for (let i = 0; i < questoes.length; i++) {
 
+            alternativas = $(questoes[i]).find('.alert')
+
+            tem_resposta = false
+            for (let j = 0; j < alternativas.length; j++) {
+
+                checked = $(alternativas[j]).find('input').prop('checked')
+                if(checked) {
+                    tem_resposta = true
+                    break;
+                }
+            }
+
+            if (tem_resposta == false) {
+                $('.modal-sem-alteracoes').modal('show');
+                break;
+            }
+        }
+        if(tem_resposta) {
+            $('#modal-aguarde').modal('show');
+        }
     };
 
     //__ Atualiza algumas informações na página
