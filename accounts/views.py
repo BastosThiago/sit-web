@@ -22,7 +22,7 @@ class SignUpView(CreateView):
         #authenticate user then login
         user = authenticate(username=username, password=password)
         login(self.request, user)
-        return HttpResponseRedirect('/')  # User is not logged in on this page
+        return HttpResponseRedirect('/area-usuario')  # User is not logged in on this page
 
 def EditUserView(request, id): # Edita uma tarefa já existente
 

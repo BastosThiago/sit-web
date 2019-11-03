@@ -137,7 +137,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # instalado através de: pip install django-crispy-forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-LOGIN_REDIRECT_URL = '/' #informa ao Django para qual URL a operação de login deve levar o usuário
+LOGIN_REDIRECT_URL = '/area-usuario' #informa ao Django para qual URL a operação de login deve levar o usuário
 
 LOGOUT_REDIRECT_URL = '/accounts/login' #informa ao Django para qual URL a operação de logout deve levar o usuário
 

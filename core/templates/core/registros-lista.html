@@ -45,6 +45,10 @@
                     <span><a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto }}</a></span>
                     <a href="/remove-{{nomeLink}}/{{ objeto.id }}" class="delete-btn"><span><i class="fas fa-trash" style="margin-right: 15px;"></i></span></a>
                     <a href="/edita-{{nomeLink}}/{{ objeto.id }}"><span><i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;"></i></span></a>
+
+                    {% if lista_cursos == True %}
+                    <a href="/cadastro-conteudo-curso/{{ objeto.id }}"><span><i class="fab fa-contao" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: #007bff;"></i></span></a>
+                    {% endif %}
                 </div>
             </li>
             <hr/>

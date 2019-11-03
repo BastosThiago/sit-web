@@ -193,6 +193,11 @@ def registrosListView(request, modelo):
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
 
+    if modelo == Curso:
+        lista_cursos = True
+    else:
+        lista_cursos = False
+
     if perfil_instrutor or perfil_administrador:
 
         # Obtém o título a ser apresentado na página com base no nome do modelo
@@ -239,6 +244,7 @@ def registrosListView(request, modelo):
                 'perfil_aluno': perfil_aluno,
                 'perfil_administrador': perfil_administrador,
                 'perfil_instrutor': perfil_instrutor,
+                'lista_cursos': lista_cursos,
             }
         )
     else:
@@ -357,6 +363,11 @@ def editaRegistroView(request, id, modelo):
         nomeModelo = modelo._meta.verbose_name
         nomeModeloPlural = remover_acentos(modelo._meta.verbose_name_plural.lower())
 
+        if nomeModelo == "Curso":
+            edicao_curso = True
+        else:
+            edicao_curso = False
+
         # Monta o título a ser apresentado na página
         tituloPagina = f"Edição de registro de {nomeModelo}"
         nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
@@ -405,7 +416,12 @@ def editaRegistroView(request, id, modelo):
                     'core/registro-edicao.html',
                     {
                         'form': form,
-                        'tituloPagina': tituloPagina
+                        'tituloPagina': tituloPagina,
+                        'perfil_aluno': perfil_aluno,
+                        'perfil_administrador': perfil_administrador,
+                        'perfil_instrutor': perfil_instrutor,
+                        'edicao_curso': edicao_curso,
+                        'objeto': objeto,
                     }
                 )
         else:
@@ -418,6 +434,8 @@ def editaRegistroView(request, id, modelo):
                     'perfil_aluno': perfil_aluno,
                     'perfil_administrador': perfil_administrador,
                     'perfil_instrutor': perfil_instrutor,
+                    'edicao_curso': edicao_curso,
+                    'objeto': objeto,
                 }
             )
     else:
@@ -916,7 +934,7 @@ def areaUsuarioView(request):
         perfil_instrutor = True
 
     # Verifica o perfil do usuário para obter o curso associado ao ID da requisição
-    if request.user.tem_perfil_aluno():
+    if perfil_aluno:
 
         # Obtem último conteudo acessado pelo usuário
         dict_ultimo_conteudo = {}
@@ -986,12 +1004,38 @@ def areaUsuarioView(request):
         )
 
     else:
-        return render(
-            request,
-            'core/area-administrador.html',
-            {
-                'perfil_administrador': True
-            }
+        if perfil_instrutor:
+
+            cursos = Curso.objects.obtem_objetos_por_perfil_usuario(request.user)
+
+            # Verifica se algum filtro foi passado para obtenção dos registros
+            try:
+                search = request.GET.get('search')
+            except:
+                search = None
+
+            if search:
+                search_fields = Curso.CustomMeta.search_fields
+                filtro = reduce(or_,
+                                [Q(**{'{}__icontains'.format(f): search}) for f
+                                 in search_fields], Q())
+                cursos = cursos.filter(filtro)
+
+            return render(
+                request,
+                'core/area-instrutor.html',
+                {
+                    'perfil_instrutor': True,
+                    'cursos': cursos
+                }
+            )
+        if perfil_administrador:
+            return render(
+                request,
+                'core/area-administrador.html',
+                {
+                    'perfil_administrador': True
+                }
         )
 
 
