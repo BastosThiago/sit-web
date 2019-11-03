@@ -47,16 +47,48 @@
             margin-bottom: 5px;
         }
 
-        .nav-tabs .nav-link {
-            border: 1px solid #adb5bd;
+         .tab-content-body {
+            margin-left: 10px;
+            padding: 10px;
         }
-        .nav-item {
+        .tab-content {
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .nav-tabs-content{
+            border: 1px solid #dee2e6;
             background-color: #f8f9fa;
         }
 
-        .nav-link.active {
-            font-weight: bold;
+        .nav-link-content {
+            border: 1px solid gray !important;
+            color: color: #007bff;;
+            background-color: white;
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-radius: .3rem !important;
+            font-family: inherit !important;
+            margin-right: 5px !important;
+            margin-bottom: 5px !important;
+            margin-top: 5px !important;
         }
+
+        .nav-link-content.active {
+            color: white !important;
+            background-color: #007bff !important;
+            border: 1px solid #007bff !important;
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-radius: .3rem !important;
+            font-family: inherit !important;
+        }
+
+        .nav-link-content.active > i{
+            color: white !important;
+        }
+
 
         .form-group {
             margin-top: 5px;
@@ -81,6 +113,25 @@
         .card-body {
             padding: 1rem;
         }
+
+        .card-header {
+            padding: .2rem 1rem
+        }
+
+        .class-icone-content {
+            margin-right: 10px;
+            color: #007bff;
+        }
+
+        .class-icone-button{
+            margin-right: 10px;
+            color: white;
+        }
+
+        .btn-link {
+           font-weight: bold;
+        }
+
   </style>
 
 
@@ -111,7 +162,7 @@
 
         </h5>
       </div>
-      <div id="collapse{{ unidade.ordem }}" class="collapse" aria-labelledby="heading{{ unidade.ordem }}" data-parent="#accordion">
+      <div id="collapse{{ unidade.ordem }}" class="collapse" aria-labelledby="heading{{ unidade.ordem }}" data-parent="#accordion" style="padding: 10px;">
 
         <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-{{ unidade.ordem }}">
 
@@ -136,15 +187,22 @@
 
         </form>
 
-        <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist">
+        <!-- <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist"> -->
+        <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="videos-tab" data-toggle="tab" href="#videos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="videos-unidade-{{ unidade.ordem }}" aria-selected="true">Vídeos</a>
+                <a class="nav-link nav-link-content active" id="videos-tab" data-toggle="tab" href="#videos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="videos-unidade-{{ unidade.ordem }}" aria-selected="true">
+                    <i class="fas fa-video class-icone-content"></i>Vídeos
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="arquivos-unidade-{{ unidade.ordem }}" aria-selected="false">Arquivos</a>
+                <a class="nav-link nav-link-content" id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="arquivos-unidade-{{ unidade.ordem }}" aria-selected="false">
+                    <i class="fas fa-file-alt class-icone-content"></i>Arquivos
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-{{ unidade.ordem }}" role="tab" aria-controls="questionarios-unidade-{{ unidade.ordem }}" aria-selected="false">Questionários</a>
+                <a class="nav-link nav-link-content" id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-{{ unidade.ordem }}" role="tab" aria-controls="questionarios-unidade-{{ unidade.ordem }}" aria-selected="false">
+                    <i class="fas fa-tasks class-icone-content"></i>Questionários
+                </a>
             </li>
         </ul>
 
@@ -152,7 +210,7 @@
 
         <div class="tab-pane fade show active" id="videos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="videos-tab">
             <div class="card-body  accordion-videos-unidade-{{ unidade.ordem }} card-videos">
-                <button class="btn btn-info btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
+                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                 </button>
                 {% for video in videos %}
@@ -265,7 +323,7 @@
 
         <div class="tab-pane fade" id="arquivos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="arquivos-tab">
             <div class="card-body  accordion-arquivos-unidade-{{ unidade.ordem }} card-arquivos">
-                <button class="btn btn-info btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
+                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                 </button>
                 {% for arquivo in arquivos %}
@@ -335,7 +393,7 @@
 
         <div class="tab-pane fade" id="questionarios-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="questionarios-tab">
             <div class="card-body  accordion-questionarios-unidade-{{ unidade.ordem }} card-questionarios">
-                <button class="btn btn-info btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
+                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                 </button>
                 {% for questionario in questionarios %}
@@ -388,8 +446,8 @@
 
                                 </form>
 
-                                <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes">
-                                    <button class="btn btn-info btn-add-panel-conteudo" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
+                                <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes" style="padding: 0;">
+                                    <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
                                         <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
                                     </button>
 
@@ -442,8 +500,8 @@
                                                         </div>
 
                                                     </form>
-                                                    <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas">
-                                                        <button class="btn btn-info btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaAlternativas(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
+                                                    <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas" style="padding: 0;">
+                                                        <button class="btn btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaAlternativas(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
                                                             <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
                                                         </button>
 
@@ -536,7 +594,7 @@
     </div>
 
 <br />
-<button class="btn btn-info btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
+<button class="btn btn-primary btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
 
 <div class="modal fade bd-example-modal-lg modal-aguarde" data-backdrop="static" data-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-sm">
@@ -622,7 +680,7 @@
 
                 </h5>
               </div>
-              <div id="collapse${numero_unidade}" class="collapse show" aria-labelledby="heading${numero_unidade}" data-parent="#accordion">
+              <div id="collapse${numero_unidade}" class="collapse show" aria-labelledby="heading${numero_unidade}" data-parent="#accordion" style="padding: 10px;">
 
                 <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-0">
 
@@ -664,7 +722,7 @@
 
                 <div class="tab-pane fade show active" id="videos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="videos-tab">
                     <div class="card-body  accordion-videos-unidade-${numero_unidade} card-videos">
-                        <button class="btn btn-info btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
+                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
                             <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                         </button>
                     </div>
@@ -672,7 +730,7 @@
 
                 <div class="tab-pane fade" id="arquivos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="arquivos-tab">
                     <div class="card-body  accordion-arquivos-unidade-${numero_unidade} card-arquivos">
-                        <button class="btn btn-info btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
+                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
                             <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                         </button>
                     </div>
@@ -680,7 +738,7 @@
 
                 <div class="tab-pane fade" id="questionarios-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="questionarios-tab">
                     <div class="card-body  accordion-questionarios-unidade-${numero_unidade} card-questionarios">
-                        <button class="btn btn-info btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
+                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
                             <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
                         </button>
                     </div>
@@ -796,8 +854,8 @@
                             </div>
 
                         </form>
-                        <div class="card-body  accordion-questoes-questionario-0-unidade-${numero_unidade - 1} card-questoes">
-                            <button class="btn btn-info btn-add-panel1" id="accordion-questoes-questionario-0-unidade-${numero_unidade - 1}" onclick='adicionaQuestoes(this, 0, ${(numero_unidade - 1)})'>
+                        <div class="card-body  accordion-questoes-questionario-0-unidade-${numero_unidade - 1} card-questoes" style="padding: 0;">
+                            <button class="btn btn-primary btn-add-panel1" id="accordion-questoes-questionario-0-unidade-${numero_unidade - 1}" onclick='adicionaQuestoes(this, 0, ${(numero_unidade - 1)})'>
                                 <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
                             </button>
                         </div>
@@ -899,8 +957,8 @@
                             </div>
 
                         </form>
-                        <div class="card-body  accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} card-alternativas">
-                            <button class="btn btn-info btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick='adicionaAlternativas(this, ${numero_questionario}, ${(numero_unidade)})'>
+                        <div class="card-body  accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} card-alternativas" style="padding: 0;">
+                            <button class="btn btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick='adicionaAlternativas(this, ${numero_questionario}, ${(numero_unidade)})'>
                                 <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
                             </button>
                         </div>

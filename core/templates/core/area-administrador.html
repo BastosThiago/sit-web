@@ -1,0 +1,24 @@
+{% extends 'pagina-inicial.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% endblock %}
+
+{% block content_page %}
+
+
+        <h2 class="text-center" style="margin-top: 20px;">Área de adminstração</h2>
+
+        <hr/>
+
+        <h3 class="text-center" style="margin-top: 20px;">Olá {{ user.get_full_name }}, utilize o menu ao lado para realizar as operações de administração.</h3>
+
+        <hr/>
+
+{% endblock %}

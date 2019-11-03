@@ -15,7 +15,7 @@
 
         <nav id="sidebar">
             <div class="sidebar-header">
-                <h3>SIT - WEB</h3>
+                <h3><i class="fas fa-university class-icone" style="margin-right: 10px;"></i>SIT - WEB</h3>
                 <strong>SW</strong>
             </div>
 
@@ -30,7 +30,7 @@
                 <li>
                     <a class="class-link" href="/cursos">
                         <i class="fas fa-list-alt class-icon"></i>
-                        Cursos
+                        Lista de Cursos
                     </a>
                 </li>
                 </li>
@@ -45,20 +45,20 @@
 
                         {% if perfil_administrador == True %}
                         <li>
-                            <a class="class-link" href="cadastros-categorias">Categorias</a>
+                            <a class="class-link" href="/cadastros-categorias">Categorias</a>
                         </li>
                         {% endif %}
 
                         <li>
-                            <a class="class-link" href="cadastros-cursos">Cursos</a>
+                            <a class="class-link" href="/cadastros-cursos">Cursos</a>
                         </li>
 
                         <li>
-                            <a class="class-link" href="cadastros-unidades">Unidades</a>
+                            <a class="class-link" href="/cadastros-unidades">Unidades</a>
                         </li>
 
                         <li>
-                            <a class="class-link" href="cadastros-videos">Videos</a>
+                            <a class="class-link" href="/cadastros-videos">Videos</a>
                         </li>
 
                         <li>
@@ -66,42 +66,42 @@
                         </li>
 
                         <li>
-                            <a class="class-link" href="cadastros-arquivos">Questionários</a>
+                            <a class="class-link" href="/cadastros-arquivos">Questionários</a>
                         </li>
 
                         <li>
-                            <a class="class-link" href="cadastros-questoes">Questões</a>
+                            <a class="class-link" href="/cadastros-questoes">Questões</a>
                         </li>
 
                         <li>
-                            <a class="class-link" href="cadastros-alternativas">Alternativas</a>
+                            <a class="class-link" href="/cadastros-alternativas">Alternativas</a>
                         </li>
 
                         {% if perfil_administrador == True %}
                         <li>
-                            <a class="class-link" href="cadastros-avaliacoes">Avaliações</a>
+                            <a class="class-link" href="/cadastros-avaliacoes">Avaliações</a>
                         </li>
                         {% endif %}
 
                         {% if perfil_administrador == True %}
                         <li>
-                            <a class="class-link" href="cadastros-inscricoes">Inscrições</a>
+                            <a class="class-link" href="/cadastros-inscricoes">Inscrições</a>
                         </li>
                         {% endif %}
                     </ul>
                 </li>
                 {% if perfil_administrador == True %}
                 <li>
-                    <a class="class-link" href="#">
+                    <a class="class-link" href="/relatorio-acompanhamento/">
                         <i class="fas fa-chart-line class-icon"></i>
                         Relatórios
                     </a>
                 </li>
                 {% endif %}
 
-                {% if perfil_aluno == True%}
+                {% if perfil_aluno == True %}
                 <li>
-                    <a class="class-link" href="#">
+                    <a class="class-link" href="/area-usuario/">
                         <i class="fas fa-graduation-cap class-icon"></i>
                         Meus Cursos
                     </a>

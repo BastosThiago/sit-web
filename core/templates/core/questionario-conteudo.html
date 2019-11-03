@@ -225,6 +225,7 @@
 
     {% endif %}
 
+    {% if perfil_aluno == True %}
     <div class="container" style="padding: 0; margin-top: 15px;">
         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
             <div class="col text-center" style="margin-bottom: 5px; padding: 0;">
@@ -243,6 +244,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <form action="/teste" method="POST" id="form-questionario">
         {% csrf_token %}
@@ -306,42 +308,58 @@
     //__ Obtém o tempo corrente do video que será exibido
     $(document).ready(function(){
         var inputs = document.getElementsByClassName("input-radio");
-        {% if usuario_questionario is not none and perfil_aluno == True%}
+        {% if usuario_questionario is not none%}
 
             {% if questionario_sem_questoes == False%}
-                $("#enviar")[0].hidden = true;
-                $("#refazer")[0].hidden = false;
-                for(let i = 0; i < inputs.length; i++){
-                    inputs[i].disabled = true;
-                    $(inputs[i]).closest('label').addClass('label-input-class-disabled')
+                {% if perfil_aluno == True %}
+                    $("#enviar")[0].hidden = true;
+                    $("#refazer")[0].hidden = false;
+                    for(let i = 0; i < inputs.length; i++){
+                        inputs[i].disabled = true;
+                        $(inputs[i]).closest('label').addClass('label-input-class-disabled')
 
-                    if($(inputs[i]).attr('correta') == "False") {
-                        $(inputs[i]).closest('.alert').addClass('alternativa-incorreta')
-                        $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-times-circle icone-incorreto')
+                        if($(inputs[i]).attr('correta') == "False") {
+                            $(inputs[i]).closest('.alert').addClass('alternativa-incorreta')
+                            $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-times-circle icone-incorreto')
 
-                    }
-                    else {
-
-                        if($(inputs[i]).attr('correta') == "True") {
-                            $(inputs[i]).closest('.alert').addClass('alternativa-correta')
-                            $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-check-circle icone-correto')
                         }
                         else {
-                            $(inputs[i]).closest('.alert').addClass('alternativa-padrao')
+
+                            if($(inputs[i]).attr('correta') == "True") {
+                                $(inputs[i]).closest('.alert').addClass('alternativa-correta')
+                                $(inputs[i]).closest('.alert').find('.icone-alternativa').addClass('fas fa-check-circle icone-correto')
+                            }
+                            else {
+                                $(inputs[i]).closest('.alert').addClass('alternativa-padrao')
+                            }
                         }
                     }
-                }
+                {% else %}
+                    $("#enviar")[0].hidden = true;
+                    $("#refazer")[0].hidden = true;
+                    for(let i = 0; i < inputs.length; i++){
+                        inputs[i].disabled = true;
+                        $(inputs[i]).closest('label').addClass('label-input-class-disabled')
+                    }
+                {% endif %}
             {% endif %}
 
         {% else %}
 
-            {% if questionario_sem_questoes == False and perfil_aluno == True %}
-                $("#enviar")[0].hidden = false;
-                $("#refazer")[0].hidden = true
-                for(let i = 0; i < inputs.length; i++){
-                    inputs[i].disabled = false;
-                    inputs[i].checked = false;
-                }
+            {% if questionario_sem_questoes == False %}
+                {% if perfil_aluno == True %}
+                    $("#enviar")[0].hidden = false;
+                    $("#refazer")[0].hidden = true
+                    for(let i = 0; i < inputs.length; i++){
+                        inputs[i].disabled = false;
+                        inputs[i].checked = false;
+                    }
+                {% else %}
+                    for(let i = 0; i < inputs.length; i++){
+                        inputs[i].disabled = true;
+                        $(inputs[i]).closest('label').addClass('label-input-class-disabled')
+                    }
+                {% endif %}
             {% endif %}
 
         {% endif %}

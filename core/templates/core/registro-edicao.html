@@ -4,15 +4,15 @@
 
 {% load static %}
 
-{% block title %}{{tituloPagina}}{%endblock %}
+{% block title %} {{tituloPagina}} {% endblock %}
 
 {% block content_page %}
-<div class="offset-1 col-10 list-div">
-    <h2>{{tituloPagina}}</h2>
+<div class="col-12 list-div">
+    <h2 class="text-center">{{tituloPagina}}</h2>
     <form method="POST">
         {% csrf_token %}
         {{ form | crispy }}
-        <input type="submit" class="btn btn-success" value="Confirmar alterações">
+        <input type="submit" class="btn btn-success btn-lg" value="Confirmar alterações">
     </form>
 </div>
 {% endblock %}

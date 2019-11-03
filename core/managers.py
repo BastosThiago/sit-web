@@ -65,13 +65,20 @@ class InscricaoManager(models.Manager):
 
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para retornar as inscrições de acorodo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
             objetos = self.all()
         return objetos
 
+    def obtem_url_ultimo_conteudo_acessado_usuario(self, usuario):
+
+        inscricao = self.filter(
+            usuario=usuario
+        ).order_by('-data_ultimo_conteudo_acessado')[:1]
+
+        return inscricao
 
 class UnidadeManager(models.Manager):
     """

@@ -108,7 +108,7 @@
                 {% else %}
 
                     <li class="nav-item">
-                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/cursos/usuarios"><i class="fas fa-user-circle class-icone"></i>Minha Conta</a>
+                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/area-usuario"><i class="fas fa-user-circle class-icone"></i>Minha área</a>
                     </li>
 
                     <ul class="navbar-nav ml-auto">
@@ -117,7 +117,7 @@
                               <i class="fas fa-user class-icon icone-usuario"></i>{{ user.username }}
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                              <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-edit class-icon icone-usuario"></i>Editar</a>
+                              <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-edit class-icon icone-usuario"></i>Minhas conta</a>
                               <a class="dropdown-item" href="/accounts/logout"><i class="fas fa-sign-out-alt class-icon icone-usuario"></i>Sair</a>
                             </div>
                           </li>

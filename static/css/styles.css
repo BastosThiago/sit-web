@@ -44,15 +44,11 @@
 
 .item-lista {
     list-style: none;
-    font-size: 20px;
-    height: 50px;
-    padding: 0 15px;
-    padding-top: 10px;
-    border-bottom: 1px dashed #ccc;
-}
-
-.task-item.done {
-    background-color: #CCC;
+    //font-size: 20px;
+    //height: 50px;
+    //padding: 0 15px;
+    //padding-top: 10px;
+    //border-bottom: 1px dashed #ccc;
 }
 
 .fas.fa-trash, .fas.fa-arrow-right {

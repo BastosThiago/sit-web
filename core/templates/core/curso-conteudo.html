@@ -180,6 +180,7 @@
                                   <i class="fab fa-contao class-icone-content"></i>Conteúdo
                               </a>
                           </li>
+                          {% if perfil_aluno == True %}
                           <li class="nav-item">
                               <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false">
                                   <i class="fa fa-star class-icone-content"></i>Minha avaliação
@@ -191,6 +192,7 @@
                                   <i class="fa fa-certificate class-icone-content"></i>Certificado
                               </a>
                           </li>
+                          {% endif %}
 
                       </ul>
 
@@ -228,6 +230,20 @@
                                 <h5 class="text-center">Iniciado em: <b>{{ data_inicio|date:"d/m/Y" }}</b></h5>
                                 <hr/>
                                 <h5 class="text-center">Último acesso em: <b>{{ data_ultimo_acesso|date:"d/m/Y" }}</b></h5>
+
+                                {% if curso_objeto_ultimo_conteudo != None %}
+
+                                <h5 class="text-center">Conteúdo: <b>{{ curso_objeto_ultimo_conteudo.unidade.titulo }} - {{ curso_objeto_ultimo_conteudo.titulo }}</b></h5>
+
+                                <div class="col text-center">
+                                    <a href="/{{ usuario_inscricao.ultimo_conteudo_acessado }}" class="btn btn-primary" role="button">
+                                        <i class="fas fa-angle-double-right class-icone-button"></i>
+                                            Continuar
+                                    </a>
+                                </div>
+
+                                {% endif %}
+
                             </div>
                           </div>
 
@@ -270,16 +286,21 @@
                                                                     <div class="card" style="margin-top: 10px;">
                                                                         <div class="card-header" id="heading-video-{{video.video.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                                           <h5 class="mb-0">
+
                                                                             <label class="container-check">
                                                                                 <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
                                                                                 <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                                             </label>
-                                                                            <button style="margin-left: 25px;" class="btn btn-link link-video" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{video.video.ordem}}" aria-expanded="true" aria-controls="collapse-video-{{video.video.ordem}}">
-                                                                              <i class="fas fa-angle-double-down"></i>
-                                                                              {{ video.video.titulo }}
-                                                                            </button>
 
-                                                                            <a href="/visualizacao-video/{{ video.video.id }}"><i class="fas fa-eye" style="font-size: 1.2rem; font-weight: bold;"> Acessar</i></a>
+                                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-video" href="/visualizacao-video/{{ video.video.id }}">
+                                                                              <i class="fas fa-eye"></i>
+                                                                              {{ video.video.titulo }}
+                                                                            </a>
+
+                                                                            <button style="margin-top: 4px;" class="btn btn-link link-video" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{video.video.ordem}}" aria-expanded="true" aria-controls="collapse-video-{{video.video.ordem}}">
+                                                                                Detalhes
+                                                                                <i class="fas fa-angle-double-down" style="margin-left: 5px; "></i>
+                                                                            </button>
 
                                                                           </h5>
                                                                         </div>
@@ -318,16 +339,21 @@
                                                                     <div class="card" style="margin-top: 10px;">
                                                                         <div class="card-header" id="heading-arquivo-{{ arquivo.arquivo.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                                           <h5 class="mb-0">
+
                                                                             <label class="container-check">
                                                                                 <input type="checkbox" checked="checked" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
                                                                                 <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                                             </label>
-                                                                            <button style="margin-left: 25px;" class="btn btn-link link-arquivo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.arquivo.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.arquivo.ordem }}">
-                                                                              <i class="fas fa-angle-double-down"></i>
-                                                                              {{ arquivo.arquivo.titulo }}
-                                                                            </button>
 
-                                                                            <a href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}"><i class="fas fa-eye" style="font-size: 1.2rem; font-weight: bold;"> Acessar</i></a>
+                                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-arquivo" href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}">
+                                                                              <i class="fas fa-eye"></i>
+                                                                              {{ arquivo.arquivo.titulo }}
+                                                                            </a>
+
+                                                                            <button style="margin-top: 4px;" class="btn btn-link link-video" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{arquivo.arquivo.ordem}}" aria-expanded="true" aria-controls="collapse-arquivo-{{arquivo.arquivo.ordem}}">
+                                                                                Detalhes
+                                                                                <i class="fas fa-angle-double-down" style="margin-left: 5px; "></i>
+                                                                            </button>
 
                                                                           </h5>
                                                                         </div>
@@ -369,12 +395,16 @@
                                                                                 <input type="checkbox" checked="checked" id="input-questionario-{{ questionario.questionario.ordem }}">
                                                                                 <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                                             </label>
-                                                                            <button style="margin-left: 25px;" class="btn btn-link link-questionario" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.questionario.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.questionario.ordem }}">
-                                                                              <i class="fas fa-angle-double-down"></i>
-                                                                              {{ questionario.questionario.titulo }}
-                                                                            </button>
 
-                                                                            <a href="/visualizacao-questionario/{{ questionario.questionario.id }}"><i class="fas fa-eye" style="font-size: 1.2rem; font-weight: bold;"> Acessar</i></a>
+                                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-questionario" href="/visualizacao-questionario/{{ questionario.questionario.id }}">
+                                                                              <i class="fas fa-eye"></i>
+                                                                              {{ questionario.questionario.titulo }}
+                                                                            </a>
+
+                                                                            <button style="margin-top: 4px;" class="btn btn-link link-questionario" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{questionario.questionario.ordem}}" aria-expanded="true" aria-controls="collapse-questionario-{{questionario.questionario.ordem}}">
+                                                                                Detalhes
+                                                                                <i class="fas fa-angle-double-down" style="margin-left: 5px; "></i>
+                                                                            </button>
 
                                                                           </h5>
                                                                         </div>
