@@ -168,7 +168,7 @@
                           {{ curso.descricao }}
                       </p>
 
-                      {% if perfil_aluno == True and aluno_inscrito_curso == False %}
+                      {% if perfil_aluno == True and aluno_inscrito_curso == False or usuario_anonimo == True %}
                       <div class="col text-center" style="margin-bottom: 20px;">
                           <a href="/inscricao-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button">
                               <i class="fas fa-user-graduate class-icone-button"></i>

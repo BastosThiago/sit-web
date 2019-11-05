@@ -61,82 +61,90 @@
             }
         </style>
 
+        {% if nao_tem_usuarios == False and nao_tem_inscricoes == False %}
+            <div style="overflow-x:auto;">
+                <table>
 
-        <div style="overflow-x:auto;">
-            <table>
-
-                <tr>
-                    <th class="titulo-relatorio" colspan="7">Relatório acompanhamento - {{ usuario.get_full_name }}</th>
-                </tr>
-
-                <tr>
-                    <th class="titulo-colunas">Curso</th>
-                    <th class="titulo-colunas">Data Inscrição</th>
-                    <th class="titulo-colunas">Andamento</th>
-                    <th class="titulo-colunas">Acertos</th>
-                    <th class="titulo-colunas">Situação</th>
-                    <th class="titulo-colunas">Data Conclusão</th>
-                    <th class="titulo-colunas">Obteve Certificado</th>
-                </tr>
-
-                {% for inscricao in inscricoes %}
-
-                    <tr class="linha-conteudo">
-
-                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.curso.titulo }}</td>
-                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_inscricao | date:"d/m/Y" }}</td>
-                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_andamento }} %</td>
-                        <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_acertos }}  %</td>
-
-
-                        {% if inscricao.situacao == 'REPROVADO' %}
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} reprovado">{{ inscricao.situacao }}</td>
-                        {% else %}
-                            {% if inscricao.situacao == 'APROVADO' %}
-                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} aprovado">{{ inscricao.situacao }}</td>
-                            {% else %}
-                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.situacao }}</td>
-                            {% endif %}
-                        {% endif %}
-
-                        {% if inscricao.data_conclusao != None %}
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_conclusao | date:"d/m/Y" }}</td>
-                        {% else %}
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}"> --- </td>
-                        {% endif %}
-
-                        {% if inscricao.obteve_certificado == True %}
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Sim</td>
-                        {% else %}
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Não</td>
-                        {% endif %}
-
+                    <tr>
+                        <th class="titulo-relatorio" colspan="7">Relatório acompanhamento - {{ usuario.get_full_name }}</th>
                     </tr>
 
-                {% endfor %}
-            </table>
-        </div>
+                    <tr>
+                        <th class="titulo-colunas">Curso</th>
+                        <th class="titulo-colunas">Data Inscrição</th>
+                        <th class="titulo-colunas">Andamento</th>
+                        <th class="titulo-colunas">Acertos</th>
+                        <th class="titulo-colunas">Situação</th>
+                        <th class="titulo-colunas">Data Conclusão</th>
+                        <th class="titulo-colunas">Obteve Certificado</th>
+                    </tr>
 
-        {% if arquivo == False %}
+                    {% for inscricao in inscricoes %}
 
-            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <tr class="linha-conteudo">
 
-                <div class="col text-center" style="margin-top: 20px; margin-bottom: 20px; padding: 0;">
-                  <a class="btn btn-primary" role="button" style="font-size: 1.2rem;"  href="/relatorio-usuario/{{ usuario.id }}">
-                      Visualizar PDF
-                      <i class="fas fa-eye"></i>
-                  </a>
-                </div>
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.curso.titulo }}</td>
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_inscricao | date:"d/m/Y" }}</td>
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_andamento }} %</td>
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_acertos }}  %</td>
 
-                <div class="col text-center" style="margin-top: 20px; margin-bottom: 20px; padding: 0;">
-                  <a class="btn btn-primary" role="button" style="font-size: 1.2rem;"  href="/relatorio-usuario/{{ usuario.id }}?download=download">
-                      Baixar PDF
-                      <i class="fas fa-download"></i>
-                  </a>
-                </div>
 
+                            {% if inscricao.situacao == 'REPROVADO' %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} reprovado">{{ inscricao.situacao }}</td>
+                            {% else %}
+                                {% if inscricao.situacao == 'APROVADO' %}
+                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} aprovado">{{ inscricao.situacao }}</td>
+                                {% else %}
+                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.situacao }}</td>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if inscricao.data_conclusao != None %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_conclusao | date:"d/m/Y" }}</td>
+                            {% else %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}"> --- </td>
+                            {% endif %}
+
+                            {% if inscricao.obteve_certificado == True %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Sim</td>
+                            {% else %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Não</td>
+                            {% endif %}
+
+                        </tr>
+
+                    {% endfor %}
+                </table>
             </div>
 
+            {% if arquivo == False %}
+                <hr/>
+
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+
+                    <div class="col text-center" style="margin-top: 20px; margin-bottom: 20px; padding: 0;">
+                      <a class="btn btn-primary" role="button" style="font-size: 1.2rem;"  href="/relatorio-usuario/{{ usuario.id }}">
+                          Visualizar PDF
+                          <i class="fas fa-eye"></i>
+                      </a>
+                    </div>
+
+                    <div class="col text-center" style="margin-top: 20px; margin-bottom: 20px; padding: 0;">
+                      <a class="btn btn-primary" role="button" style="font-size: 1.2rem;"  href="/relatorio-usuario/{{ usuario.id }}?download=download">
+                          Baixar PDF
+                          <i class="fas fa-download"></i>
+                      </a>
+                    </div>
+
+                </div>
+                <hr/>
+
+            {% endif %}
+
+        {% else %}
+            {% if nao_tem_usuarios == False %}
+                <h5 class="text-center" style="margin-top: 20px;">Sem dados para geração de relatório</h5>
+            {% endif %}
         {% endif %}
     {% endif %}
 

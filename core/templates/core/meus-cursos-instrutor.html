@@ -1,0 +1,66 @@
+{% extends 'pagina-inicial.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% endblock %}
+
+{% block content_page %}
+
+
+        <h2 class="text-center" style="margin-top: 20px;">Meus cursos</h2>
+
+        <hr/>
+
+        <div class="col-12 search-div">
+            <form method="GET" id="search-form">
+                <input class="form-control" type="text" id="search" name="search"
+                       placeholder="Digite qualquer coisa para buscar"
+                       value="{{ request.GET.search }}">
+                <i class="fas fa-search" id="search-btn"></i>
+            </form>
+        </div>
+
+        {% if nao_tem_cursos == False %}
+        <div class="row">
+            {% for curso in cursos %}
+                <div class="col-sm-3">
+                    <div class="card card-curso">
+
+                        <div class="card-header">
+                            <h5 class="text-center" style="margin: 0; padding: 0;">{{ curso.titulo }}</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <h6 class="card-subtitle mb-2 text-muted text-center">{{ curso.categoria.titulo }}</h6>
+
+                            <hr/>
+                            {% if curso.publicado == True %}
+                            <p class="card-text text-center">Publicado</p>
+                            {% else %}
+                            <p class="card-text text-center">Não publicado</p>
+                            {% endif %}
+                            <p>
+                                <div class="col text-center">
+                                    <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary" role="button">
+                                        <i class="fas fa-angle-double-right class-icone-button"></i>
+                                            Preview Curso
+                                    </a>
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <h5 class="text-center" style="margin-top: 20px;">Sem cursos a serem exibidos</h5>
+            {% endif %}
+
+{% endblock %}

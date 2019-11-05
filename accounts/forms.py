@@ -15,7 +15,16 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserChangeForm(UserChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(UserChangeForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            self.fields['first_name'].widget.attrs['readonly'] = True
+            self.fields['last_name'].widget.attrs['readonly'] = True
+            self.fields['perfil'].widget.attrs['readonly'] = True
+
     password = None
+
     class Meta(UserChangeForm):
         model = CustomUser
-        fields = ('email',)
+        fields = ('first_name', 'last_name', 'perfil', 'email',)

@@ -201,6 +201,8 @@
                           <div class="tab-pane fade show active" id="informacoes-curso" role="tabpanel" aria-labelledby="informacoes-tab">
                             <div class="tab-content-body">
                                 <hr/>
+                               <h5 class="text-center">Descrição: {{ curso.descricao }}</b></h5>
+                                <hr/>
                                 {% if situacao_aluno_curso == "REPROVADO" %}
                                     <h5 class="text-center">Situação: <b style="color: red;">{{ situacao_aluno_curso }}</b></h5>
                                 {% else %}
@@ -215,7 +217,7 @@
                                 <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_andamento }}%)</b></div>
                                 <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: {{ percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        <span class="perc-nota"><b style="font-size: 1rem">{{ percentual_andamento }}%</b></span>
+                                        <span class="perc-nota"><b style="font-size: 1rem"></b></span>
                                     </div>
                                 </div>
                                 <hr/>
@@ -223,13 +225,13 @@
                                 <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_acertos }}%)</b></div>
                                 <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: {{ percentual_acertos }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        <span class="perc-nota"><b style="font-size: 1rem">{{ percentual_acertos }}%</b></span>
+                                        <span class="perc-nota"><b style="font-size: 1rem"></b></span>
                                     </div>
                                 </div>
                                 <hr/>
-                                <h5 class="text-center">Iniciado em: <b>{{ data_inicio|date:"d/m/Y" }}</b></h5>
+                                <h5 class="text-center">Iniciado em: <b>{{ data_inicio|date:"d/m/Y h:m:s" }}</b></h5>
                                 <hr/>
-                                <h5 class="text-center">Último acesso em: <b>{{ data_ultimo_acesso|date:"d/m/Y" }}</b></h5>
+                                <h5 class="text-center">Último acesso em: <b>{{ data_ultimo_acesso|date:"d/m/Y h:m:s" }}</b></h5>
 
                                 {% if curso_objeto_ultimo_conteudo != None %}
 
@@ -288,9 +290,13 @@
                                                                           <h5 class="mb-0">
 
                                                                             <label class="container-check">
-                                                                                <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                                            {% if video.assistido == True %}
+                                                                            <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                                            {% else %}
+                                                                            <input type="checkbox" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                                            {% endif %}
                                                                                 <span style="float: left; margin-top: 6px;"class="checkmark"></span>
-                                                                            </label>
+                                                                             </label>
 
                                                                             <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-video" href="/visualizacao-video/{{ video.video.id }}">
                                                                               <i class="fas fa-eye"></i>
@@ -341,7 +347,11 @@
                                                                           <h5 class="mb-0">
 
                                                                             <label class="container-check">
+                                                                                {% if arquivo.acessado == True %}
                                                                                 <input type="checkbox" checked="checked" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                                {% else %}
+                                                                                <input type="checkbox" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                                {% endif %}
                                                                                 <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                                             </label>
 
@@ -391,8 +401,13 @@
                                                                     <div class="card" style="margin-top: 10px;">
                                                                         <div class="card-header" id="heading-questionario-{{ questionario.questionario.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                                           <h5 class="mb-0">
+
                                                                             <label class="container-check">
+                                                                                {% if questionario.respondido == True %}
                                                                                 <input type="checkbox" checked="checked" id="input-questionario-{{ questionario.questionario.ordem }}">
+                                                                                {% else %}
+                                                                                <input type="checkbox" id="input-questionario-{{ questionario.questionario.ordem }}">
+                                                                                {% endif %}
                                                                                 <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                                             </label>
 
@@ -438,12 +453,12 @@
                               <h5 class="text-center">Avalie o curso preenchendo as informações abaixo</h5>
                               <hr/>
                               <div class="alert alert-danger alert-dismissable" id="avaliacao-falha" hidden="true">
-                                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times</a>
-                                  <strong>Falha ao salvar a avalição do curso.</strong>
+                                  <a href="#" class="close" onclick="escodeAlerta(this)"  aria-label="close">&times</a>
+                                  <strong>Falha ao executar ação.</strong>
                               </div>
                               <div class="alert alert-success alert-dismissable" id="avaliacao-sucesso" hidden="true">
-                                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times</a>
-                                  <strong>Avaliação salva com sucesso.</strong>
+                                  <a href="#" class="close" onclick="escodeAlerta(this)" aria-label="close">&times</a>
+                                  <strong>Sucesso ao executar ação.</strong>
                               </div>
                               <form action="" id="avaliacao-form" method="POST">
                                 {% csrf_token %}
@@ -504,9 +519,33 @@
                                       <textarea class="form-control" id="avaliacao-comentario" name="comentario" rows="3" required></textarea>
                                   {% endif %}
                                 </div>
-                                <div class="col-auto my-1">
-                                    <button type="submit" name="envia" class="btn btn-primary">Enviar</button>
-                                </div>
+
+
+                                  <div class="container">
+                                      <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                          <div class="col text-center" style="margin-bottom: 10px;">
+                                              <button type="submit" name="envia" class="btn btn-primary"><i class="fas fa-share-square class-icone-button"></i>Enviar</button>
+                                          </div>
+                                          {% if avaliacao != None %}
+                                          <div class="col text-center">
+                                              <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
+                                                  <i class="fas fa-trash-alt class-icone-button"></i>
+                                                      Eliminar
+                                              </button>
+                                          </div>
+                                          {% else %}
+                                         <div class="col text-center" id="elimina-avaliacao" hidden="true">
+                                              <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
+                                                  <i class="fas fa-trash-alt class-icone-button"></i>
+                                                      Eliminar
+                                              </button>
+                                          </div>
+                                          {% endif %}
+                                      </div>
+                                  </div>
+
+
+
                               </form>
 
                             </div>
@@ -521,7 +560,7 @@
                               e também ter um percentual de acerto de do mínimo 70% nos questionários propostos.</p>
                               <hr/>
 
-                              {% if situacao_aluno_curso != "APROVADO" %}
+                              {% if situacao_aluno_curso == "APROVADO" %}
                               <div class="container">
                                   <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                                       <div class="col text-center" style="margin-bottom: 10px;">
@@ -686,13 +725,41 @@
                   success     : function(data, textStatus, jqXHR){
                       $('#avaliacao-sucesso')[0].hidden = false;
                       $('#avaliacao-falha')[0].hidden = true;
+                      $('#elimina-avaliacao')[0].hidden = false;
                   },
                   error: function(data){
                       $('#avaliacao-sucesso')[0].hidden = true;
                       $('#avaliacao-falha')[0].hidden = false;
+                      $('#avaliacao-falha').find('strong')[0].innerText = data.responseText;
                   }
                 });
             });
+
+            function escodeAlerta(elemento) {
+                $(elemento).closest('.alert')[0].hidden = true
+            }
+
+            function eliminaAvaliacao(id_avaliacao) {
+                event.preventDefault();
+                $.ajax({
+                  url         : '/elimina-avaliacao/{{ curso.id }}',
+                  type        : 'GET',
+                  processData : false,
+                  contentType : false,
+                  success     : function(data, textStatus, jqXHR){
+                      $('#avaliacao-sucesso')[0].hidden = false;
+                      $('#avaliacao-falha')[0].hidden = true;
+                      $('#avaliacao-nota')[0].value = "1"
+                      $('#avaliacao-comentario')[0].value = ""
+                  },
+                  error: function(data){
+                      $('#avaliacao-sucesso')[0].hidden = true;
+                      $('#avaliacao-falha')[0].hidden = false;
+                      $('#avaliacao-falha').find('strong')[0].innerText = data.responseText;
+                  }
+                });
+
+            }
 
           </script>
 

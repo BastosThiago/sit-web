@@ -1,0 +1,261 @@
+{% extends 'pagina-inicial.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% endblock %}
+
+{% block content_page %}
+
+
+        <h2 class="text-center" style="margin-top: 20px;">Cadastros</h2>
+
+
+        <hr/>
+
+        <div class="row">
+
+            {% if perfil_administrador == True %}
+            <div class="col-sm-2">
+
+                <div class="card card-curso" style="margin-top: 20px;">
+
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Categorias</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-object-group" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-categorias" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Cursos</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-graduation-cap" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-cursos" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Unidades</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-layer-group" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-unidades" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Vídeos</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-video" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-videos" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Arquivos</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-file-alt" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-arquivos" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Questionários</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-tasks" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-questionarios" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Questões</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-question-circle" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-questoes" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Alternativas</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-spell-check" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-alternativas" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {% if perfil_administrador == True %}
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Avalicações</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-star" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-avaliações" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="card card-curso" style="margin-top: 20px;">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Inscrições</h5>
+                    </div>
+
+                    <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
+
+                        <div class="text-center">
+                            <i class="fas fa-users" style="font-size: 4rem; color: #007bff;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-footer col text-center">
+                        <a href="/cadastros-inscricoes" class="btn btn-primary" role="button">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+{% endblock %}

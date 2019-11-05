@@ -17,46 +17,82 @@
 
         <hr/>
 
-        <div class="col-12 search-div">
-            <form method="GET" id="search-form">
-                <input class="form-control" type="text" id="search" name="search"
-                       placeholder="Digite qualquer caracteristica do curso para buscar"
-                       value="{{ request.GET.search }}">
-                <i class="fas fa-search" id="search-btn"></i>
-            </form>
-        </div>
         <div class="row">
-            {% for curso in cursos %}
-                <div class="col-sm-3">
-                    <div class="card card-curso">
+            <div class="col-sm-4">
+                <div class="card card-curso">
 
-                        <div class="card-header">
-                            <h5 class="text-center" style="margin: 0; padding: 0;">{{ curso.titulo }}</h5>
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Cadastros</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="col text-center">
+                            <p class="card-text text-center">Cadastros de Conteúdo</p>
+                            <i class="fas fa-copy" style="font-size: 6em; color: #007bff;"></i>
                         </div>
-
-                        <div class="card-body">
-
-                            <h6 class="card-subtitle mb-2 text-muted text-center">{{ curso.categoria.titulo }}</h6>
-
-                            <hr/>
-                            {% if curso.publicado == True %}
-                            <p class="card-text text-center">Publicado</p>
-                            {% else %}
-                            <p class="card-text text-center">Não publicado</p>
-                            {% endif %}
-                            <p>
-                                <div class="col text-center">
-                                    <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary" role="button">
-                                        <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Preview Curso
-                                    </a>
-                                </div>
-                            </p>
-                        </div>
+                        <p>
+                            <div class="col text-center">
+                                <a href="/cadastros-conteudos" class="btn btn-primary" role="button">
+                                    <i class="fas fa-angle-double-right class-icone-button"></i>
+                                        Acessar
+                                </a>
+                            </div>
+                        </p>
                     </div>
                 </div>
-            {% endfor %}
             </div>
+
+            <div class="col-sm-4">
+                <div class="card card-curso">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Meus cursos</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="col text-center">
+                            <p class="card-text text-center">Cursos</p>
+                            <i class="fas fa-graduation-cap" style="font-size: 6em; color: #007bff;"></i>
+                        </div>
+                        <p>
+                            <div class="col text-center">
+                                <a href="/meus-cursos/" class="btn btn-primary" role="button">
+                                    <i class="fas fa-angle-double-right class-icone-button"></i>
+                                        Acessar
+                                </a>
+                            </div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card card-curso">
+
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Relatórios</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="col text-center">
+                            <p class="card-text text-center">Acompanhamento</p>
+                            <i class="fas fa-chart-line" style="font-size: 6em; color: #007bff;"></i>
+                        </div>
+                        <p>
+                            <div class="col text-center">
+                                <a href="/relatorio-acompanhamento/" class="btn btn-primary" role="button">
+                                    <i class="fas fa-angle-double-right class-icone-button"></i>
+                                        Acessar
+                                </a>
+                            </div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
 {% endblock %}

@@ -227,12 +227,15 @@ def registrosListView(request, modelo):
                 modelo.CustomMeta.ordering_field
             )
 
-            paginator = Paginator(lista_objetos, 5)
+            paginator = Paginator(lista_objetos, 10)
 
             page = request.GET.get('page')
 
             objetos = paginator.get_page(page)
 
+        nao_tem_objetos = False
+        if len(objetos) == 0:
+            nao_tem_objetos = True
 
         return render(
             request,
@@ -245,6 +248,7 @@ def registrosListView(request, modelo):
                 'perfil_administrador': perfil_administrador,
                 'perfil_instrutor': perfil_instrutor,
                 'lista_cursos': lista_cursos,
+                'nao_tem_objetos': nao_tem_objetos
             }
         )
     else:
@@ -661,6 +665,7 @@ def informacoesCursoView(request, id):
     avaliacoes = None
     aluno_inscrito_curso = False
     perfil_aluno = False
+    usuario_anonimo = False
     nota_media_curso = "Sem nota"
     numero_unidades = 0
     numero_videos = 0
@@ -704,6 +709,8 @@ def informacoesCursoView(request, id):
                     curso=curso
             ):
                 aluno_inscrito_curso = True
+    else:
+        usuario_anonimo = True
 
     # Verifica se o curso tem algum conteúdo
     if curso.tem_conteudo():
@@ -773,6 +780,7 @@ def informacoesCursoView(request, id):
             'numero_inscritos': numero_inscritos,
             'curso_sem_conteudo': curso_sem_conteudo,
             'perfil_aluno': perfil_aluno,
+            'usuario_anonimo': usuario_anonimo,
             'aluno_inscrito_curso': aluno_inscrito_curso,
             'unidades': unidades,
             'avaliacoes': avaliacoes,
@@ -818,7 +826,9 @@ def inscricaoCursoView(request, id):
                 if inscricao.count() == 0:
                     Inscricao.objects.create(curso=curso, usuario=request.user)
 
-                return redirect(f"/conteudo-curso/{curso.id}")
+                return redirect(
+                    f"/conteudo-curso/{curso.id}"
+                )
 
             except:
                 return trata_erro_404(request, None)
@@ -836,7 +846,7 @@ def avaliacaoCursoView(request, id):
     """
 
     # Permite a avaliação de um curso apenas para usuário com perfil ALUNO
-    if request.user.tem_perfil_aluno() == False:
+    if request.user.tem_perfil_aluno():
 
         try:
             curso = Curso.objects.get(pk=id)
@@ -876,8 +886,9 @@ def avaliacaoCursoView(request, id):
                         data_avaliacao=datetime.now()
                     )
         except:
-            resposta = HttpResponse('FALHA')
+            resposta = HttpResponse('Falha ao executar a ação.')
             resposta.status_code = 404
+            return resposta
 
         resposta = HttpResponse('SUCESSO')
         resposta.status_code = 200
@@ -886,7 +897,46 @@ def avaliacaoCursoView(request, id):
 
     else:
         # Chama tratamento padrão para usuário sem permissão
-        return trata_usuario_sem_permissao(request)
+        resposta = HttpResponse('Usuário sem permissão para executar a ação.')
+        resposta.status_code = 404
+        return resposta
+
+
+@login_required
+def eliminaAvaliacaoView(request, id):
+    """
+    View responsável pelo tratamento de eliminação de uma avalição de um curso
+    """
+    # Permite a avaliação de um curso apenas para usuário com perfil ALUNO
+    if request.user.tem_perfil_aluno():
+
+        try:
+            usuario = CustomUser.objects.get(pk=21)
+
+            try:
+                usuario.delete()
+            except Exception as e:
+                pass
+
+            avaliacao = Avaliacao.objects.get(curso_id=id, usuario=request.user)
+
+            avaliacao.delete()
+        except:
+            # Chama tratamento padrão para usuário sem permissão
+            resposta = HttpResponse('Usuário sem permissão para executar a ação.')
+            resposta.status_code = 404
+            return resposta
+
+        resposta = HttpResponse('SUCESSO')
+        resposta.status_code = 200
+
+        return resposta
+
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        resposta = HttpResponse('Usuário sem permissão para a ação.')
+        resposta.status_code = 404
+        return resposta
 
 
 def obtem_objeto_conteudo_pela_url(conteudo_url):
@@ -912,6 +962,7 @@ def obtem_objeto_conteudo_pela_url(conteudo_url):
         return objeto_conteudo
     except:
         return None
+
 
 @login_required
 def areaUsuarioView(request):
@@ -956,6 +1007,56 @@ def areaUsuarioView(request):
                 dict_ultimo_conteudo['curso_titulo'] = inscricao_ultimo_conteudo_acessado[0].curso.titulo
                 dict_ultimo_conteudo['unidade'] = objeto_ultimo_conteudo.unidade.titulo
 
+        return render(
+            request,
+            'core/area-usuario.html',
+            {
+                'dict_ultimo_conteudo': dict_ultimo_conteudo,
+                'perfil_aluno': True,
+                'menu_inicio': True,
+                'menu_meus_cursos': False,
+                'menu_cadastros': False,
+                'menu_relatorios': False,
+            }
+        )
+
+    else:
+        if perfil_instrutor:
+
+            return render(
+                request,
+                'core/area-instrutor.html',
+                {
+                    'perfil_instrutor': True,
+                    'menu_inicio': True,
+                    'menu_meus_cursos': False,
+                    'menu_cadastros': False,
+                    'menu_relatorios': False,
+                }
+            )
+        if perfil_administrador:
+            return render(
+                request,
+                'core/area-administrador.html',
+                {
+                    'perfil_administrador': True,
+                    'menu_inicio': True,
+                    'menu_meus_cursos': False,
+                    'menu_cadastros': False,
+                    'menu_relatorios': False,
+                }
+        )
+
+
+@login_required
+def meusCursosView(request):
+    """
+    View responsável pelo tratamento de apresentação dos cursos de um usuário
+    """
+
+    # Verifica o perfil do usuário para obter o curso associado ao ID da requisição
+    if request.user.tem_perfil_aluno():
+
         # Obtém todas as inscrições do usuário
         inscricoes_usuario = Inscricao.objects.filter(usuario=request.user)
 
@@ -993,19 +1094,25 @@ def areaUsuarioView(request):
 
                 lista_cursos.append(dict_curso)
 
+        nao_tem_cursos = False
+        if len(lista_cursos) == 0:
+            nao_tem_cursos = True
         return render(
             request,
-            'core/area-usuario.html',
+            'core/meus-cursos.html',
             {
-                'dict_ultimo_conteudo': dict_ultimo_conteudo,
                 'lista_cursos': lista_cursos,
+                'nao_tem_cursos': nao_tem_cursos,
                 'perfil_aluno': True,
+                'menu_inicio': False,
+                'menu_meus_cursos': True,
+                'menu_cadastros': False,
+                'menu_relatorios': False,
             }
         )
 
     else:
-        if perfil_instrutor:
-
+        if request.user.tem_perfil_instrutor():
             cursos = Curso.objects.obtem_objetos_por_perfil_usuario(request.user)
 
             # Verifica se algum filtro foi passado para obtenção dos registros
@@ -1021,23 +1128,27 @@ def areaUsuarioView(request):
                                  in search_fields], Q())
                 cursos = cursos.filter(filtro)
 
+            nao_tem_cursos = False
+            if len(cursos) == 0:
+                nao_tem_cursos = True
+
             return render(
                 request,
-                'core/area-instrutor.html',
+                'core/meus-cursos-instrutor.html',
                 {
+                    'cursos': cursos,
+                    'nao_tem_cursos': nao_tem_cursos,
+                    'perfil_aluno': False,
                     'perfil_instrutor': True,
-                    'cursos': cursos
+                    'menu_inicio': False,
+                    'menu_meus_cursos': True,
+                    'menu_cadastros': False,
+                    'menu_relatorios': False,
                 }
             )
-        if perfil_administrador:
-            return render(
-                request,
-                'core/area-administrador.html',
-                {
-                    'perfil_administrador': True
-                }
-        )
-
+        else:
+            # Chama tratamento padrão para usuário sem permissão
+            return trata_usuario_sem_permissao(request)
 
 
 @login_required
@@ -1103,6 +1214,8 @@ def conteudoCursoView(request, id):
         avaliacao = Avaliacao.objects.filter(curso=curso, usuario=request.user)
         if avaliacao.count() == 1:
             avaliacao = avaliacao[0]
+        else:
+            avaliacao = None
 
         curso_objeto_ultimo_conteudo = \
             obtem_objeto_conteudo_pela_url(
@@ -1110,7 +1223,17 @@ def conteudoCursoView(request, id):
             )
 
     else:
-        curso = get_object_or_404(Curso, pk=id)
+        # Caso o perfil do usuário seja de INSTRUTOR, permite apenas a visualização
+        # do conteúdo do curso caso o usuário seja o criado do curso
+        if perfil_instrutor:
+            try:
+                curso = Curso.objects.get(pk=id, usuario=request.user)
+            except:
+                # Chama tratamento padrão para usuário sem permissão
+                return trata_usuario_sem_permissao(request)
+            pass
+        else:
+            curso = get_object_or_404(Curso, pk=id)
 
     # Caso tenha obtido o curso com sucesso, obtém seus conteúdos
     if curso:
@@ -1172,7 +1295,7 @@ def conteudoCursoView(request, id):
                 )
 
                 dict_questionario['respondido'] = False
-                if usuario_arquivo.count() == 1:
+                if usuario_questionario.count() == 1:
                     if usuario_questionario[0].respondido:
                         dict_questionario['respondido'] = True
 
@@ -1196,6 +1319,12 @@ def conteudoCursoView(request, id):
             except:
                 inscricao = None
 
+            if data_ultimo_acesso is None:
+                data_ultimo_acesso = datetime.now()
+                if inscricao is not None:
+                    inscricao.data_ultimo_conteudo_acessado = data_ultimo_acesso
+                    inscricao.save()
+
     return render(
         request,
         'core/curso-conteudo.html',
@@ -1215,6 +1344,10 @@ def conteudoCursoView(request, id):
             'perfil_aluno': perfil_aluno,
             'perfil_administrador': perfil_administrador,
             'perfil_instrutor': perfil_instrutor,
+            'menu_inicio': True,
+            'menu_meus_cursos': False,
+            'menu_cadastros': False,
+            'menu_relatorios': False,
         }
     )
 
@@ -1243,6 +1376,25 @@ def atualizaAcessoConteudoView(request):
 
                     usuario_video.assistido = conteudo_status
                     usuario_video.save()
+
+                if tipo_conteudo == "arquivo":
+                    usuario_arquivo = UsuarioVideo.objects.get(
+                        usuario=request.user,
+                        arquivo_id=id_conteudo
+                    )
+
+                    usuario_arquivo.acessado = conteudo_status
+                    usuario_arquivo.save()
+
+                if tipo_conteudo == "questionario":
+                    usuario_questionario = UsuarioQuestionario.objects.get(
+                        usuario=request.user,
+                        questionario_id=id_conteudo
+                    )
+
+                    usuario_questionario.respondido = conteudo_status
+                    usuario_questionario.save()
+
         except:
             resposta = HttpResponse('FALHA')
             resposta.status_code = 404
@@ -1431,6 +1583,10 @@ def visualizacaoVideoView(request, id):
                 'perfil_aluno': perfil_aluno,
                 'perfil_administrador': perfil_administrador,
                 'perfil_instrutor': perfil_instrutor,
+                'menu_inicio': False,
+                'menu_meus_cursos': True,
+                'menu_cadastros': False,
+                'menu_relatorios': False,
             }
         )
     else:
@@ -1460,6 +1616,10 @@ def visualizacaoVideoView(request, id):
                 'perfil_aluno': perfil_aluno,
                 'perfil_administrador': perfil_administrador,
                 'perfil_instrutor': perfil_instrutor,
+                'menu_inicio': False,
+                'menu_meus_cursos': True,
+                'menu_cadastros': False,
+                'menu_relatorios': False,
             },
         )
 
@@ -1519,6 +1679,7 @@ def atualizaUltimoConteudoAcessado(usuario, curso, url):
         inscricao.save()
     except:
         pass
+
 
 @login_required
 @never_cache
@@ -1627,6 +1788,19 @@ def visualizacaoArquivoView(request, id):
             f"visualizacao-arquivo/{arquivo.id}"
         )
 
+        # Marca na instância de modelo do Usuario x Arquivo que o mesmo foi acessado
+        try:
+            usuario_arquivo = UsuarioArquivo.objects.get_or_create(
+                usuario=request.user,
+                arquivo=arquivo
+            )
+
+            usuario_arquivo[0].data_acesso = datetime.now()
+            usuario_arquivo[0].acessado = True
+            usuario_arquivo[0].save()
+        except:
+            pass
+
     # Obtém as URLs do próximo e do conteúdo anterior ao arquivo acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         arquivo.unidade.curso.id,
@@ -1655,6 +1829,10 @@ def visualizacaoArquivoView(request, id):
             'perfil_aluno': perfil_aluno,
             'perfil_administrador': perfil_administrador,
             'perfil_instrutor': perfil_instrutor,
+            'menu_inicio': False,
+            'menu_meus_cursos': True,
+            'menu_cadastros': False,
+            'menu_relatorios': False,
         },
     )
 
@@ -1704,6 +1882,7 @@ def visualizacaoQuestionarioView(request, id):
             questionario.unidade.curso,
             f"visualizacao-questionario/{questionario.id}"
         )
+
 
     # Obtém a questões associadas ao questionário
     questoes = Questao.objects.filter(questionario=questionario).order_by('ordem')
@@ -1777,13 +1956,15 @@ def visualizacaoQuestionarioView(request, id):
 
                 usuario_questionario.percentual_acertos = percentual_acertos
                 usuario_questionario.data_execucao = datetime.now()
+                usuario_questionario.respondido = True
                 usuario_questionario.save()
             except:
                 usuario_questionario = UsuarioQuestionario.objects.create(
                     questionario=questionario,
                     usuario=request.user,
                     percentual_acertos=percentual_acertos,
-                    data_execucao=datetime.now()
+                    data_execucao=datetime.now(),
+                    respondido=True
                 )
 
         # Verifica se o usuário da requisição já respondeu ao questionário anteriormente.
@@ -1839,6 +2020,10 @@ def visualizacaoQuestionarioView(request, id):
             'perfil_aluno': perfil_aluno,
             'perfil_administrador': perfil_administrador,
             'perfil_instrutor': perfil_instrutor,
+            'menu_inicio': False,
+            'menu_meus_cursos': True,
+            'menu_cadastros': False,
+            'menu_relatorios': False,
         },
     )
 
@@ -1917,25 +2102,53 @@ def relatorioAcompanhamentoView(request):
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
 
-
-
     # Caso o usuário tenha perfil de administrador
-    if request.user.tem_perfil_administrador():
-        # Obtém todos os usuários de pefil ALUNO
-        usuarios = CustomUser.objects.filter(perfil=1).order_by('username')
+    if perfil_administrador or perfil_instrutor:
+
+        if perfil_administrador == True:
+            # Obtém todos os usuários de pefil ALUNO
+            usuarios = CustomUser.objects.filter(perfil=1).order_by('username')
+
+        else:
+            # Obtém o ID dos usuários que estão incritos nos cursos criados
+            # pelo instrutor da requisição
+            usuarios_ids = Inscricao.objects.filter(
+                curso__usuario=request.user,
+            ).values_list('usuario_id')
+
+            usuarios = CustomUser.objects.filter(id__in=usuarios_ids)
 
         usuario = None
         inscricoes = None
         usuario_id = request.GET.get('usuario')
 
         # Obtém o ID do usuário para então obter suas inscrições nos cursos
-        if usuario_id:
+        if usuario_id is not None:
             try:
-                usuario = CustomUser.objects.get(pk=usuario_id)
-                inscricoes = Inscricao.objects.filter(usuario=usuario)
+                if perfil_administrador:
+                    usuario = CustomUser.objects.get(pk=usuario_id)
+                    inscricoes = Inscricao.objects.filter(usuario=usuario)
+                else:
+                    usuario = usuarios.filter(id=usuario_id)[0]
+                    inscricoes = Inscricao.objects.filter(
+                        usuario=usuario,
+                        curso__usuario=request.user
+                    )
+
             except:
                 usuario = None
 
+        nao_tem_usuarios = False
+        if len(usuarios) == 0:
+            nao_tem_usuarios = True
+
+        nao_tem_inscricoes = False
+
+        if usuario is not None:
+            if inscricoes is None:
+                nao_tem_inscricoes = True
+            elif len(inscricoes) == 0:
+                nao_tem_inscricoes = True
 
         if request.is_ajax():
             return render(
@@ -1945,9 +2158,15 @@ def relatorioAcompanhamentoView(request):
                     'usuario': usuario,
                     'inscricoes': inscricoes,
                     'arquivo': False,
+                    'nao_tem_usuarios': nao_tem_usuarios,
+                    'nao_tem_inscricoes': nao_tem_inscricoes,
                     'perfil_aluno': perfil_aluno,
                     'perfil_administrador': perfil_administrador,
                     'perfil_instrutor': perfil_instrutor,
+                    'menu_inicio': False,
+                    'menu_meus_cursos': False,
+                    'menu_cadastros': False,
+                    'menu_relatorios': True,
                 }
             )
         else:
@@ -1959,14 +2178,49 @@ def relatorioAcompanhamentoView(request):
                     'usuario': usuario,
                     'inscricoes': inscricoes,
                     'arquivo': False,
+                    'nao_tem_usuarios': nao_tem_usuarios,
+                    'nao_tem_inscricoes': nao_tem_inscricoes,
                     'perfil_aluno': perfil_aluno,
                     'perfil_administrador': perfil_administrador,
                     'perfil_instrutor': perfil_instrutor,
+                    'menu_inicio': False,
+                    'menu_meus_cursos': False,
+                    'menu_cadastros': False,
+                    'menu_relatorios': True,
                 }
             )
     else:
-        # Chama tratamento padrão para usuário sem permissão
-        return trata_usuario_sem_permissao(request)
+        if perfil_aluno:
+            inscricoes = Inscricao.objects.filter(usuario=request.user)
+
+            nao_tem_usuarios = False
+            nao_tem_inscricoes = False
+            if len(inscricoes) == 0:
+                nao_tem_inscricoes = True
+
+            return render(
+                request,
+                'core/relatorio-acompanhamento.html',
+                {
+                    'usuarios': None,
+                    'usuario': request.user,
+                    'inscricoes': inscricoes,
+                    'arquivo': False,
+                    'nao_tem_usuarios': nao_tem_usuarios,
+                    'nao_tem_inscricoes': nao_tem_inscricoes,
+                    'perfil_aluno': perfil_aluno,
+                    'perfil_administrador': perfil_administrador,
+                    'perfil_instrutor': perfil_instrutor,
+                    'menu_inicio': False,
+                    'menu_meus_cursos': False,
+                    'menu_cadastros': False,
+                    'menu_relatorios': True,
+                }
+            )
+            pass
+        else:
+            # Chama tratamento padrão para usuário sem permissão
+            return trata_usuario_sem_permissao(request)
 
 
 def relatorioUsuarioView(request):
@@ -1975,13 +2229,20 @@ def relatorioUsuarioView(request):
     """
 
     # Caso o usuário tenha perfil de administrador
-    if request.user.tem_perfil_administrador():
+    if request.user.tem_perfil_administrador() or request.user.tem_perfil_instrutor():
+        nao_tem_usuarios = False
+        nao_tem_inscricoes = False
+        usuario = None
+        inscricoes = None
         if request.method == 'GET':
             try:
                 usuario_id = request.GET['usuario_id']
 
                 usuario = CustomUser.objects.get(pk=usuario_id)
                 inscricoes = Inscricao.objects.filter(usuario=usuario)
+
+                if len(inscricoes) == 0:
+                    nao_tem_inscricoes = True
 
             except:
                 return JsonResponse({})
@@ -1992,6 +2253,8 @@ def relatorioUsuarioView(request):
             {
                 'usuario': usuario,
                 'inscricoes': inscricoes,
+                'nao_tem_usuarios': nao_tem_usuarios,
+                'nao_tem_inscricoes': nao_tem_inscricoes,
                 'arquivo': False,
             }
         )
@@ -2006,36 +2269,32 @@ def obtemRelatorio(request, usuario_id):
       View responsável por gerar um arquivo PDF do relatório de acompanhamento
     """
 
-    # Caso o usuário tenha perfil de administrador
-    if request.user.tem_perfil_administrador():
-        try:
-            usuario = CustomUser.objects.get(pk=usuario_id)
-            inscricoes = Inscricao.objects.filter(usuario=usuario)
+    try:
+        usuario = CustomUser.objects.get(pk=usuario_id)
+        inscricoes = Inscricao.objects.filter(usuario=usuario)
 
-            contexto = {
-                'usuario': usuario,
-                'inscricoes': inscricoes,
-                'arquivo': True,
-                'request': request
-            }
-            pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
+        contexto = {
+            'usuario': usuario,
+            'inscricoes': inscricoes,
+            'arquivo': True,
+            'request': request
+        }
+        pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
 
-            if pdf:
-                response = HttpResponse(pdf, content_type='application/pdf')
-                nome_arquivo = "relatorio.pdf"
-                content = "inline; filename=%s" % (nome_arquivo)
-                download = request.GET.get("download")
-                if download:
-                    content = "attachment; filename=%s" % (nome_arquivo)
-                response['Content-Disposition'] = content
-                return response
-            return trata_erro_500(request)
-        except:
-            return trata_erro_500(request)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            nome_arquivo = "relatorio.pdf"
+            content = "inline; filename=%s" % (nome_arquivo)
+            download = request.GET.get("download")
+            if download:
+                content = "attachment; filename=%s" % (nome_arquivo)
+            response['Content-Disposition'] = content
+            return response
+        return trata_erro_500(request)
+    except:
+        return trata_erro_500(request)
 
-    else:
-        # Chama tratamento padrão para usuário sem permissão
-        return trata_usuario_sem_permissao(request)
+
 
 
 @never_cache
@@ -2475,6 +2734,10 @@ def cadastroConteudoCursoView(request, id):
             'perfil_aluno': perfil_aluno,
             'perfil_instrutor': perfil_instrutor,
             'perfil_administrador': perfil_administrador,
+            'menu_inicio': False,
+            'menu_meus_cursos': True,
+            'menu_cadastros': False,
+            'menu_relatorios': False,
         }
     )
 
@@ -2533,3 +2796,40 @@ def removeConteudoCursoView(request):
         )
     return HttpResponse()
 
+
+@login_required
+def cadastroConteudosView(request):
+    """
+    View responsável pelo tratamento de apresentação dos cursos de um usuário
+    """
+    perfil_aluno = False
+    perfil_instrutor = False
+    perfil_administrador = False
+
+    # Avalia o perfil do usuário da requsição
+    if request.user.tem_perfil_aluno():
+        perfil_aluno = True
+
+    if request.user.tem_perfil_administrador():
+        perfil_administrador = True
+
+    if request.user.tem_perfil_instrutor():
+        perfil_instrutor = True
+
+
+    # Verifica o perfil do usuário para obter o curso associado ao ID da requisição
+    if perfil_aluno:
+        return trata_usuario_sem_permissao(request)
+
+    return render(
+        request,
+        'core/cadastros-conteudos.html',
+        {
+            'perfil_administrador': perfil_administrador,
+            'perfil_instrutor': perfil_instrutor,
+            'menu_inicio': False,
+            'menu_meus_cursos': False,
+            'menu_cadastros': True,
+            'menu_relatorios': False,
+        }
+    )

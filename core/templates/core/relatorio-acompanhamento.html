@@ -4,31 +4,42 @@
 
 {% block content_page %}
 
-    <h2 class="text-center">Geração de relatórios de acompanhamento</h2>
+    <h2 class="text-center">Relatório de acompanhamento</h2>
 
-    <div class="container">
-        <div class="form-group">
-            <label for="select-alunos">Selecione um aluno:</label>
-            <select class="form-control" id="select-alunos" name="alunos">
-                {% for user in usuarios %}
-                    {% if usuario != None and usuario.id == user.id %}
-                        <option value="{{ user.id }}" selected="selected">{{ user.get_full_name }}</option>
-                    {% else %}
-                        <option value="{{ user.id }}">{{ user.get_full_name }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-    </div>
+    <hr/>
 
-    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-        <div class="col text-center" style="margin-top: 10px; margin-bottom: 20px; padding: 0;">
-          <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem;"  onclick="geraRelatorio()">
-              Gerar Relatório
-              <i class="fas fa-share-square"></i>
-          </span>
-        </div>
-    </div>
+    {% if perfil_administrador == True or perfil_instrutor == True %}
+        {% if nao_tem_usuarios == False %}
+            <div class="container">
+                <div class="form-group">
+                    <label for="select-alunos">Selecione um aluno:</label>
+                    <select class="form-control" id="select-alunos" name="alunos">
+                        {% for user in usuarios %}
+                            {% if usuario != None and usuario.id == user.id %}
+                                <option value="{{ user.id }}" selected="selected">{{ user.get_full_name }}</option>
+                            {% else %}
+                                <option value="{{ user.id }}">{{ user.get_full_name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <hr/>
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="col text-center" style="margin-top: 10px; margin-bottom: 20px; padding: 0;">
+                  <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem;"  onclick="geraRelatorio()">
+                      Gerar Relatório
+                      <i class="fas fa-share-square"></i>
+                  </span>
+                </div>
+            </div>
+            <hr/>
+        {% else %}
+            <h5 class="text-center" style="margin-top: 20px;">Sem usuários para geração de relatório</h5>
+        {% endif %}
+    {% endif %}
+
 
     {% include  'core/relatorio-conteudo.html' %}
 

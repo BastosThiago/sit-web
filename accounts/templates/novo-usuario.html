@@ -1,0 +1,16 @@
+{% extends 'pagina-inicial.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} {{tituloPagina}} {% endblock %}
+
+{% block content_page %}
+<div class="col-12 list-div">
+    <h2 class="text-center">Novo usuário</h2>
+    <form method="POST" form enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form | crispy }}
+        <input type="submit" class="btn btn-success btn-lg" value="Criar">
+    </form>
+</div>
+{% endblock %}

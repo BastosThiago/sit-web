@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
     )
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def tem_perfil_aluno(self):
         if self.perfil == self.ALUNO:
@@ -30,4 +30,3 @@ class CustomUser(AbstractUser):
 
     def tem_perfil_administrador(self):
         return self.is_staff
-

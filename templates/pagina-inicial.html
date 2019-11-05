@@ -20,90 +20,79 @@
             </div>
 
             <ul class="list-unstyled components">
+                {% if menu_inicio == True %}
                 <li class="active">
                     <a class="class-link" href="/area-usuario">
                         <i class="fas fa-home class-icon"></i>
                         Início
                     </a>
                 </li>
+                {% else%}
                 <li>
-                <li>
-                    <a class="class-link" href="/cursos">
-                        <i class="fas fa-list-alt class-icon"></i>
-                        Lista de Cursos
+                    <a class="class-link" href="/area-usuario">
+                        <i class="fas fa-home class-icon"></i>
+                        Início
                     </a>
                 </li>
-                </li>
-                <li>
-                    {% if perfil_administrador == True or perfil_instrutor == True %}
-                    <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle class-link">
-                        <i class="fas fa-copy class-icon"></i>
-                        Cadastros
-                    </a>
-                    {% endif %}
-                    <ul class="collapse list-unstyled" id="pageSubmenu">
+                {% endif %}
 
-                        {% if perfil_administrador == True %}
-                        <li>
-                            <a class="class-link" href="/cadastros-categorias">Categorias</a>
-                        </li>
-                        {% endif %}
-
-                        <li>
-                            <a class="class-link" href="/cadastros-cursos">Cursos</a>
-                        </li>
-
-                        <li>
-                            <a class="class-link" href="/cadastros-unidades">Unidades</a>
-                        </li>
-
-                        <li>
-                            <a class="class-link" href="/cadastros-videos">Videos</a>
-                        </li>
-
-                        <li>
-                            <a class="class-link" href="#">Arquivos</a>
-                        </li>
-
-                        <li>
-                            <a class="class-link" href="/cadastros-arquivos">Questionários</a>
-                        </li>
-
-                        <li>
-                            <a class="class-link" href="/cadastros-questoes">Questões</a>
-                        </li>
-
-                        <li>
-                            <a class="class-link" href="/cadastros-alternativas">Alternativas</a>
-                        </li>
-
-                        {% if perfil_administrador == True %}
-                        <li>
-                            <a class="class-link" href="/cadastros-avaliacoes">Avaliações</a>
-                        </li>
-                        {% endif %}
-
-                        {% if perfil_administrador == True %}
-                        <li>
-                            <a class="class-link" href="/cadastros-inscricoes">Inscrições</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </li>
                 {% if perfil_administrador == True %}
-                <li>
+                    {% if menu_usuarios == True %}
+                    <li class="active">
+                    {% else %}
+                    <li>
+                    {% endif %}
+                        <a class="class-link" href="/accounts/lista-usuarios">
+                            <i class="fas fa-users class-icon"></i>
+                            Usuários
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if perfil_administrador == True or perfil_instrutor == True %}
+                    {% if menu_cadastros == True %}
+                    <li class="active">
+                    {% else %}
+                    <li>
+                    {% endif %}
+                        <a class="class-link" href="/cadastros-conteudos">
+                            <i class="fas fa-copy class-icon"></i>
+                            Cadastros
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if perfil_aluno == True or perfil_instrutor == True %}
+
+                    {% if menu_meus_cursos == True %}
+                    <li class="active">
+                        <a class="class-link" href="/meus-cursos/">
+                            <i class="fas fa-graduation-cap class-icon"></i>
+                            Meus Cursos
+                        </a>
+                    </li>
+                    {% else%}
+                    <li>
+                        <a class="class-link" href="/meus-cursos/">
+                            <i class="fas fa-graduation-cap class-icon"></i>
+                            Meus Cursos
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endif %}
+
+                {% if menu_relatorios == True %}
+                <li class="active">
                     <a class="class-link" href="/relatorio-acompanhamento/">
                         <i class="fas fa-chart-line class-icon"></i>
                         Relatórios
                     </a>
                 </li>
-                {% endif %}
-
-                {% if perfil_aluno == True %}
+                {% else%}
                 <li>
-                    <a class="class-link" href="/area-usuario/">
-                        <i class="fas fa-graduation-cap class-icon"></i>
-                        Meus Cursos
+                    <a class="class-link" href="/relatorio-acompanhamento/">
+                        <i class="fas fa-chart-line class-icon"></i>
+                        Relatórios
                     </a>
                 </li>
                 {% endif %}
@@ -130,11 +119,11 @@
 
                         <ul class="navbar-nav ml-auto">
                               <li class="nav-item active dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 1.2rem;">
                                   <i class="fas fa-user class-icon icone-usuario"></i>{{ user.username }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                  <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-circle class-icon icone-usuario"></i>Minha conta</a>
+                                  <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-circle class-icon icone-usuario"></i>Informações</a>
                                   <a class="dropdown-item" href="/accounts/logout"><i class="fas fa-sign-out-alt class-icon icone-usuario"></i>Sair</a>
                                 </div>
                               </li>

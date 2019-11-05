@@ -13,71 +13,88 @@
 {% block content_page %}
 
 
-        <h2 class="text-center" style="margin-top: 20px;">Meus Cursos</h2>
-
+        <h2 class="text-center" style="margin-top: 20px;">Área do aluno</h2>
+        <hr/>
         <div style="margin: 20px">
 
-            <div class="text-left" >
 
-                {% if dict_ultimo_conteudo.objeto_ultimo_conteudo != None %}
-                <div class="col text-center">Último conteúdo acessado</div>
-                    <hr/>
-                        <div class="col text-center">{{ dict_ultimo_conteudo.curso_titulo }} - {{ dict_ultimo_conteudo.unidade }} - {{ dict_ultimo_conteudo.objeto_ultimo_conteudo.titulo }}</div>
-                    <hr/>
-                    <div class="col text-center">
-                        <a href="/{{ dict_ultimo_conteudo.url }}" class="btn btn-primary" role="button">
-                            <i class="fas fa-angle-double-right class-icone-button"></i>
-                                Continuar
-                        </a>
-                    </div>
-                    <hr/>
-                {% endif %}
-
-            </div>
-
-            <div class="col-12 search-div">
-                <form method="GET" id="search-form">
-                    <input class="form-control" type="text" id="search" name="search"
-                           placeholder="Digite qualquer caracteristica do curso para buscar"
-                           value="{{ request.GET.search }}">
-                    <i class="fas fa-search" id="search-btn"></i>
-                </form>
-            </div>
             <div class="row">
-            {% for elemento in lista_cursos %}
-                <div class="col-sm-3">
+                {% if dict_ultimo_conteudo.objeto_ultimo_conteudo != None %}
+                <div class="col-sm-4">
                     <div class="card card-curso">
 
                         <div class="card-header">
-                            <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
+                            <h5 class="text-center" style="margin: 0; padding: 0;">Último curso acessado</h5>
                         </div>
 
                         <div class="card-body">
 
-                            <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
-
-                            <hr/>
-
-                            <p class="card-text text-center">Andamento</p>
-                            <p>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ elemento.percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        <span class="perc-nota"><b style="font-size: 1rem">{{ elemento.percentual_andamento }}%</b></span>
-                                    </div>
-                                </div>
-                            </p>
+                            <div class="col text-center">
+                                <p class="col text-center">{{ dict_ultimo_conteudo.curso_titulo }}</p>
+                                <i class="fas fa-graduation-cap" style="font-size: 6em; color: #007bff;"></i>
+                            </div>
                             <p>
                                 <div class="col text-center">
-                                    <a href="/conteudo-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button">
+                                    <a href="/{{ dict_ultimo_conteudo.url }}" class="btn btn-primary" role="button">
                                         <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Acessar conteúdo
+                                            Continuar
                                     </a>
                                 </div>
                             </p>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+                {% endif %}
+
+                <div class="col-sm-4">
+                    <div class="card card-curso">
+
+                        <div class="card-header">
+                            <h5 class="text-center" style="margin: 0; padding: 0;">Meus cursos</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="col text-center">
+                                <p class="card-text text-center">Cursos</p>
+                                <i class="fas fa-graduation-cap" style="font-size: 6em; color: #007bff;"></i>
+                            </div>
+                            <p>
+                                <div class="col text-center">
+                                    <a href="/meus-cursos/" class="btn btn-primary" role="button">
+                                        <i class="fas fa-angle-double-right class-icone-button"></i>
+                                            Acessar
+                                    </a>
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="card card-curso">
+
+                        <div class="card-header">
+                            <h5 class="text-center" style="margin: 0; padding: 0;">Relatórios</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="col text-center">
+                                <p class="card-text text-center">Acompanhamento</p>
+                                <i class="fas fa-chart-line" style="font-size: 6em; color: #007bff;"></i>
+                            </div>
+                            <p>
+                                <div class="col text-center">
+                                    <a href="/relatorio-acompanhamento/" class="btn btn-primary" role="button">
+                                        <i class="fas fa-angle-double-right class-icone-button"></i>
+                                            Acessar
+                                    </a>
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
