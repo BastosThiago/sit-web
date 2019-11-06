@@ -110,8 +110,12 @@
           border: none;
         }
 
+        .card {
+            margin-bottom: 5px;
+        }
+
         .card-body {
-            padding: 1rem;
+            padding: 0.5rem;
         }
 
         .card-header {
@@ -134,9 +138,9 @@
 
   </style>
 
-    <h2 class="text-center" style="margin-top: 20px;">Cadastro de conteúdos: {{ curso.titulo }}</h2>
-
-    <hr/>
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+        <h2 class="text-center" style="margin-top: 5px;">Cadastro de conteúdos: {{ curso.titulo }}</h2>
+    </div>
 
     <div class="panel-group" id="accordion">
 
@@ -185,7 +189,7 @@
 
             <div class="form-group">
                 <label for="descricao-unidade" id="label-descricao">Descrição:</label>
-                <input type="text" class="form-control" id="descricao-unidade" aria-describedby="" placeholder="Digite uma descrição" name="descricao-unidade">
+                <input type="text" class="form-control" id="descricao-unidade" value="{{ unidade.descricao }}" aria-describedby="" placeholder="Digite uma descrição" name="descricao-unidade">
             </div>
 
         </form>
@@ -213,9 +217,15 @@
 
         <div class="tab-pane fade show active" id="videos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="videos-tab">
             <div class="card-body  accordion-videos-unidade-{{ unidade.ordem }} card-videos">
-                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
-                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
-                </button>
+
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
+                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo vídeo
+                        </button>
+                    </div>
+                </div>
+
                 {% for video in videos %}
                     {% if video.unidade.id == unidade.id %}
 
@@ -326,9 +336,14 @@
 
         <div class="tab-pane fade" id="arquivos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="arquivos-tab">
             <div class="card-body  accordion-arquivos-unidade-{{ unidade.ordem }} card-arquivos">
-                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
-                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
-                </button>
+
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
+                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo arquivo
+                        </button>
+                    </div>
+                </div>
                 {% for arquivo in arquivos %}
                     {% if arquivo.unidade.id == unidade.id %}
 
@@ -396,9 +411,14 @@
 
         <div class="tab-pane fade" id="questionarios-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="questionarios-tab">
             <div class="card-body  accordion-questionarios-unidade-{{ unidade.ordem }} card-questionarios">
-                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
-                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
-                </button>
+
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
+                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo questionário
+                        </button>
+                    </div>
+                </div>
                 {% for questionario in questionarios %}
                     {% if questionario.unidade.id == unidade.id %}
 
@@ -596,8 +616,12 @@
 
     </div>
 
-<br />
-<button class="btn btn-primary btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
+<div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
+         <button class="btn btn-primary btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
+    </div>
+</div>
+
 
 <div class="modal fade bd-example-modal-lg modal-aguarde" data-backdrop="static" data-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-sm">
@@ -709,15 +733,21 @@
 
                 </form>
 
-                <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist">
+                <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="videos-tab" data-toggle="tab" href="#videos-unidade-${numero_unidade}" role="tab" aria-controls="videos-unidade-${numero_unidade}" aria-selected="true">Vídeos</a>
+                        <a class="nav-link nav-link-content active" id="videos-tab" data-toggle="tab" href="#videos-unidade-${numero_unidade}" role="tab" aria-controls="videos-unidade-${numero_unidade}" aria-selected="true">
+                            <i class="fas fa-video class-icone-content"></i>Vídeos
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-${numero_unidade}" role="tab" aria-controls="arquivos-unidade-${numero_unidade}" aria-selected="false">Arquivos</a>
+                        <a class="nav-link nav-link-content " id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-${numero_unidade}" role="tab" aria-controls="arquivos-unidade-${numero_unidade}" aria-selected="false">
+                            <i class="fas fa-file-alt class-icone-content"></i>Arquivos
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-${numero_unidade}" role="tab" aria-controls="questionarios-unidade-${numero_unidade}" aria-selected="false">Questionários</a>
+                        <a class="nav-link nav-link-content " id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-${numero_unidade}" role="tab" aria-controls="questionarios-unidade-${numero_unidade}" aria-selected="false">
+                            <i class="fas fa-tasks class-icone-content"></i>Questionários
+                        </a>
                     </li>
                 </ul>
 
@@ -725,25 +755,41 @@
 
                 <div class="tab-pane fade show active" id="videos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="videos-tab">
                     <div class="card-body  accordion-videos-unidade-${numero_unidade} card-videos">
-                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
-                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
-                        </button>
+
+                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo vídeo
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
                 <div class="tab-pane fade" id="arquivos-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="arquivos-tab">
                     <div class="card-body  accordion-arquivos-unidade-${numero_unidade} card-arquivos">
-                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
-                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
-                        </button>
+
+                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo arquivo
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="tab-pane fade" id="questionarios-unidade-${numero_unidade}" role="tabpanel" aria-labelledby="questionarios-tab">
                     <div class="card-body  accordion-questionarios-unidade-${numero_unidade} card-questionarios">
-                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
-                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo
-                        </button>
+
+                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo questionário
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -833,11 +879,11 @@
                             </div>
 
                             <div class="form-check">
-                                <label class="form-check-label">
+                                <label class="form-check-label" id="check-video-url">
                                     <input type="radio" class="form-check-input" id="tipo-video-url" name="tipo-video" checked>Vídeo - URL
                                 </label>
                             </div>
-                            <div class="form-check">
+                            <div class="form-check" id="check-video-arquivo">
                                 <label class="form-check-label">
                                     <input type="radio" class="form-check-input" id="tipo-video-arquivo" name="tipo-video">Vídeo - Arquivo
                                 </label>
@@ -849,10 +895,10 @@
                                 <span id="url-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
 
-                            <div class="form-group grupo-arquivo" hidden="true">
-                                <label for="conteudo-path" id="label-path">Arquivo:</label>
+                            <div class="form-group grupo-arquivo">
+                                <label for="conteudo-path" id="label-path" hidden="true">Arquivo:</label>
                                 <span><a href="" target="_blank" id="link-conteudo-0-unidade-0"></a></span>
-                                <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho">
+                                <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho" hidden="true">
                                 <span id="path-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
 
@@ -876,6 +922,9 @@
         var label_path   = $('.' + classe_card_conteudo).find('#label-path')[0]
         var input_path   = $('.' + classe_card_conteudo).find('input[name="caminho"]')[0]
 
+        var check_video_url   = $('.' + classe_card_conteudo).find('#check-video-url')[0]
+        var check_video_arquivo   = $('.' + classe_card_conteudo).find('#check-video-arquivo')[0]
+
         var div_questoes = $('.' + "accordion-questoes-questionario-" + 0 + "-unidade-" +  (numero_unidade - 1))[0]
 
         if(tipo_conteudo == "video"){
@@ -887,8 +936,16 @@
                 label_url.hidden  = true
             if(input_url)
                input_url.hidden  = true
+            if(label_path)
+                label_path.hidden = false
+            if(input_path)
+               input_path.hidden = false
             if(div_questoes)
                 div_questoes.remove()
+            if(check_video_url)
+                check_video_url.hidden  = true
+            if(check_video_arquivo)
+                check_video_arquivo.hidden  = true
         }
 
         if(tipo_conteudo == "questionario"){
@@ -900,6 +957,10 @@
                 label_path.hidden = true
             if(input_path)
                input_path.hidden = true
+            if(check_video_url)
+                check_video_url.hidden  = true
+            if(check_video_arquivo)
+                check_video_arquivo.hidden  = true
         }
 
         $('form').on('submit', enviaForm);
@@ -1285,7 +1346,6 @@
         formData = new FormData(form);
 
         $('body').addClass('disabledbutton')
-        modal();
 
         $.ajax({
           url         : '/cadastro-conteudo-curso/{{ curso.id }}',
@@ -1393,7 +1453,7 @@
 
             var form = forms_modificados[0]
             if(form) {
-                enviaForms()
+                $('.modal-aguarde').modal('show');
             }
             else {
                 $('.modal-sem-alteracoes').modal('show');
@@ -1408,13 +1468,9 @@
     }
 
 
-    function modal(){
-         $('.modal-aguarde').modal('show');
-         setTimeout(function () {
-         	console.log('hejsan');
-         	$('.modal-aguarde').modal('hide');
-         }, 2000);
-      }
+    $('.modal-aguarde').on('shown.bs.modal', function () {
+        enviaForms()
+    })
 
 
     function alterouDados(){

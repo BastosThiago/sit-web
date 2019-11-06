@@ -1,11 +1,13 @@
 {% extends  'pagina-inicial.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Entrar{% endblock %}
+{% block title %}Edição de usuário{% endblock %}
 
 {% block content_page %}
-    <div class="card-body">
-        <h4 class="card-title text-center">Informações de cadastro</h4>
+
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+            <h2 class="text-center" style="margin-top: 5px;">Informações de cadastro</h2>
+        </div>
 
         <form method="post">
             {% csrf_token %}
@@ -19,5 +21,4 @@
             {% endif %}
             <button type="submit" class="btn btn-primary">Confirmar alterações</button>
         </form>
-    </div>
-{% endblock %}
+ {% endblock %}

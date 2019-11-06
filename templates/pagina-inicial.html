@@ -15,8 +15,8 @@
 
         <nav id="sidebar">
             <div class="sidebar-header">
-                <h3><a href="/" style="color: white;"><i class="fas fa-university class-icone" style="margin-right: 10px;"></i>SIT - WEB</a></h3>
-                <strong>SW</strong>
+                <h3><a href="/" style="color: white;"><i class="fas fa-university class-icone" style="margin-right: 10px;  margin-top: 5px;"></i>SIT - WEB</a></h3>
+                <strong><a href="/" style="color: white;"><i class="fas fa-university class-icone"></i></a></strong>
             </div>
 
             <ul class="list-unstyled components">
@@ -123,7 +123,7 @@
                                   <i class="fas fa-user class-icon icone-usuario"></i>{{ user.username }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                  <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-circle class-icon icone-usuario"></i>Informações</a>
+                                  <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-circle class-icon icone-usuario"></i>Dados cadastrais</a>
                                   <a class="dropdown-item" href="/accounts/logout"><i class="fas fa-sign-out-alt class-icon icone-usuario"></i>Sair</a>
                                 </div>
                               </li>

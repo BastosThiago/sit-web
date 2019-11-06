@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %} {{video.titulo}} {% endblock %}
+{% block title %} Conteúdo do curso {% endblock %}
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -13,7 +13,7 @@
         }
 
         .tab-content-body {
-            margin-left: 10px;
+            //margin-left: 10px;
             padding: 10px;
         }
 
@@ -155,6 +155,12 @@
           border: none;
         }
 
+        .alert {
+            padding: .4rem 1rem;
+            margin-bottom: 10px;
+            background-color: rgba(0,0,0,.03);
+        }
+
     </style>
 
 {% endblock %}
@@ -162,430 +168,386 @@
 {% block content_page %}
 
     <div id="page-content">
-        <section class="py-4">
+
             <div id="content" class="container-fluid">
 
-              <div class="card">
-                  <h4 class="card-header text-center">Curso Avançado de Java Script</h4>
-                  <div class="card-body">
+              <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
+                  <h4 class="text-center" style="margin-top: 10px;">Curso Avançado de Java Script</h4>
+              </div>
 
-                      <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
-                          <li class="nav-item">
-                              <a class="nav-link nav-link-content active" id="informacoes-tab" data-toggle="tab" href="#informacoes-curso" role="tab" aria-controls="informacoes-curso" aria-selected="false">
-                                  <i class="fa fa-info-circle class-icone-content"></i>Informações
-                              </a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="nav-link nav-link-content" id="conteudo-tab" data-toggle="tab" href="#conteudo-curso" role="tab" aria-controls="conteudo-curso" aria-selected="false">
-                                  <i class="fab fa-contao class-icone-content"></i>Conteúdo
-                              </a>
-                          </li>
-                          {% if perfil_aluno == True %}
-                          <li class="nav-item">
-                              <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false">
-                                  <i class="fa fa-star class-icone-content"></i>Minha avaliação
-                              </a>
-                          </li>
+              <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
+                  <li class="nav-item">
+                      <a class="nav-link nav-link-content active" id="informacoes-tab" data-toggle="tab" href="#informacoes-curso" role="tab" aria-controls="informacoes-curso" aria-selected="false">
+                          <i class="fa fa-info-circle class-icone-content"></i>Informações
+                      </a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link nav-link-content" id="conteudo-tab" data-toggle="tab" href="#conteudo-curso" role="tab" aria-controls="conteudo-curso" aria-selected="false">
+                          <i class="fab fa-contao class-icone-content"></i>Conteúdo
+                      </a>
+                  </li>
+                  {% if perfil_aluno == True %}
+                  <li class="nav-item">
+                      <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false">
+                          <i class="fa fa-comment class-icone-content"></i>Minha avaliação
+                      </a>
+                  </li>
 
-                          <li class="nav-item">
-                              <a class="nav-link nav-link-content" id="certificado-tab" data-toggle="tab" href="#certificado-curso" role="tab" aria-controls="certificado-curso" aria-selected="false">
-                                  <i class="fa fa-certificate class-icone-content"></i>Certificado
-                              </a>
-                          </li>
-                          {% endif %}
+                  <li class="nav-item">
+                      <a class="nav-link nav-link-content" id="certificado-tab" data-toggle="tab" href="#certificado-curso" role="tab" aria-controls="certificado-curso" aria-selected="false">
+                          <i class="fas fa-award class-icone-content"></i>Certificado
+                      </a>
+                  </li>
+                  {% endif %}
 
-                      </ul>
+              </ul>
 
-                      <div class="tab-content" id="navegacao-conteudo">
+              <div class="tab-content" id="navegacao-conteudo">
 
-                          <div class="tab-pane fade show active" id="informacoes-curso" role="tabpanel" aria-labelledby="informacoes-tab">
-                            <div class="tab-content-body">
-                                <hr/>
-                               <h5 class="text-center">Descrição: {{ curso.descricao }}</b></h5>
-                                <hr/>
-                                {% if situacao_aluno_curso == "REPROVADO" %}
-                                    <h5 class="text-center">Situação: <b style="color: red;">{{ situacao_aluno_curso }}</b></h5>
+                  <div class="tab-pane fade show active" id="informacoes-curso" role="tabpanel" aria-labelledby="informacoes-tab">
+                    <div class="tab-content-body">
+                        {% if perfil_aluno == True %}
+                        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
+                            <h5 class="text-center"><i class="fas fa-clock class-icone-content"></i>Último acesso em: <b>{{ data_ultimo_acesso|date:"d/m/Y h:m:s" }}</b></h5>
+
+                            {% if curso_objeto_ultimo_conteudo != None %}
+
+                            <h5 class="text-center">Conteúdo: <b>{{ curso_objeto_ultimo_conteudo.unidade.titulo }} - {{ curso_objeto_ultimo_conteudo.titulo }}</b></h5>
+
+                            <div class="col text-center">
+                                <a href="/{{ usuario_inscricao.ultimo_conteudo_acessado }}" class="btn btn-primary" role="button">
+                                    <i class="fas fa-angle-double-right class-icone-button"></i>
+                                        Continuar
+                                </a>
+                            </div>
+
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <hr/>
+                        <h5 class="text-center"><i class="fas fa-pen class-icone-content"></i>Descrição:</h5>
+                        <div class="text-center" style="font-size: 1.1rem;"><b>{{ curso.descricao }}</b></div>
+                        <hr/>
+                        {% if perfil_aluno == True %}
+                            {% if situacao_aluno_curso == "REPROVADO" %}
+                                <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b style="color: red;">{{ situacao_aluno_curso }}</b></h5>
+                            {% else %}
+                                {% if situacao_aluno_curso == "APROVADO" %}
+                                    <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b style="color: green;">{{ situacao_aluno_curso }}</b></h5>
                                 {% else %}
-                                    {% if situacao_aluno_curso == "APROVADO" %}
-                                        <h5 class="text-center">Situação: <b style="color: green;">{{ situacao_aluno_curso }}</b></h5>
-                                    {% else %}
-                                        <h5 class="text-center">Situação: <b style="color: #007bff;">{{ situacao_aluno_curso }}</b></h5>
-                                    {% endif %}
+                                    <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b style="color: #007bff;">{{ situacao_aluno_curso }}</b></h5>
                                 {% endif %}
-                                <hr/>
-                                <h5 class="text-center">Andamento</h5>
-                                <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_andamento }}%)</b></div>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        <span class="perc-nota"><b style="font-size: 1rem"></b></span>
-                                    </div>
+                            {% endif %}
+                            <hr/>
+                            <h5 class="text-center"><i class="fas fa-percent class-icone-content"></i>Andamento:</h5>
+                            <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_andamento }}%)</b></div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    <span class="perc-nota"><b style="font-size: 1rem"></b></span>
                                 </div>
-                                <hr/>
-                                <h5 class="text-center">Acertos</h5>
-                                <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_acertos }}%)</b></div>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ percentual_acertos }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        <span class="perc-nota"><b style="font-size: 1rem"></b></span>
-                                    </div>
-                                </div>
-                                <hr/>
-                                <h5 class="text-center">Iniciado em: <b>{{ data_inicio|date:"d/m/Y h:m:s" }}</b></h5>
-                                <hr/>
-                                <h5 class="text-center">Último acesso em: <b>{{ data_ultimo_acesso|date:"d/m/Y h:m:s" }}</b></h5>
-
-                                {% if curso_objeto_ultimo_conteudo != None %}
-
-                                <h5 class="text-center">Conteúdo: <b>{{ curso_objeto_ultimo_conteudo.unidade.titulo }} - {{ curso_objeto_ultimo_conteudo.titulo }}</b></h5>
-
-                                <div class="col text-center">
-                                    <a href="/{{ usuario_inscricao.ultimo_conteudo_acessado }}" class="btn btn-primary" role="button">
-                                        <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Continuar
-                                    </a>
-                                </div>
-
-                                {% endif %}
-
                             </div>
-                          </div>
+                            <hr/>
+                            <h5 class="text-center"><i class="fas fa-check-double class-icone-content"></i>Acertos:</h5>
+                            <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_acertos }}%)</b></div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ percentual_acertos }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    <span class="perc-nota"><b style="font-size: 1rem"></b></span>
+                                </div>
+                            </div>
+                            <hr/>
+                            <h5 class="text-center"><i class="fas fa-play class-icone-content"></i>Iniciado em: <b>{{ data_inicio|date:"d/m/Y h:m:s" }}</b></h5>
+                            <hr/>
+                        {% endif %}
+                    </div>
+                  </div>
 
-                          <div class="tab-pane fade" id="conteudo-curso" role="tabpanel" aria-labelledby="conteudo-tab">
-                            <div class="tab-content-body">
-                                {% for elemento in lista_unidades %}
-                                <div class="panel-group" id="accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
-                                    <div class="card" style="margin-top: 10px;">
-                                        <div class="card-header" id="heading-unidade-{{elemento.unidade.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
-                                          <h5 class="mb-0">
-                                            <button style="margin-left: 10px;" class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-unidade-{{elemento.unidade.ordem}}" aria-expanded="true" aria-controls="collapse-unidade-{{elemento.unidade.ordem}}">
-                                              <i class="fas fa-angle-double-down"></i>
-                                              Unidade - {{elemento.unidade.ordem}} - {{elemento.unidade.titulo}}
-                                            </button>
+                  <div class="tab-pane fade" id="conteudo-curso" role="tabpanel" aria-labelledby="conteudo-tab">
+                    <div class="tab-content-body">
+                        {% for elemento in lista_unidades %}
+                        <div class="panel-group" id="accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
+                            <div class="card" style="margin-top: 10px;">
+                                <div class="card-header" id="heading-unidade-{{elemento.unidade.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                  <h5 class="mb-0">
+                                    <button style="margin-left: 10px;" class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-unidade-{{elemento.unidade.ordem}}" aria-expanded="true" aria-controls="collapse-unidade-{{elemento.unidade.ordem}}">
+                                      <i class="fas fa-angle-double-down"></i>
+                                      Unidade - {{elemento.unidade.ordem}} - {{elemento.unidade.titulo}}
+                                    </button>
 
-                                          </h5>
-                                        </div>
-                                        <div id="collapse-unidade-{{elemento.unidade.ordem}}" class="collapse" aria-labelledby="heading-unidade-{{elemento.unidade.ordem}}" data-parent="#accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
+                                  </h5>
+                                </div>
+                                <div id="collapse-unidade-{{elemento.unidade.ordem}}" class="collapse" aria-labelledby="heading-unidade-{{elemento.unidade.ordem}}" data-parent="#accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
 
-                                            <div class="tab-content-body">
-                                                <p class="text-center">{{elemento.unidade.descricao}}</p>
+                                    <div class="tab-content-body">
+                                        {% if elemento.unidade.descricao != None  %}
+                                        <p class="text-center">{{elemento.unidade.descricao}}</p>
+                                        {% endif %}
 
-                                                <div class="panel-group" id="accordion-videos-unidade-{{elemento.unidade.ordem}}">
+                                        <div class="panel-group" id="accordion-videos-unidade-{{elemento.unidade.ordem}}">
 
-                                                    <div class="card" style="margin-top: 10px;">
-                                                        <div class="card-header" id="heading-videos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
-                                                          <h5 class="mb-0">
-                                                            <button style="margin-left: 5px;" class="btn btn-link link-videos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-videos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-videos-unidade-{{ elemento.unidade.ordem }}">
-                                                              <i class="fas fa-angle-double-down"></i>
-                                                              <i class="fas fa-video"></i>
-                                                              - Vídeos
-                                                            </button>
-                                                          </h5>
-                                                        </div>
-                                                        <div id="collapse-videos-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-videos-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-videos-unidade-{{elemento.unidade.ordem}}">
-                                                          <div class="tab-content-body">
-
-                                                                {% for video in elemento.videos %}
-                                                                <div class="panel-group" id="accordion-video-unidade-{{elemento.unidade.ordem}}">
-                                                                    <div class="card" style="margin-top: 10px;">
-                                                                        <div class="card-header" id="heading-video-{{video.video.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
-                                                                          <h5 class="mb-0">
-
-                                                                            <label class="container-check">
-                                                                            {% if video.assistido == True %}
-                                                                            <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
-                                                                            {% else %}
-                                                                            <input type="checkbox" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
-                                                                            {% endif %}
-                                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
-                                                                             </label>
-
-                                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-video" href="/visualizacao-video/{{ video.video.id }}">
-                                                                              <i class="fas fa-eye"></i>
-                                                                              {{ video.video.titulo }}
-                                                                            </a>
-
-                                                                            <button style="margin-top: 4px;" class="btn btn-link link-video" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{video.video.ordem}}" aria-expanded="true" aria-controls="collapse-video-{{video.video.ordem}}">
-                                                                                Detalhes
-                                                                                <i class="fas fa-angle-double-down" style="margin-left: 5px; "></i>
-                                                                            </button>
-
-                                                                          </h5>
-                                                                        </div>
-                                                                        <div id="collapse-video-{{video.video.ordem}}" class="collapse" aria-labelledby="heading-video-{{video.video.ordem}}" data-parent="#accordion-video-unidade-{{elemento.unidade.ordem}}">
-                                                                          <div class="tab-content-body">
-                                                                          <p class="text-center">{{ video.video.descricao }}</p>
-                                                                          </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                {% endfor %}
-                                                          </div>
-                                                        </div>
-                                                    </div>
+                                            <div class="card" style="margin-top: 10px;">
+                                                <div class="card-header" id="heading-videos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                  <h5 class="mb-0">
+                                                    <button style="margin-left: 5px;" class="btn btn-link link-videos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-videos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-videos-unidade-{{ elemento.unidade.ordem }}">
+                                                      <i class="fas fa-angle-double-down"></i>
+                                                      Vídeos
+                                                      <i style="margin-left: 4px;" class="fas fa-video"></i>
+                                                    </button>
+                                                  </h5>
                                                 </div>
+                                                <div id="collapse-videos-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-videos-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-videos-unidade-{{elemento.unidade.ordem}}">
+                                                  <div class="tab-content-body">
 
+                                                    {% for video in elemento.videos %}
+                                                        <div class="alert alert-secondary" role="alert">
 
-                                                <div class="panel-group" id="accordion-arquivos-unidade-{{elemento.unidade.ordem}}">
+                                                            <label class="container-check">
+                                                            {% if video.assistido == True %}
+                                                            <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                            {% else %}
+                                                            <input type="checkbox" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                            {% endif %}
+                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
+                                                             </label>
 
-
-                                                    <div class="card" style="margin-top: 10px;">
-                                                        <div class="card-header" id="heading-arquivos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
-                                                          <h5 class="mb-0">
-                                                            <button style="margin-left: 5px;" class="btn btn-link link-arquivos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}">
-                                                              <i class="fas fa-angle-double-down"></i>
-                                                              <i class="fas fa-file-alt"></i>
-                                                              - Arquivos
-                                                            </button>
-                                                          </h5>
+                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-video" href="/visualizacao-video/{{ video.video.id }}">
+                                                              {{ video.video.titulo }}
+                                                            </a>
                                                         </div>
-                                                        <div id="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-arquivos-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-arquivos-unidade-{{elemento.unidade.ordem}}">
-                                                          <div class="tab-content-body">
-
-                                                                {% for arquivo in elemento.arquivos %}
-                                                                <div class="panel-group" id="accordion-arquivo-unidade-{{elemento.unidade.ordem}}">
-                                                                    <div class="card" style="margin-top: 10px;">
-                                                                        <div class="card-header" id="heading-arquivo-{{ arquivo.arquivo.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
-                                                                          <h5 class="mb-0">
-
-                                                                            <label class="container-check">
-                                                                                {% if arquivo.acessado == True %}
-                                                                                <input type="checkbox" checked="checked" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
-                                                                                {% else %}
-                                                                                <input type="checkbox" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
-                                                                                {% endif %}
-                                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
-                                                                            </label>
-
-                                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-arquivo" href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}">
-                                                                              <i class="fas fa-eye"></i>
-                                                                              {{ arquivo.arquivo.titulo }}
-                                                                            </a>
-
-                                                                            <button style="margin-top: 4px;" class="btn btn-link link-video" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{arquivo.arquivo.ordem}}" aria-expanded="true" aria-controls="collapse-arquivo-{{arquivo.arquivo.ordem}}">
-                                                                                Detalhes
-                                                                                <i class="fas fa-angle-double-down" style="margin-left: 5px; "></i>
-                                                                            </button>
-
-                                                                          </h5>
-                                                                        </div>
-                                                                        <div id="collapse-arquivo-{{ arquivo.arquivo.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.arquivo.ordem }}" data-parent="#accordion-arquivo-unidade-{{elemento.unidade.ordem}}">
-                                                                          <div class="tab-content-body">
-                                                                              <p class="text-center">{{ arquivo.arquivo.descricao }}</p>
-                                                                          </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                {% endfor %}
-                                                          </div>
-                                                        </div>
-                                                    </div>
+                                                    {% endfor %}
+                                                  </div>
                                                 </div>
-
-                                                <div class="panel-group" id="accordion-questionarios-unidade-{{elemento.unidade.ordem}}">
-
-
-                                                    <div class="card" style="margin-top: 10px;">
-                                                        <div class="card-header" id="heading-questionarios-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
-                                                          <h5 class="mb-0">
-                                                            <button style="margin-left: 5px;" class="btn btn-link link-questionarios" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}">
-                                                              <i class="fas fa-angle-double-down"></i>
-                                                              <i class="fas fa-tasks"></i>
-                                                              - Questionários
-                                                            </button>
-                                                          </h5>
-                                                        </div>
-                                                        <div id="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-questionarios-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-questionarios-unidade-{{elemento.unidade.ordem}}">
-                                                          <div class="tab-content-body">
-
-                                                                {% for questionario in elemento.questionarios %}
-                                                                <div class="panel-group" id="accordion-questionario-unidade-{{elemento.unidade.ordem}}">
-                                                                    <div class="card" style="margin-top: 10px;">
-                                                                        <div class="card-header" id="heading-questionario-{{ questionario.questionario.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
-                                                                          <h5 class="mb-0">
-
-                                                                            <label class="container-check">
-                                                                                {% if questionario.respondido == True %}
-                                                                                <input type="checkbox" checked="checked" id="input-questionario-{{ questionario.questionario.ordem }}">
-                                                                                {% else %}
-                                                                                <input type="checkbox" id="input-questionario-{{ questionario.questionario.ordem }}">
-                                                                                {% endif %}
-                                                                                <span style="float: left; margin-top: 6px;"class="checkmark"></span>
-                                                                            </label>
-
-                                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-questionario" href="/visualizacao-questionario/{{ questionario.questionario.id }}">
-                                                                              <i class="fas fa-eye"></i>
-                                                                              {{ questionario.questionario.titulo }}
-                                                                            </a>
-
-                                                                            <button style="margin-top: 4px;" class="btn btn-link link-questionario" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{questionario.questionario.ordem}}" aria-expanded="true" aria-controls="collapse-questionario-{{questionario.questionario.ordem}}">
-                                                                                Detalhes
-                                                                                <i class="fas fa-angle-double-down" style="margin-left: 5px; "></i>
-                                                                            </button>
-
-                                                                          </h5>
-                                                                        </div>
-                                                                        <div id="collapse-questionario-{{ questionario.questionario.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.questionario.ordem }}" data-parent="#accordion-questionario-unidade-{{elemento.unidade.ordem}}">
-                                                                          <div class="tab-content-body">
-                                                                              <p class="text-center">{{ questionario.questionario.descricao }}</p>
-                                                                          </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                {% endfor %}
-                                                          </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
                                             </div>
-
                                         </div>
+
+
+                                        <div class="panel-group" id="accordion-arquivos-unidade-{{elemento.unidade.ordem}}">
+
+
+                                            <div class="card" style="margin-top: 10px;">
+                                                <div class="card-header" id="heading-arquivos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                  <h5 class="mb-0">
+                                                    <button style="margin-left: 5px;" class="btn btn-link link-arquivos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}">
+                                                      <i class="fas fa-angle-double-down"></i>
+                                                      Arquivos
+                                                      <i style="margin-left: 4px;" class="fas fa-file-alt"></i>
+                                                    </button>
+                                                  </h5>
+                                                </div>
+                                                <div id="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-arquivos-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-arquivos-unidade-{{elemento.unidade.ordem}}">
+                                                  <div class="tab-content-body">
+
+                                                        {% for arquivo in elemento.arquivos %}
+                                                            <div class="alert alert-secondary" role="alert">
+
+                                                                <label class="container-check">
+                                                                    {% if arquivo.acessado == True %}
+                                                                    <input type="checkbox" checked="checked" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                    {% else %}
+                                                                    <input type="checkbox" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                    {% endif %}
+                                                                    <span style="float: left; margin-top: 6px;"class="checkmark"></span>
+                                                                </label>
+
+                                                                <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-arquivo" href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}">
+                                                                  {{ arquivo.arquivo.titulo }}
+                                                                </a>
+
+                                                            </div>
+
+                                                        {% endfor %}
+                                                  </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-group" id="accordion-questionarios-unidade-{{elemento.unidade.ordem}}">
+
+
+                                            <div class="card" style="margin-top: 10px;">
+                                                <div class="card-header" id="heading-questionarios-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                                                  <h5 class="mb-0">
+                                                    <button style="margin-left: 5px;" class="btn btn-link link-questionarios" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}">
+                                                      <i class="fas fa-angle-double-down"></i>
+                                                      Questionários
+                                                      <i style="margin-left: 4px;" class="fas fa-question-circle"></i>
+                                                    </button>
+                                                  </h5>
+                                                </div>
+                                                <div id="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" class="collapse" aria-labelledby="heading-questionarios-unidade-{{ elemento.unidade.ordem }}" data-parent="#accordion-questionarios-unidade-{{elemento.unidade.ordem}}">
+                                                  <div class="tab-content-body">
+
+                                                        {% for questionario in elemento.questionarios %}
+                                                            <div class="alert alert-secondary" role="alert">
+
+                                                                <label class="container-check">
+                                                                    {% if questionario.respondido == True %}
+                                                                    <input type="checkbox" checked="checked" id="input-questionario-{{ questionario.questionario.ordem }}">
+                                                                    {% else %}
+                                                                    <input type="checkbox" id="input-questionario-{{ questionario.questionario.ordem }}">
+                                                                    {% endif %}
+                                                                    <span style="float: left; margin-top: 6px;"class="checkmark"></span>
+                                                                </label>
+
+                                                                <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-questionario" href="/visualizacao-questionario/{{ questionario.questionario.id }}">
+                                                                  {{ questionario.questionario.titulo }}
+                                                                </a>
+                                                            </div>
+
+                                                        {% endfor %}
+                                                  </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
+
                                 </div>
-                                {% endfor %}
                             </div>
-
-                          </div>
-
-                          <div class="tab-pane fade" id="avaliacoes-curso" role="tabpanel" aria-labelledby="avaliacoes-tab">
-
-                            <div class="tab-content-body">
-                              <hr/>
-                              <h5 class="text-center">Avalie o curso preenchendo as informações abaixo</h5>
-                              <hr/>
-                              <div class="alert alert-danger alert-dismissable" id="avaliacao-falha" hidden="true">
-                                  <a href="#" class="close" onclick="escodeAlerta(this)"  aria-label="close">&times</a>
-                                  <strong>Falha ao executar ação.</strong>
-                              </div>
-                              <div class="alert alert-success alert-dismissable" id="avaliacao-sucesso" hidden="true">
-                                  <a href="#" class="close" onclick="escodeAlerta(this)" aria-label="close">&times</a>
-                                  <strong>Sucesso ao executar ação.</strong>
-                              </div>
-                              <form action="" id="avaliacao-form" method="POST">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                  <label for="avaliacao-nota">Nota:</label>
-                                  <select id="avaliacao-nota" name="nota" class="form-control" required>
-                                      {% if avaliacao != None %}
-                                        {% if avaliacao.nota == 1 %}
-                                            <option value="1" selected>1</option>
-                                            <option value="2" >2</option>
-                                            <option value="3" >3</option>
-                                            <option value="4" >4</option>
-                                            <option value="5" >5</option>
-                                        {% endif %}
-                                        {% if avaliacao.nota == 2 %}
-                                            <option value="1" >1</option>
-                                            <option value="2" selected>2</option>
-                                            <option value="3" >3</option>
-                                            <option value="4" >4</option>
-                                            <option value="5" >5</option>
-                                        {% endif %}
-                                        {% if avaliacao.nota == 3 %}
-                                            <option value="1" >1</option>
-                                            <option value="2" >2</option>
-                                            <option value="3" selected>3</option>
-                                            <option value="4" >4</option>
-                                            <option value="5" >5</option>
-                                        {% endif %}
-                                        {% if avaliacao.nota == 4 %}
-                                            <option value="1" >1</option>
-                                            <option value="2" >2</option>
-                                            <option value="3" >3</option>
-                                            <option value="4" selected>4</option>
-                                            <option value="5" >5</option>
-                                        {% endif %}
-                                        {% if avaliacao.nota == 5 %}
-                                            <option value="1" >1</option>
-                                            <option value="2" >2</option>
-                                            <option value="3" >3</option>
-                                            <option value="4" >4</option>
-                                            <option value="5" selected>5</option>
-                                        {% endif %}
-                                      {% else %}
-                                          <option value="1" >1</option>
-                                          <option value="2" >2</option>
-                                          <option value="3" >3</option>
-                                          <option value="4" >4</option>
-                                          <option value="5" >5</option>
-                                      {% endif %}
-                                  </select>
-                                </div>
-
-                                <div class="form-group">
-                                  <label for="avaliacao-comentario">Comentário:</label>
-                                  {% if avaliacao != None %}
-                                      <textarea class="form-control" id="avaliacao-comentario" name="comentario" rows="3" required>{{ avaliacao.comentario }}</textarea>
-                                  {% else %}
-                                      <textarea class="form-control" id="avaliacao-comentario" name="comentario" rows="3" required></textarea>
-                                  {% endif %}
-                                </div>
-
-
-                                  <div class="container">
-                                      <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                                          <div class="col text-center" style="margin-bottom: 10px;">
-                                              <button type="submit" name="envia" class="btn btn-primary"><i class="fas fa-share-square class-icone-button"></i>Enviar</button>
-                                          </div>
-                                          {% if avaliacao != None %}
-                                          <div class="col text-center">
-                                              <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
-                                                  <i class="fas fa-trash-alt class-icone-button"></i>
-                                                      Eliminar
-                                              </button>
-                                          </div>
-                                          {% else %}
-                                         <div class="col text-center" id="elimina-avaliacao" hidden="true">
-                                              <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
-                                                  <i class="fas fa-trash-alt class-icone-button"></i>
-                                                      Eliminar
-                                              </button>
-                                          </div>
-                                          {% endif %}
-                                      </div>
-                                  </div>
-
-
-
-                              </form>
-
-                            </div>
-                          </div>
-
-
-                           <div class="tab-pane fade" id="certificado-curso" role="tabpanel" aria-labelledby="certificado-tab">
-
-                            <div class="tab-content-body">
-                              <hr/>
-                              <p> Para obter o certificado do curso, é necessário ter assistido a todos os vídeos disponibilizados nas unidades
-                              e também ter um percentual de acerto de do mínimo 70% nos questionários propostos.</p>
-                              <hr/>
-
-                              {% if situacao_aluno_curso == "APROVADO" %}
-                              <div class="container">
-                                  <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                                      <div class="col text-center" style="margin-bottom: 10px;">
-                                          <a href="/certificado/{{ curso.id }}" class="btn btn-primary btn-lg" role="button">
-                                              <i class="fas fa-eye class-icone-button"></i>
-                                                  Visualizar certificado
-                                          </a>
-                                      </div>
-                                      <div class="col text-center">
-                                          <a href="/certificado/{{ curso.id }}?download=download" class="btn btn-primary btn-lg" role="button">
-                                              <i class="fas fa-download class-icone-button"></i>
-                                                  Baixar certificado
-                                          </a>
-                                      </div>
-                                  </div>
-                              </div>
-                              {% endif %}
-
-                            </div>
-                          </div>
-
-                      </div>
+                        </div>
+                        {% endfor %}
+                    </div>
 
                   </div>
+
+                  <div class="tab-pane fade" id="avaliacoes-curso" role="tabpanel" aria-labelledby="avaliacoes-tab">
+
+                    <div class="tab-content-body">
+                      <hr/>
+                      <h5 class="text-center">Avalie o curso preenchendo as informações abaixo</h5>
+                      <hr/>
+                      <div class="alert alert-danger alert-dismissable" id="avaliacao-falha" hidden="true">
+                          <a href="#" class="close" onclick="escodeAlerta(this)"  aria-label="close">&times</a>
+                          <strong>Falha ao executar ação.</strong>
+                      </div>
+                      <div class="alert alert-success alert-dismissable" id="avaliacao-sucesso" hidden="true">
+                          <a href="#" class="close" onclick="escodeAlerta(this)" aria-label="close">&times</a>
+                          <strong>Sucesso ao executar ação.</strong>
+                      </div>
+                      <form action="" id="avaliacao-form" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                          <label for="avaliacao-nota">Nota:</label>
+                          <select id="avaliacao-nota" name="nota" class="form-control" required>
+                              {% if avaliacao != None %}
+                                {% if avaliacao.nota == 1 %}
+                                    <option value="1" selected>1</option>
+                                    <option value="2" >2</option>
+                                    <option value="3" >3</option>
+                                    <option value="4" >4</option>
+                                    <option value="5" >5</option>
+                                {% endif %}
+                                {% if avaliacao.nota == 2 %}
+                                    <option value="1" >1</option>
+                                    <option value="2" selected>2</option>
+                                    <option value="3" >3</option>
+                                    <option value="4" >4</option>
+                                    <option value="5" >5</option>
+                                {% endif %}
+                                {% if avaliacao.nota == 3 %}
+                                    <option value="1" >1</option>
+                                    <option value="2" >2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4" >4</option>
+                                    <option value="5" >5</option>
+                                {% endif %}
+                                {% if avaliacao.nota == 4 %}
+                                    <option value="1" >1</option>
+                                    <option value="2" >2</option>
+                                    <option value="3" >3</option>
+                                    <option value="4" selected>4</option>
+                                    <option value="5" >5</option>
+                                {% endif %}
+                                {% if avaliacao.nota == 5 %}
+                                    <option value="1" >1</option>
+                                    <option value="2" >2</option>
+                                    <option value="3" >3</option>
+                                    <option value="4" >4</option>
+                                    <option value="5" selected>5</option>
+                                {% endif %}
+                              {% else %}
+                                  <option value="1" >1</option>
+                                  <option value="2" >2</option>
+                                  <option value="3" >3</option>
+                                  <option value="4" >4</option>
+                                  <option value="5" >5</option>
+                              {% endif %}
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="avaliacao-comentario">Comentário:</label>
+                          {% if avaliacao != None %}
+                              <textarea class="form-control" id="avaliacao-comentario" name="comentario" rows="3" required>{{ avaliacao.comentario }}</textarea>
+                          {% else %}
+                              <textarea class="form-control" id="avaliacao-comentario" name="comentario" rows="3" required></textarea>
+                          {% endif %}
+                        </div>
+
+
+                          <div class="container">
+                              <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                  <div class="col text-center" style="margin-bottom: 10px;">
+                                      <button type="submit" name="envia" class="btn btn-primary"><i class="fas fa-share-square class-icone-button"></i>Enviar</button>
+                                  </div>
+                                  {% if avaliacao != None %}
+                                  <div class="col text-center">
+                                      <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
+                                          <i class="fas fa-trash-alt class-icone-button"></i>
+                                              Eliminar
+                                      </button>
+                                  </div>
+                                  {% else %}
+                                 <div class="col text-center" id="elimina-avaliacao" hidden="true">
+                                      <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
+                                          <i class="fas fa-trash-alt class-icone-button"></i>
+                                              Eliminar
+                                      </button>
+                                  </div>
+                                  {% endif %}
+                              </div>
+                          </div>
+
+
+
+                      </form>
+
+                    </div>
+                  </div>
+
+
+                   <div class="tab-pane fade" id="certificado-curso" role="tabpanel" aria-labelledby="certificado-tab">
+
+                    <div class="tab-content-body">
+                      <hr/>
+                      <p> Para obter o certificado do curso, é necessário ter assistido a todos os vídeos disponibilizados nas unidades
+                      e também ter um percentual de acerto de do mínimo 70% nos questionários propostos.</p>
+                      <hr/>
+
+                      {% if situacao_aluno_curso == "APROVADO" %}
+                      <div class="container">
+                          <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                              <div class="col text-center" style="margin-bottom: 10px;">
+                                  <a href="/certificado/{{ curso.id }}" class="btn btn-primary btn-lg" role="button">
+                                      <i class="fas fa-eye class-icone-button"></i>
+                                          Visualizar certificado
+                                  </a>
+                              </div>
+                              <div class="col text-center">
+                                  <a href="/certificado/{{ curso.id }}?download=download" class="btn btn-primary btn-lg" role="button">
+                                      <i class="fas fa-download class-icone-button"></i>
+                                          Baixar certificado
+                                  </a>
+                              </div>
+                          </div>
+                      </div>
+                      {% endif %}
+
+                    </div>
+                  </div>
+
               </div>
+
             </div>
 
             <div class="modal fade modal-delete-item" id="confirmDeleteModal" id_elemento="" id_conteudo="" tipo_conteudo="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -761,8 +723,37 @@
 
             }
 
+            $('.nav-tabs a').on('shown.bs.tab', function (e) {
+                e.preventDefault();
+                history.pushState({}, '', this.href);
+            })
+
+            //__ Obtém o tempo corrente do video que será exibido
+            $(document).ready(function(){
+                console.log("Onready");
+
+                id_tab = window.location.hash;
+
+                if(id_tab != "#informacoes-curso" && id_tab != ""){
+
+                    $('a[href="#informacoes-curso"]').removeClass('active')
+                    $('#informacoes-curso').removeClass('show')
+                    $('#informacoes-curso').removeClass('active')
+
+                    $('a[href="' + id_tab + '"]').addClass('active')
+
+                    $(id_tab).addClass('active')
+                    $(id_tab).addClass('show')
+
+                }
+            })
+
+            window.addEventListener("popstate", event => {
+                history.back();
+            });
+
           </script>
 
-        </section>
+
     </div>
 {% endblock %}

@@ -12,10 +12,9 @@
 
 {% block content_page %}
 
-
-        <h2 class="text-center" style="margin-top: 20px;">Meus cursos</h2>
-
-        <hr/>
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+            <h2 class="text-center" style="margin-top: 5px;">Meus cursos<i class="fas fa-graduation-cap class-icon" style="margin-left: 10px;"></i></h2>
+        </div>
 
         <div class="col-12 search-div">
             <form method="GET" id="search-form">
@@ -30,7 +29,7 @@
         <div class="row">
             {% for curso in cursos %}
                 <div class="col-sm-3">
-                    <div class="card card-curso">
+                    <div class="card card-curso h-100 ">
 
                         <div class="card-header">
                             <h5 class="text-center" style="margin: 0; padding: 0;">{{ curso.titulo }}</h5>
@@ -46,11 +45,21 @@
                             {% else %}
                             <p class="card-text text-center">Não publicado</p>
                             {% endif %}
+
+                            <p>
+                                <div class="col text-center">
+                                    <a href="/edita-curso/{{curso.id}}" class="btn btn-primary" role="button">
+                                        <i class="fas fa-edit class-icone-button" style="color: white;"></i>
+                                            Editar
+                                    </a>
+                                </div>
+                            </p>
+
                             <p>
                                 <div class="col text-center">
                                     <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary" role="button">
                                         <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Preview Curso
+                                            Preview
                                     </a>
                                 </div>
                             </p>

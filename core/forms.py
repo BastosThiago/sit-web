@@ -2,6 +2,7 @@ from django import forms
 
 from .models import *
 
+
 class CategoriaForm(forms.ModelForm):
 
     class Meta:
@@ -17,6 +18,14 @@ class CursoForm(forms.ModelForm):
                   'palavras_chaves', 'descricao', 'publicado',
                   )
 
+
+class CursoAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Curso
+        fields = ('titulo', 'categoria', 'nome_instrutor',
+                  'palavras_chaves', 'descricao', 'publicado',
+                  )
 
 class InscricaoForm(forms.ModelForm):
 

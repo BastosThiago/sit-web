@@ -6,7 +6,11 @@
 
 {% block content_page %}
 <div class="col-12 list-div">
-    <h2 class="text-center">{{tituloPagina}}</h2>
+
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+        <h2 class="text-center" style="margin-top: 5px;">{{tituloPagina}}</h2>
+    </div>
+
     <form method="POST" form enctype="multipart/form-data">
         {% csrf_token %}
         {{ form | crispy }}

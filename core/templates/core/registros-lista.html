@@ -4,7 +4,9 @@
 
 {% block content_page %}
 <div class="col-12 list-div">
-    <h2 class="text-center">Lista de {{tituloPagina}}</h2>
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+        <h2 class="text-center" style="margin-top: 5px;">Lista de {{tituloPagina}}</h2>
+    </div>
 
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
         <div class="col text-center" style="margin-top: 20px; margin-bottom: 10px;">
@@ -44,12 +46,26 @@
             {% for objeto in objetos %}
                 <li class="item-lista">
                     <div >
-                        <span><a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto }}</a></span>
-                        <a href="/remove-{{nomeLink}}/{{ objeto.id }}" class="delete-btn"><span><i class="fas fa-trash" style="margin-right: 15px;"></i></span></a>
-                        <a href="/edita-{{nomeLink}}/{{ objeto.id }}"><span><i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;"></i></span></a>
+                        <span>
+                            <a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto }}</a>
+                        </span>
+
+                        <span href="" class="delete-btn2" onclick="removeItem({{ objeto.id }}, '/remove-{{nomeLink}}/{{ objeto.id }}')">
+                            <i class="fas fa-trash" style="margin-right: 15px;" title="Remove item selecionado"></i>
+                        </span>
+
+                        <a href="/edita-{{nomeLink}}/{{ objeto.id }}">
+                            <span>
+                                <i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;"></i>
+                            </span>
+                        </a>
 
                         {% if lista_cursos == True %}
-                        <a href="/cadastro-conteudo-curso/{{ objeto.id }}"><span><i class="fab fa-contao" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: #007bff;"></i></span></a>
+                        <a href="/cadastro-conteudo-curso/{{ objeto.id }}">
+                            <span>
+                                <i class="fab fa-contao" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: #007bff;"></i>
+                            </span>
+                        </a>
                         {% endif %}
                     </div>
                 </li>
@@ -80,4 +96,38 @@
         <h5 class="text-center" style="margin-top: 20px;">Sem cadastros a serem exibidos</h5>
     {% endif %}
 </div>
+
+<div class="modal fade modal-delete-item" id="confirmDeleteModal" id_objeto="" link_objeto="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body confirm-delete">
+        Deseja realmente remover o item?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteButtonModal">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    function removeItem(id_objeto, link_objeto) {
+
+        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto", id_objeto)
+        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto", link_objeto)
+
+        $('.modal-delete-item').modal('show');
+
+    }
+
+    $(document).on('click', '#confirmDeleteButtonModal', function () {
+        id_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto")
+        link_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto")
+
+
+        window.location.href = link_objeto;
+    });
+</script>
 {% endblock %}

@@ -187,6 +187,13 @@
               </span>
             </div>
 
+            <div class="col text-center" id="botao-conteudo-curso" style="margin-bottom: 20px; padding: 0;">
+              <a href="/conteudo-curso/{{questionario.unidade.curso.id}}#conteudo-curso" class="btn btn-primary" id="botao-conteudo" role="button" style="font-size: 1.2rem;">
+                  <i class="fas fa-arrow-circle-left"></i>
+                  Conteúdos
+              </a>
+            </div>
+
             <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 20px; padding: 0;">
               <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')">
                   Próximo
@@ -212,7 +219,7 @@
                 </div>
                 <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-resultado">
 
-                    <h5 class="text-center" style="margin-top: 12px;"><i class="fas fa-star class-icone-content"></i>Percentual de acertos: <span class="text-center" style="color:orange;"><b>{{ usuario_questionario.percentual_acertos}}</b></span></h5>
+                    <h5 class="text-center" style="margin-top: 12px;"><i class="fas fa-percent class-icone-content"></i>Percentual de acertos: <span class="text-center" style="color:orange;"><b>{{ usuario_questionario.percentual_acertos}}</b></span></h5>
 
                     <hr/>
 

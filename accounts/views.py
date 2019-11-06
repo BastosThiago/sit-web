@@ -59,11 +59,19 @@ def EditUserView(request, id):
     form.fields['perfil'].widget.attrs['disabled'] = True
 
     if request.method == 'POST':
+        perfil_usuario = usuario.perfil
         form = CustomUserChangeForm(request.POST, instance=usuario)
 
         if form.is_valid():
+            usuario.perfil = perfil_usuario
             usuario.save()
-            return redirect('/')
+            if perfil_administrador:
+                return redirect("/accounts/lista-usuarios")
+            else:
+                if perfil_instrutor:
+                    return redirect("/area-usuario")
+                else:
+                    return redirect("/area-usuario")
         else:
             return render(
                 request,

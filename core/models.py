@@ -36,6 +36,7 @@ class Curso(models.Model):
     titulo = models.CharField(unique=True, max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    nome_instrutor = models.CharField(null=True, blank=True, max_length=200)
     palavras_chaves = models.CharField(max_length=150, null=True, blank=True)
     descricao = models.TextField(max_length=150, null=True, blank=True)
     publicado = models.BooleanField(default=False)

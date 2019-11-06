@@ -248,7 +248,11 @@ def registrosListView(request, modelo):
                 'perfil_administrador': perfil_administrador,
                 'perfil_instrutor': perfil_instrutor,
                 'lista_cursos': lista_cursos,
-                'nao_tem_objetos': nao_tem_objetos
+                'nao_tem_objetos': nao_tem_objetos,
+                'menu_inicio': False,
+                'menu_meus_cursos': False,
+                'menu_cadastros': True,
+                'menu_relatorios': False,
             }
         )
     else:
@@ -297,8 +301,17 @@ def novoRegistroView(request, modelo):
         # Monta a informação do link de redirecionamento
         nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
-        # Obtém o form associado ao modelo
-        formModelo = forms[remover_acentos(nomeModelo.lower())]
+        # Caso o modelo seja de Curso e o perfil do usuário da requsição seja
+        # de INSTRUTOR, remove o campo de nome do instrutor do cadastro, pois
+        # neste caso, será o nome do próprio usuário
+        if modelo == Curso:
+            if perfil_instrutor:
+                formModelo = CursoForm
+            else:
+                formModelo = CursoAdminForm
+        else:
+            # Obtém o form associado ao modelo
+            formModelo = forms[remover_acentos(nomeModelo.lower())]
 
         # Caso o método HTTP associado a requisição seja POST
         # Exibe o formulário com os dados já existentes, senão, um em branco
@@ -335,6 +348,10 @@ def novoRegistroView(request, modelo):
                 'perfil_aluno': perfil_aluno,
                 'perfil_administrador': perfil_administrador,
                 'perfil_instrutor': perfil_instrutor,
+                'menu_inicio': False,
+                'menu_meus_cursos': False,
+                'menu_cadastros': True,
+                'menu_relatorios': False,
             }
         )
     else:
@@ -376,14 +393,25 @@ def editaRegistroView(request, id, modelo):
         tituloPagina = f"Edição de registro de {nomeModelo}"
         nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
-        # Obtém o form associado ao modelo
-        formModelo = forms[remover_acentos(nomeModelo.lower())]
-
         # Obtém o objeto de acordo com seu ID
         try:
             objeto = modelo.objects.obtem_objetos_por_perfil_usuario(request.user).filter(pk=id)[0]
+
         except:
             return trata_erro_404(request, None)
+
+        # Caso o modelo seja de Curso e o perfil do usuário da requsição seja
+        # de INSTRUTOR, remove o campo de nome do instrutor do cadastro, pois
+        # neste caso, será o nome do próprio usuário
+        if modelo == Curso:
+            perfil_usuario_curso_instrutor = objeto.usuario.tem_perfil_instrutor()
+            if perfil_usuario_curso_instrutor:
+                formModelo = CursoForm
+            else:
+                formModelo = CursoAdminForm
+        else:
+            # Obtém o form associado ao modelo
+            formModelo = forms[remover_acentos(nomeModelo.lower())]
 
         #Obtém o form associado ao objeto
         form = formModelo(instance=objeto)
@@ -426,6 +454,10 @@ def editaRegistroView(request, id, modelo):
                         'perfil_instrutor': perfil_instrutor,
                         'edicao_curso': edicao_curso,
                         'objeto': objeto,
+                        'menu_inicio': False,
+                        'menu_meus_cursos': False,
+                        'menu_cadastros': True,
+                        'menu_relatorios': False,
                     }
                 )
         else:
@@ -440,6 +472,10 @@ def editaRegistroView(request, id, modelo):
                     'perfil_instrutor': perfil_instrutor,
                     'edicao_curso': edicao_curso,
                     'objeto': objeto,
+                    'menu_inicio': False,
+                    'menu_meus_cursos': False,
+                    'menu_cadastros': True,
+                    'menu_relatorios': False,
                 }
             )
     else:
@@ -695,7 +731,13 @@ def informacoesCursoView(request, id):
 
     categoria = curso.categoria.titulo
 
-    instrutor = curso.usuario.get_full_name()
+    # Caso o usuário que criou o curso tenha o perfil de INSTRUTOR, o nome do
+    # instrutor do curso será o nome do próprio usuário, Se não, será o nome
+    # do instrutor cadastrado para o curso
+    if curso.usuario.tem_perfil_instrutor():
+        instrutor = curso.usuario.get_full_name()
+    else:
+        instrutor = curso.nome_instrutor
 
     numero_inscritos = curso.obtem_numero_inscritos()
 
@@ -1344,8 +1386,8 @@ def conteudoCursoView(request, id):
             'perfil_aluno': perfil_aluno,
             'perfil_administrador': perfil_administrador,
             'perfil_instrutor': perfil_instrutor,
-            'menu_inicio': True,
-            'menu_meus_cursos': False,
+            'menu_inicio': False,
+            'menu_meus_cursos': True,
             'menu_cadastros': False,
             'menu_relatorios': False,
         }
@@ -1568,6 +1610,7 @@ def visualizacaoVideoView(request, id):
     if request.is_ajax() and request.GET['origem'] == 'video':
         return JsonResponse(
             {
+                'video': video,
                 'titulo_video': video.titulo,
                 'caminho_video': caminho_video,
                 'tempo_corrente': tempo_corrente,
@@ -1597,6 +1640,7 @@ def visualizacaoVideoView(request, id):
             request,
             nome_template,
             {
+                'video': video,
                 'titulo_video': video.titulo,
                 'usuario_video': usuario_video,
                 'tipo_video': tipo_video,
@@ -2735,8 +2779,8 @@ def cadastroConteudoCursoView(request, id):
             'perfil_instrutor': perfil_instrutor,
             'perfil_administrador': perfil_administrador,
             'menu_inicio': False,
-            'menu_meus_cursos': True,
-            'menu_cadastros': False,
+            'menu_meus_cursos': False,
+            'menu_cadastros': True,
             'menu_relatorios': False,
         }
     )

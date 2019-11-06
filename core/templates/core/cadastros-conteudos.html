@@ -8,22 +8,33 @@
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
+    <style>
+        h5 {
+             font-size: 1.1rem;
+        }
+        .card-body {
+            padding: 0;
+        }
+
+        .class-icone-content{
+            margin-top: 15px;
+        }
+    </style>
 {% endblock %}
 
 {% block content_page %}
 
 
-        <h2 class="text-center" style="margin-top: 20px;">Cadastros</h2>
-
-
-        <hr/>
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+            <h2 class="text-center" style="margin-top: 10px;">Cadastros</h2>
+        </div>
 
         <div class="row">
 
             {% if perfil_administrador == True %}
-            <div class="col-sm-2">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
 
-                <div class="card card-curso" style="margin-top: 20px;">
+                <div class="card card-curso h-100 " style="margin-top: 20px;">
 
 
                     <div class="card-header">
@@ -33,7 +44,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-object-group" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-object-group class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -48,8 +59,8 @@
             </div>
             {% endif %}
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Cursos</h5>
@@ -58,7 +69,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-graduation-cap" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-graduation-cap class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -71,8 +82,8 @@
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Unidades</h5>
@@ -81,7 +92,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-layer-group" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-layer-group class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -94,8 +105,8 @@
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Vídeos</h5>
@@ -104,7 +115,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-video" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-video class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -117,8 +128,8 @@
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Arquivos</h5>
@@ -127,7 +138,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-file-alt" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-file-alt class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -140,8 +151,8 @@
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Questionários</h5>
@@ -150,7 +161,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-tasks" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-tasks class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -163,8 +174,8 @@
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Questões</h5>
@@ -173,7 +184,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-question-circle" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-question-circle class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -186,8 +197,8 @@
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Alternativas</h5>
@@ -196,7 +207,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-spell-check" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-spell-check class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -210,8 +221,8 @@
             </div>
 
             {% if perfil_administrador == True %}
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Avalicações</h5>
@@ -220,7 +231,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-star" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-comments class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 
@@ -233,8 +244,8 @@
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <div class="card card-curso" style="margin-top: 20px;">
+            <div class="col-sm-2" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100" style="margin-top: 20px;">
 
                     <div class="card-header">
                         <h5 class="text-center" style="margin: 0; padding: 0;">Inscrições</h5>
@@ -243,7 +254,7 @@
                     <div class="card-body" style="margin: 0; padding-left: 0; padding-right: 0;">
 
                         <div class="text-center">
-                            <i class="fas fa-users" style="font-size: 4rem; color: #007bff;"></i>
+                            <i class="fas fa-users class-icone-content" style="font-size: 4rem; color: #007bff;"></i>
                         </div>
                     </div>
 

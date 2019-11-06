@@ -82,12 +82,16 @@
 
 {% endblock %}
 
+{% block title %}Lista de cursos disponíveis {%endblock %}
+
 {% block conteudo-home-page %}
 
     <div id="page-content">
         <section class="py-4">
 
-            <h2 class="text-center" style="margin-top: 20px;">Lista de Cursos</h2>
+            <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); margin-top: 20px; margin-left: 20px; margin-right: 20px; padding: 0;">
+                <h2 class="text-center" style="margin-top: 5px;">Lista de cursos disponíveis</h2>
+            </div>
 
             <div style="margin: 20px">
                 <div class="col-12 search-div">
@@ -111,8 +115,8 @@
                 -->
                 <div class="row">
                 {% for elemento in lista_cursos %}
-                    <div class="col-sm-3">
-                        <div class="card card-curso">
+                    <div class="col-sm-3 py-2">
+                        <div class="card card-curso h-100">
 
                             <div class="card-header">
                                 <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>

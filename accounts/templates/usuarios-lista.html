@@ -1,13 +1,15 @@
 {% extends 'pagina-inicial.html' %}
 
-{% block title %} Lista de {{tituloPagina}} {% endblock %}
+{% block title %} Lista de Usuários {% endblock %}
 
 {% block content_page %}
 <div class="col-12 list-div">
-    <h2 class="text-center">Lista de Usuários</h2>
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+        <h2 class="text-center" style="margin-top: 5px;">Lista de Usuários</h2>
+    </div>
 
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-        <div class="col text-center" style="margin-top: 20px; margin-bottom: 10px;">
+        <div class="col text-center" style="margin-top: 0px; margin-bottom: 5px;">
           <a href="/accounts/novo-usuario/" class="btn btn-primary btn-lg" role="button">
               <i class="fas fa-plus class-icone-button"></i>
                   Adicionar
@@ -44,9 +46,19 @@
             {% for objeto in objetos %}
                 <li class="item-lista">
                     <div >
-                        <span><a href="/accounts/edit/{{objeto.id}}">{{ objeto }}</a></span>
-                        <a href="/accounts/remove-usuario/{{ objeto.id }}" class="delete-btn"><span><i class="fas fa-trash" style="margin-right: 15px;"></i></span></a>
-                        <a href="/accounts/edit/{{ objeto.id }}"><span><i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;"></i></span></a>
+                        <span>
+                            <a href="/accounts/edit/{{objeto.id}}">{{ objeto }}</a>
+                        </span>
+
+                        <span class="delete-btn2" onclick="removeItem({{ objeto.id }}, '/accounts/remove-usuario/{{ objeto.id }}')">
+                            <i class="fas fa-trash" style="margin-right: 15px;"></i>
+                        </span>
+
+                        <a href="/accounts/edit/{{ objeto.id }}">
+                            <span>
+                                <i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;"></i>
+                            </span>
+                        </a>
 
                     </div>
                 </li>
@@ -77,4 +89,38 @@
         <h5 class="text-center" style="margin-top: 20px;">Sem cadastros a serem exibidos</h5>
     {% endif %}
 </div>
+
+<div class="modal fade modal-delete-item" id="confirmDeleteModal" id_objeto="" link_objeto="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body confirm-delete">
+        Deseja realmente remover o item?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteButtonModal">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    function removeItem(id_objeto, link_objeto) {
+
+        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto", id_objeto)
+        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto", link_objeto)
+
+        $('.modal-delete-item').modal('show');
+
+    }
+
+    $(document).on('click', '#confirmDeleteButtonModal', function () {
+        id_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto")
+        link_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto")
+
+
+        window.location.href = link_objeto;
+    });
+</script>
 {% endblock %}

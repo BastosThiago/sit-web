@@ -1,6 +1,8 @@
 {% extends  'base-home-page.html' %}
 {% load static %}
 
+{% block title %}SIT - WEB{% endblock %}
+
 {% block conteudo-home-page %}
     <header>
       <div class="overlay"></div>
@@ -8,8 +10,15 @@
       <div class="container h-100">
           <div class="d-flex h-100 text-center align-items-center">
               <div class="w-100 text-white">
-                  <h1 class="display-3">Video Header</h1>
-                  <p class="lead mb-0">With HTML5 Video and Bootstrap 4</p>
+                  <h1 class="display-3" style="font-weight: bold;">SIT - WEB</h1>
+                  <p class="lead mb-0" style="font-weight: bold;">Sistema Institucional de Treinamentos</p>
+                  <div class="col text-center" style="margin-bottom: 0px;">
+                      <a style="background-color: rgba(0,0,0,0.8); border-color: white; margin-top: 20px;" href="/cursos" class="btn btn-primary btn-lg" role="button">
+                          <i class="fas fa-angle-double-right class-icone-button"></i>
+                              Cursos disponíveis
+                      </a>
+                  </div>
+
               </div>
           </div>
       </div>
@@ -18,8 +27,9 @@
     <div id="page-content">
         <section class="py-4">
           <div class="container">
-            <h1 class="font-weight-light">Half Page Image Slider</h1>
-            <p class="lead">The background images for the slider are set directly in the HTML using inline CSS. The images in this snippet are from <a href="https://unsplash.com">Unsplash</a>!</p>
+            <h1 class="font-weight-light">Sistema Institucional de Treinamentos</h1>
+            <p class="lead">O SIT - WEB é uma plataforma de treinamentos on-line que visa agregar valor para as instituições que desejam ter o total controle dos cursos oferecidos
+                como também de seus usuários, sejam eles instrutores ou alunos dos treinamentos.</p>
           </div>
         </section>
     </div>

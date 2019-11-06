@@ -10,18 +10,21 @@
 
 {% endblock %}
 
+{% block title %}Área do Aluno{%endblock %}
+
 {% block content_page %}
 
 
-        <h2 class="text-center" style="margin-top: 20px;">Área do aluno</h2>
-        <hr/>
-        <div style="margin: 20px">
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0; margin-left: 20px; margin-right: 20px;">
+            <h2 class="text-center" style="margin-top: 10px;">Área do aluno</h2>
+        </div>
 
+        <div style="margin: 20px">
 
             <div class="row">
                 {% if dict_ultimo_conteudo.objeto_ultimo_conteudo != None %}
                 <div class="col-sm-4">
-                    <div class="card card-curso">
+                    <div class="card card-curso h-100 ">
 
                         <div class="card-header">
                             <h5 class="text-center" style="margin: 0; padding: 0;">Último curso acessado</h5>
@@ -47,7 +50,7 @@
                 {% endif %}
 
                 <div class="col-sm-4">
-                    <div class="card card-curso">
+                    <div class="card card-curso h-100 ">
 
                         <div class="card-header">
                             <h5 class="text-center" style="margin: 0; padding: 0;">Meus cursos</h5>
@@ -72,7 +75,7 @@
                 </div>
 
                 <div class="col-sm-4">
-                    <div class="card card-curso">
+                    <div class="card card-curso h-100 ">
 
                         <div class="card-header">
                             <h5 class="text-center" style="margin: 0; padding: 0;">Relatórios</h5>
