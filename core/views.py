@@ -2139,13 +2139,13 @@ def downloadConteudo(request, file_path, diretorio):
       View responsável por permitir o download de algum conteúdo do curso
     """
     try:
-        file_path = f"{MEDIA_ROOT}\\{diretorio}\\{file_path}"
+        file_path = f"{MEDIA_ROOT}//{diretorio}//{file_path}"
         wrapper = FileWrapper(open(file_path, 'rb'))
         response = HttpResponse(wrapper, content_type='application/force-download')
         response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
         return response
     except Exception as e:
-        return None
+        return trata_erro_500()
 
 
 @login_required
