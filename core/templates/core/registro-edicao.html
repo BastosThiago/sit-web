@@ -13,17 +13,26 @@
         <h2 class="text-center" style="margin-top: 5px;">{{tituloPagina}}</h2>
     </div>
 
+    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="col text-center">
+            <a href="/{{ nomeLinkRedirecionamento }}" class="btn btn-primary" role="button" title="Retorna para a lista de registros">
+                <i class="fas fa-list class-icone-button"></i>
+                    Lista de registros
+            </a>
+        </div>
+    </div>
+
     <form method="POST">
         {% csrf_token %}
         {{ form | crispy }}
 
         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
             <div class="col text-center">
-                <input type="submit" class="btn btn-success btn-lg" value="Confirmar alterações">
+                <input type="submit" class="btn btn-success" value="Confirmar alterações" title="Salva as alterações realizadas">
             </div>
             {% if edicao_curso == True %}
                <div class="col text-center">
-                    <a href="/cadastro-conteudo-curso/{{ objeto.id }}" class="btn btn-primary btn-lg" role="button">
+                    <a href="/cadastro-conteudo-curso/{{ objeto.id }}" class="btn btn-primary" role="button" title="Acessa página de cadastro de conteúdos do curso">
                         <i class="fas fa-angle-double-right class-icone-button"></i>
                             Cadastro Conteúdo
                     </a>

@@ -91,7 +91,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav " style="float: left;">
                 <li class="nav-item">
-                  <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;  padding-right: 20px;" href="/cursos">
+                  <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;  padding-right: 20px;" href="/cursos" title="Acessa lista de cursos disponíveis no sistema">
                       <i class="fas fa-list-alt class-icone"></i>Lista de Cursos
                   </a>
                 </li>
@@ -100,15 +100,15 @@
               <ul class="navbar-nav ml-auto" style="float: right;">
                 {% if not user.is_authenticated %}
                     <li class="nav-item">
-                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem; padding-right: 20px;" href="/accounts/register"><i class="fas fa-user-plus class-icone"></i>Registrar-se</a>
+                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem; padding-right: 20px;" href="/accounts/register" title="Cria registro de acesso ao sistema"><i class="fas fa-user-plus class-icone"></i>Registrar-se</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/accounts/login"><i class="fas fa-sign-in-alt class-icone"></i>Entrar</a>
+                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/accounts/login" title="Loga no sistema "><i class="fas fa-sign-in-alt class-icone"></i>Entrar</a>
                     </li>
                 {% else %}
 
                     <li class="nav-item">
-                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/area-usuario"><i class="fas fa-user-circle class-icone"></i>Minha área</a>
+                      <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/area-usuario" title="Acessa área do usuário logado"><i class="fas fa-user-circle class-icone"></i>Minha área</a>
                     </li>
 
                     <ul class="navbar-nav ml-auto">
@@ -117,8 +117,8 @@
                               <i class="fas fa-user class-icon icone-usuario"></i>{{ user.username }}
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                              <a class="dropdown-item" href="/accounts/edit/{{ user.id }}"><i class="fas fa-user-edit class-icon icone-usuario"></i>Dados cadastrais</a>
-                              <a class="dropdown-item" href="/accounts/logout"><i class="fas fa-sign-out-alt class-icon icone-usuario"></i>Sair</a>
+                              <a class="dropdown-item" href="/accounts/edit/{{ user.id }}" title="Informações de dados cadastrais do usuário"><i class="fas fa-user-edit class-icon icone-usuario"></i>Dados cadastrais</a>
+                              <a class="dropdown-item" href="/accounts/logout" title="Realiza logout do usuário"><i class="fas fa-sign-out-alt class-icon icone-usuario"></i>Sair</a>
                             </div>
                           </li>
                     </ul>

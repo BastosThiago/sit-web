@@ -176,31 +176,36 @@
 
 <div class="conteudo-curso-container">
 
-    <h4 class="text-center" id="titulo-video">{{ questionario.titulo }}</h4>
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px;">
+        <div class="container" style="padding: 0; margin-top: 5px; margin-bottom: 5px;">
 
-    <div class="container" style="padding: 0; margin-top: 20px;">
-        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-            <div class="col text-center" id="botao-anterior-container" style="margin-bottom: 10px; padding: 0;">
-              <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')">
-                  <i class="fas fa-angle-double-left" ></i>
-                   Anterior
-              </span>
-            </div>
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="col text-center" id="botao-anterior-container" style="margin-bottom: 0px; padding: 0;">
+                  <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem; cursor: pointer;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')" title="Retorna para conteúdo anterior">
+                      <i class="fas fa-angle-double-left" ></i>
+                       Anterior
+                  </span>
+                </div>
 
-            <div class="col text-center" id="botao-conteudo-curso" style="margin-bottom: 20px; padding: 0;">
-              <a href="/conteudo-curso/{{questionario.unidade.curso.id}}#conteudo-curso" class="btn btn-primary" id="botao-conteudo" role="button" style="font-size: 1.2rem;">
-                  <i class="fas fa-arrow-circle-left"></i>
-                  Conteúdos
-              </a>
-            </div>
+                <div class="col text-center" id="botao-conteudo-curso" style="margin-bottom: 0x; padding: 0;">
+                  <a href="/conteudo-curso/{{questionario.unidade.curso.id}}#conteudo-curso" class="btn btn-primary" id="botao-conteudo" role="button" style="font-size: 1.2rem;" title="Retorna para página de conteúdos do curso">
+                      <i class="fas fa-arrow-circle-left"></i>
+                      Conteúdos
+                  </a>
+                </div>
 
-            <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 20px; padding: 0;">
-              <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')">
-                  Próximo
-                  <i class="fas fa-angle-double-right"></i>
-              </span>
+                <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 0x; padding: 0;">
+                  <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem; cursor: pointer;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')" title="Avança para próximo conteúdo">
+                      Próximo
+                      <i class="fas fa-angle-double-right"></i>
+                  </span>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px;">
+        <h4 class="text-center" id="titulo-video" style="margin-top: 10px;">{{ questionario.titulo }}</h4>
     </div>
 
     {% if usuario_questionario is not none %}
@@ -233,23 +238,25 @@
     {% endif %}
 
     {% if perfil_aluno == True %}
-    <div class="container" style="padding: 0; margin-top: 15px;">
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px; margin-top: 10px;">
+
         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-            <div class="col text-center" style="margin-bottom: 5px; padding: 0;">
-              <span class="btn btn-primary"  id="refazer" role="button" style="font-size: 1.2rem;" onclick="atualizaDados()">
+            <div class="col text-center" style="margin-top: 5px; margin-bottom: 5px; padding: 0;">
+              <span class="btn btn-primary"  id="refazer" role="button" style="font-size: 1.2rem;" onclick="atualizaDados()" title="Clique aqui para refazer o questionário">
                   <i class="fas fa-undo-alt" ></i>
                    Refazer
               </span>
             </div>
         </div>
         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-            <div class="col text-center" style="margin-bottom: 5px; padding: 0;">
-              <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem;"  onclick="enviaForm()">
+            <div class="col text-center" style="margin-top: 0px; margin-bottom: 5px; padding: 0;">
+              <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem;"  onclick="enviaForm()" title="Envia o questionário para avaliação">
                   Enviar
                   <i class="fas fa-share-square"></i>
               </span>
             </div>
         </div>
+
     </div>
     {% endif %}
 
@@ -262,7 +269,7 @@
                 <div class="card card-questao" style="margin-top: 10px;">
                     <div class="card-header" id="heading-questao-{{ questao.id }}" style="padding: .2rem 1rem; text-align-last: justify;">
                       <h5 class="mb-0">
-                        <button class="btn btn-link link-unidade"  style="margin-top: 5px; font-size: 1.1rem;" onclick="expandeArea(this)"  data-toggle="collapse" data-target="#collapse-questao-{{ questao.id }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.id }}">
+                        <button class="btn btn-link link-unidade"  style="margin-top: 5px; font-size: 1.1rem;" onclick="expandeArea(this)"  data-toggle="collapse" data-target="#collapse-questao-{{ questao.id }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.id }}" title="Clique aqui para exibir ou omitir detalhes da questão">
                           <i class="fas fa-angle-double-down"></i>
                           Questão - {{ questao.ordem }}
                         </button>
@@ -277,7 +284,7 @@
 
                             {% if alternativa.questao.id == questao.id %}
                                 <div class="alert alternativa-padrao" role="alert">
-                                    <label class="container-check label-input-class">
+                                    <label class="container-check label-input-class" title="Cliquei aqui para selecionar a resposta da questão">
                                     {% if perfil_aluno == True %}
                                         {% for chave, valor in alternativas_dict.items %}
                                             {% if chave == alternativa.id %}

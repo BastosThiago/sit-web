@@ -1,39 +1,45 @@
 <div class="conteudo-curso-container">
 
-    <h4 class="text-center" id="titulo-video">{{ arquivo.titulo }}</h4>
 
-    <div class="container" style="padding: 0; margin-top: 20px;">
-        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-            <div class="col text-center" id="botao-anterior-container" style="margin-bottom: 10px; padding: 0;">
-              <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')">
-                  <i class="fas fa-angle-double-left" ></i>
-                   Anterior
-              </span>
-            </div>
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+        <div class="container" style="padding: 0; margin-top: 5px; margin-bottom: 5px;">
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="col text-center" id="botao-anterior-container" style="margin-bottom: 0px; padding: 0;">
+                  <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem; cursor: pointer;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')" title="Retorna para conteúdo anterior">
+                      <i class="fas fa-angle-double-left" ></i>
+                       Anterior
+                  </span>
+                </div>
 
-            <div class="col text-center" id="botao-conteudo-curso" style="margin-bottom: 20px; padding: 0;">
-              <a href="/conteudo-curso/{{arquivo.unidade.curso.id}}#conteudo-curso" class="btn btn-primary" id="botao-conteudo" role="button" style="font-size: 1.2rem;">
-                  <i class="fas fa-arrow-circle-left"></i>
-                  Conteúdos
-              </a>
-            </div>
+                <div class="col text-center" id="botao-conteudo-curso" style="margin-bottom: 0px; padding: 0;">
+                  <a href="/conteudo-curso/{{arquivo.unidade.curso.id}}#conteudo-curso" class="btn btn-primary" id="botao-conteudo" role="button" style="font-size: 1.2rem;" title="Retorna para página de conteúdos do curso">
+                      <i class="fas fa-arrow-circle-left"></i>
+                      Conteúdos
+                  </a>
+                </div>
 
-            <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 20px; padding: 0;">
-              <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')">
-                  Próximo
-                  <i class="fas fa-angle-double-right"></i>
-              </span>
+                <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 0px; padding: 0;">
+                  <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem; cursor: pointer;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')" title="Avança para próximo conteúdo">
+                      Próximo
+                      <i class="fas fa-angle-double-right"></i>
+                  </span>
+                </div>
             </div>
         </div>
     </div>
 
-    {% if arquivo_existe %}
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px;">
+        <h4 class="text-center" id="titulo-video" style="margin-top: 10px;">{{ arquivo.titulo }}</h4>
+    </div>
 
-        <div class="col text-center" id="botao-download" style="margin-bottom: 10px; padding: 0;">
-            <a class="btn btn-primary" href="/download/{{ arquivo.caminho }}" role="button" style="font-size: 1.2rem;">
-              Download
-              <i class="fas fa-download"></i>
-            </a>
+    {% if arquivo_existe %}
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px;">
+            <div class="col text-center" id="botao-download" style="margin-top: 5px; margin-bottom: 5px; padding: 0;">
+                <a class="btn btn-primary" href="/download/{{ arquivo.caminho }}" role="button" style="font-size: 1.2rem;" title="Realiza o download do arquivo">
+                  Download
+                  <i class="fas fa-download"></i>
+                </a>
+            </div>
         </div>
 
         <div class="alert alert-danger alert-dismissable" id="arquivo-nao-existe" hidden>
@@ -94,9 +100,8 @@
                 success: function( data )
                 {
                     $(".conteudo-curso-container").replaceWith(data);
-
-
-                    window.history.pushState({route: url}, "Arquivo", url);
+                    if(window.history.state && window.history.state.route && window.history.state.route != url)
+                        window.history.pushState({route: url}, "Arquivo", url);
                 }
             })
         }

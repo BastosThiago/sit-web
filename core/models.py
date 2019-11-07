@@ -6,6 +6,11 @@ import math
 from .fields import OrderField
 from .managers import *
 
+from sistema_treinamentos.settings \
+    import PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_VIDEOS, \
+    PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_ARQUIVOS, \
+    PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_QUESTIONARIOS, \
+    PERCENTUAL_ACERTOS_QUESTIONARIOS_APROVACAO
 
 class Categoria(models.Model):
     """
@@ -163,9 +168,15 @@ class Curso(models.Model):
         """
         try:
             total_videos_curso = self.obtem_videos().count()
+            total_arquivos_curso = self.obtem_arquivos().count()
             total_questionarios_curso = self.obtem_questionarios().count()
 
-            total_videos_assistidos = UsuarioVideo.objects.obtem_videos_assistindos_por_usuario(
+            total_videos_assistidos = UsuarioVideo.objects.obtem_videos_assistidos_por_usuario(
+                self,
+                usuario
+            ).count()
+
+            total_arquivos_acessados = UsuarioArquivo.objects.obtem_arquivos_acessados_por_usuario(
                 self,
                 usuario
             ).count()
@@ -175,10 +186,25 @@ class Curso(models.Model):
                 usuario
             ).count()
 
-            total_conteudo = total_videos_curso + total_questionarios_curso
-            total_conteudo_realizado = total_videos_assistidos + total_questionarios_respondidos
+            total_conteudo = 0
+            total_conteudo_realizado = 0
 
-            percentual_andamento = (total_conteudo_realizado / total_conteudo) * 100
+            if PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_VIDEOS:
+                total_conteudo = total_conteudo + total_videos_curso
+                total_conteudo_realizado = total_conteudo_realizado + total_videos_assistidos
+
+            if PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_ARQUIVOS:
+                total_conteudo = total_conteudo + total_arquivos_curso
+                total_conteudo_realizado = total_conteudo_realizado + total_arquivos_acessados
+
+            if PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_QUESTIONARIOS:
+                total_conteudo = total_conteudo + total_questionarios_curso
+                total_conteudo_realizado = total_conteudo_realizado + total_questionarios_respondidos
+
+            if total_conteudo > 0:
+                percentual_andamento = (total_conteudo_realizado / total_conteudo) * 100
+            else:
+                percentual_andamento = 0
 
             return percentual_andamento
         except:
@@ -196,6 +222,8 @@ class Curso(models.Model):
 
             percentual_acertos = (questionarios_respondidos.aggregate(Avg('percentual_acertos')))['percentual_acertos__avg']
 
+            if percentual_acertos is None:
+                percentual_acertos = 0
             return percentual_acertos
         except:
             return 0
@@ -369,6 +397,7 @@ class UsuarioVideo(models.Model):
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Vídeos"
+        unique_together = (('video', 'usuario'),)
 
     def __str__(self):
         return f"{self.usuario} - {self.video}"
@@ -378,7 +407,7 @@ class UsuarioArquivo(models.Model):
     """
         Modelo associado a relação entre os usuários e videos
     """
-    objects = UsuarioVideoManager()
+    objects = UsuarioArquivoManager()
 
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     arquivo = models.ForeignKey(Arquivo, on_delete=models.CASCADE)
@@ -387,6 +416,7 @@ class UsuarioArquivo(models.Model):
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Arquivos"
+        unique_together = (('arquivo', 'usuario'),)
 
     def __str__(self):
         return f"{self.usuario} - {self.arquivo}"
@@ -424,12 +454,13 @@ class UsuarioQuestionario(models.Model):
 
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
-    percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1)
+    percentual_acertos = models.DecimalField(max_digits=10, default=0, decimal_places=1)
     respondido = models.BooleanField(default=False)
     data_execucao = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Questionarios"
+        unique_together = (('usuario', 'questionario'),)
 
     def __str__(self):
         return f"{self.usuario} - {self.questionario}"
@@ -490,10 +521,11 @@ class UsuarioResposta(models.Model):
     """
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
-    alternativa = models.ForeignKey(Alternativa, on_delete=models.CASCADE)
+    alternativa = models.ForeignKey(Alternativa, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.usuario} - {self.questao} - {self.alternativa}"
 
     class Meta:
         verbose_name_plural = "Registros Usuários-Respostas"
+        unique_together = (('usuario', 'questao'),)

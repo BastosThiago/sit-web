@@ -10,9 +10,9 @@
 
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
         <div class="col text-center" style="margin-top: 20px; margin-bottom: 10px;">
-          <a href="/adiciona-{{nomeLink}}/" class="btn btn-primary btn-lg" role="button">
+          <a href="/adiciona-{{nomeLink}}/" class="btn btn-primary " role="button" title="Adiciona um novo registro">
               <i class="fas fa-plus class-icone-button"></i>
-                  Adicionar
+                  Adicionar registro
           </a>
         </div>
     </div>
@@ -21,7 +21,9 @@
         <form method="GET" id="search-form">
             <input class="form-control" type="text" id="search" name="search"
                    placeholder="Digite qualquer coisa para buscar"
-                   value="{{ request.GET.search }}">
+                   value="{{ request.GET.search }}"
+                   style="font-size: 0.9rem"
+                   title="Informe qualquer caracteristica do registro para filtrar">
             <i class="fas fa-search" id="search-btn"></i>
         </form>
     </div>
@@ -51,17 +53,17 @@
                         </span>
 
                         <span href="" class="delete-btn2" onclick="removeItem({{ objeto.id }}, '/remove-{{nomeLink}}/{{ objeto.id }}')">
-                            <i class="fas fa-trash" style="margin-right: 15px;" title="Remove item selecionado"></i>
+                            <i class="fas fa-trash" style="margin-right: 15px;" title="Remove registro selecionado"></i>
                         </span>
 
                         <a href="/edita-{{nomeLink}}/{{ objeto.id }}">
                             <span>
-                                <i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;"></i>
+                                <i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;" title="Abre edição do registro selecionado"></i>
                             </span>
                         </a>
 
                         {% if lista_cursos == True %}
-                        <a href="/cadastro-conteudo-curso/{{ objeto.id }}">
+                        <a href="/cadastro-conteudo-curso/{{ objeto.id }}" title="Acessa página de cadastro de conteúdos do curso">
                             <span>
                                 <i class="fab fa-contao" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: #007bff;"></i>
                             </span>

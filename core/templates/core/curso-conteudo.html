@@ -172,29 +172,29 @@
             <div id="content" class="container-fluid">
 
               <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
-                  <h4 class="text-center" style="margin-top: 10px;">Curso Avançado de Java Script</h4>
+                  <h4 class="text-center" style="margin-top: 10px;">{{ curso.titulo }}</h4>
               </div>
 
               <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
                   <li class="nav-item">
-                      <a class="nav-link nav-link-content active" id="informacoes-tab" data-toggle="tab" href="#informacoes-curso" role="tab" aria-controls="informacoes-curso" aria-selected="false">
+                      <a class="nav-link nav-link-content active" id="informacoes-tab" data-toggle="tab" href="#informacoes-curso" role="tab" aria-controls="informacoes-curso" aria-selected="false" title="Informações gerais do curso">
                           <i class="fa fa-info-circle class-icone-content"></i>Informações
                       </a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link nav-link-content" id="conteudo-tab" data-toggle="tab" href="#conteudo-curso" role="tab" aria-controls="conteudo-curso" aria-selected="false">
+                      <a class="nav-link nav-link-content" id="conteudo-tab" data-toggle="tab" href="#conteudo-curso" role="tab" aria-controls="conteudo-curso" aria-selected="false" title="Conteúdos didáticos do curso(vídeos, arquivos e questionários)">
                           <i class="fab fa-contao class-icone-content"></i>Conteúdo
                       </a>
                   </li>
                   {% if perfil_aluno == True %}
                   <li class="nav-item">
-                      <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false">
+                      <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false" title="Sua avaliação do curso">
                           <i class="fa fa-comment class-icone-content"></i>Minha avaliação
                       </a>
                   </li>
 
                   <li class="nav-item">
-                      <a class="nav-link nav-link-content" id="certificado-tab" data-toggle="tab" href="#certificado-curso" role="tab" aria-controls="certificado-curso" aria-selected="false">
+                      <a class="nav-link nav-link-content" id="certificado-tab" data-toggle="tab" href="#certificado-curso" role="tab" aria-controls="certificado-curso" aria-selected="false" title="Obtenção do certificado de participação no curso">
                           <i class="fas fa-award class-icone-content"></i>Certificado
                       </a>
                   </li>
@@ -215,7 +215,7 @@
                             <h5 class="text-center">Conteúdo: <b>{{ curso_objeto_ultimo_conteudo.unidade.titulo }} - {{ curso_objeto_ultimo_conteudo.titulo }}</b></h5>
 
                             <div class="col text-center">
-                                <a href="/{{ usuario_inscricao.ultimo_conteudo_acessado }}" class="btn btn-primary" role="button">
+                                <a href="/{{ usuario_inscricao.ultimo_conteudo_acessado }}" class="btn btn-primary" role="button" title="Clique aqui para continuar no último conteúdo que parou">
                                     <i class="fas fa-angle-double-right class-icone-button"></i>
                                         Continuar
                                 </a>
@@ -231,27 +231,27 @@
                         <hr/>
                         {% if perfil_aluno == True %}
                             {% if situacao_aluno_curso == "REPROVADO" %}
-                                <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b style="color: red;">{{ situacao_aluno_curso }}</b></h5>
+                                <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b id="situacao-aluno" style="color: red;">{{ situacao_aluno_curso }}</b></h5>
                             {% else %}
                                 {% if situacao_aluno_curso == "APROVADO" %}
-                                    <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b style="color: green;">{{ situacao_aluno_curso }}</b></h5>
+                                    <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b id="situacao-aluno" style="color: green;">{{ situacao_aluno_curso }}</b></h5>
                                 {% else %}
-                                    <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b style="color: #007bff;">{{ situacao_aluno_curso }}</b></h5>
+                                    <h5 class="text-center"><i class="fab fa-stripe-s class-icone-content"></i>Situação: <b id="situacao-aluno" style="color: #007bff;">{{ situacao_aluno_curso }}</b></h5>
                                 {% endif %}
                             {% endif %}
                             <hr/>
                             <h5 class="text-center"><i class="fas fa-percent class-icone-content"></i>Andamento:</h5>
-                            <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_andamento }}%)</b></div>
+                            <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem" id="texto-percentual-andamento">({{ percentual_andamento }}%)</b></div>
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: {{ percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" id="pb-andamento"role="progressbar" style="width: {{ percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                     <span class="perc-nota"><b style="font-size: 1rem"></b></span>
                                 </div>
                             </div>
                             <hr/>
                             <h5 class="text-center"><i class="fas fa-check-double class-icone-content"></i>Acertos:</h5>
-                            <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem">({{ percentual_acertos }}%)</b></div>
+                            <div style="float: right; margin-left: 10px;"><b style="font-size: 1.5rem" id="texto-percentual-acertos">({{ percentual_acertos }}%)</b></div>
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: {{ percentual_acertos }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" id="pb-acertos" role="progressbar" style="width: {{ percentual_acertos }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                     <span class="perc-nota"><b style="font-size: 1rem"></b></span>
                                 </div>
                             </div>
@@ -269,7 +269,7 @@
                             <div class="card" style="margin-top: 10px;">
                                 <div class="card-header" id="heading-unidade-{{elemento.unidade.ordem}}" style="padding: .2rem 1rem; text-align-last: justify;">
                                   <h5 class="mb-0">
-                                    <button style="margin-left: 10px;" class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-unidade-{{elemento.unidade.ordem}}" aria-expanded="true" aria-controls="collapse-unidade-{{elemento.unidade.ordem}}">
+                                    <button style="margin-left: 10px;" class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-unidade-{{elemento.unidade.ordem}}" aria-expanded="true" aria-controls="collapse-unidade-{{elemento.unidade.ordem}}" title="Clique para visualiar ou recolher as informações">
                                       <i class="fas fa-angle-double-down"></i>
                                       Unidade - {{elemento.unidade.ordem}} - {{elemento.unidade.titulo}}
                                     </button>
@@ -288,7 +288,7 @@
                                             <div class="card" style="margin-top: 10px;">
                                                 <div class="card-header" id="heading-videos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                   <h5 class="mb-0">
-                                                    <button style="margin-left: 5px;" class="btn btn-link link-videos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-videos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-videos-unidade-{{ elemento.unidade.ordem }}">
+                                                    <button style="margin-left: 5px;" class="btn btn-link link-videos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-videos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-videos-unidade-{{ elemento.unidade.ordem }}"  title="Clique aqui para visualiar ou recolher os vídeos">
                                                       <i class="fas fa-angle-double-down"></i>
                                                       Vídeos
                                                       <i style="margin-left: 4px;" class="fas fa-video"></i>
@@ -301,16 +301,18 @@
                                                     {% for video in elemento.videos %}
                                                         <div class="alert alert-secondary" role="alert">
 
-                                                            <label class="container-check">
+                                                            {% if perfil_aluno == True %}
+                                                            <label class="container-check" title="Clique aqui para marcar ou desmarcar que você interagiu com o vídeo">
                                                             {% if video.assistido == True %}
-                                                            <input type="checkbox" checked="checked" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                            <input type="checkbox" checked="checked" id="input-unidade-{{ elemento.unidade.ordem }}-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
                                                             {% else %}
-                                                            <input type="checkbox" id="input-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
+                                                            <input type="checkbox" id="input-unidade-{{ elemento.unidade.ordem }}-video-{{video.video.ordem}}" id_conteudo="{{ video.video.id }}" tipo_conteudo="video">
                                                             {% endif %}
                                                                 <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                              </label>
+                                                            {% endif %}
 
-                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-video" href="/visualizacao-video/{{ video.video.id }}">
+                                                            <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-video" href="/visualizacao-video/{{ video.video.id }}" title="Clique aqui para acessar o vídeo">
                                                               {{ video.video.titulo }}
                                                             </a>
                                                         </div>
@@ -327,7 +329,7 @@
                                             <div class="card" style="margin-top: 10px;">
                                                 <div class="card-header" id="heading-arquivos-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                   <h5 class="mb-0">
-                                                    <button style="margin-left: 5px;" class="btn btn-link link-arquivos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}">
+                                                    <button style="margin-left: 5px;" class="btn btn-link link-arquivos" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivos-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivos-unidade-{{ elemento.unidade.ordem }}"   title="Clique aqui para visualiar ou recolher os arquivos">
                                                       <i class="fas fa-angle-double-down"></i>
                                                       Arquivos
                                                       <i style="margin-left: 4px;" class="fas fa-file-alt"></i>
@@ -340,16 +342,18 @@
                                                         {% for arquivo in elemento.arquivos %}
                                                             <div class="alert alert-secondary" role="alert">
 
-                                                                <label class="container-check">
+                                                                {% if perfil_aluno == True %}
+                                                                <label class="container-check" title="Clique aqui para marcar ou desmarcar que você interagiu com o arquivo">
                                                                     {% if arquivo.acessado == True %}
-                                                                    <input type="checkbox" checked="checked" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                    <input type="checkbox" checked="checked" id="input-unidade-{{ elemento.unidade.ordem }}-arquivo-{{ arquivo.arquivo.ordem }}" id_conteudo="{{ arquivo.arquivo.id }}" tipo_conteudo="arquivo">
                                                                     {% else %}
-                                                                    <input type="checkbox" id="input-arquivo-{{ arquivo.arquivo.ordem }}">
+                                                                    <input type="checkbox" id="input-unidade-{{ elemento.unidade.ordem }}-arquivo-{{ arquivo.arquivo.ordem }}" id_conteudo="{{ arquivo.arquivo.id }}" tipo_conteudo="arquivo">
                                                                     {% endif %}
                                                                     <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                                 </label>
+                                                                {% endif %}
 
-                                                                <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-arquivo" href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}">
+                                                                <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-arquivo" href="/visualizacao-arquivo/{{ arquivo.arquivo.id }}" title="Clique aqui para acessar o arquivo">
                                                                   {{ arquivo.arquivo.titulo }}
                                                                 </a>
 
@@ -367,7 +371,7 @@
                                             <div class="card" style="margin-top: 10px;">
                                                 <div class="card-header" id="heading-questionarios-unidade-{{ elemento.unidade.ordem }}" style="padding: .2rem 1rem; text-align-last: justify;">
                                                   <h5 class="mb-0">
-                                                    <button style="margin-left: 5px;" class="btn btn-link link-questionarios" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}">
+                                                    <button style="margin-left: 5px;" class="btn btn-link link-questionarios" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionarios-unidade-{{ elemento.unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionarios-unidade-{{ elemento.unidade.ordem }}"   title="Clique aqui para visualiar ou recolher os questionários">
                                                       <i class="fas fa-angle-double-down"></i>
                                                       Questionários
                                                       <i style="margin-left: 4px;" class="fas fa-question-circle"></i>
@@ -380,16 +384,18 @@
                                                         {% for questionario in elemento.questionarios %}
                                                             <div class="alert alert-secondary" role="alert">
 
-                                                                <label class="container-check">
+                                                                {% if perfil_aluno == True %}
+                                                                <label class="container-check" title="Clique aqui para marcar ou desmarcar que você interagiu com o questionário">
                                                                     {% if questionario.respondido == True %}
-                                                                    <input type="checkbox" checked="checked" id="input-questionario-{{ questionario.questionario.ordem }}">
+                                                                    <input type="checkbox" checked="checked" id="input-unidade-{{ elemento.unidade.ordem }}-questionario-{{ questionario.questionario.ordem }}" id_conteudo="{{ questionario.questionario.id }}" tipo_conteudo="questionario">
                                                                     {% else %}
-                                                                    <input type="checkbox" id="input-questionario-{{ questionario.questionario.ordem }}">
+                                                                    <input type="checkbox" id="input-unidade-{{ elemento.unidade.ordem }}-questionario-{{ questionario.questionario.ordem }}" id_conteudo="{{ questionario.questionario.id }}" tipo_conteudo="questionario">
                                                                     {% endif %}
                                                                     <span style="float: left; margin-top: 6px;"class="checkmark"></span>
                                                                 </label>
+                                                                {% endif %}
 
-                                                                <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-questionario" href="/visualizacao-questionario/{{ questionario.questionario.id }}">
+                                                                <a style="margin-left: 25px; margin-top: 2px;" class="btn btn-link link-questionario" href="/visualizacao-questionario/{{ questionario.questionario.id }}" title="Clique aqui para acessar o questionário">
                                                                   {{ questionario.questionario.titulo }}
                                                                 </a>
                                                             </div>
@@ -488,18 +494,18 @@
                           <div class="container">
                               <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                                   <div class="col text-center" style="margin-bottom: 10px;">
-                                      <button type="submit" name="envia" class="btn btn-primary"><i class="fas fa-share-square class-icone-button"></i>Enviar</button>
+                                      <button type="submit" name="envia" class="btn btn-primary" title="Clique aqui salvar sua avaliação"><i class="fas fa-share-square class-icone-button"></i>Enviar</button>
                                   </div>
                                   {% if avaliacao != None %}
                                   <div class="col text-center">
-                                      <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
+                                      <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button" title="Clique aqui para eliminar sua avaliação atual">
                                           <i class="fas fa-trash-alt class-icone-button"></i>
                                               Eliminar
                                       </button>
                                   </div>
                                   {% else %}
                                  <div class="col text-center" id="elimina-avaliacao" hidden="true">
-                                      <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button">
+                                      <button class="btn btn-danger" onclick="eliminaAvaliacao()" role="button" title="Clique aqui para eliminar sua avaliação atual">
                                           <i class="fas fa-trash-alt class-icone-button"></i>
                                               Eliminar
                                       </button>
@@ -528,13 +534,13 @@
                       <div class="container">
                           <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                               <div class="col text-center" style="margin-bottom: 10px;">
-                                  <a href="/certificado/{{ curso.id }}" class="btn btn-primary btn-lg" role="button">
+                                  <a href="/certificado/{{ curso.id }}" class="btn btn-primary btn-lg" role="button" title="Abre página com a visualização do PDF do certificado">
                                       <i class="fas fa-eye class-icone-button"></i>
                                           Visualizar certificado
                                   </a>
                               </div>
                               <div class="col text-center">
-                                  <a href="/certificado/{{ curso.id }}?download=download" class="btn btn-primary btn-lg" role="button">
+                                  <a href="/certificado/{{ curso.id }}?download=download" class="btn btn-primary btn-lg" role="button" title="Realiza o download do arquivo PDF do certificado">
                                       <i class="fas fa-download class-icone-button"></i>
                                           Baixar certificado
                                   </a>
@@ -569,13 +575,32 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">Cadastro de conteúdo de Curso</h5>
+                    <h5 class="modal-title">Atualização de conteúdo</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body">
                     <p>Atualização realizada com sucesso.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal modal-falha" tabindex="-1" role="dialog">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Atualização de conteúdo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Falha ao realizar atualização.</p>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
@@ -664,9 +689,33 @@
                     success     : function(data, textStatus, jqXHR){
                         $('#modal-aguarde').modal('hide');
                         $('.modal-sem-alteracoes').modal('show');
+
+                        if(data['percentual_acertos'] != null){
+                            $('#texto-percentual-acertos')[0].innerText = '(' + data['percentual_acertos'] + '%)'
+                            $('#pb-acertos').attr('style', 'width: ' + data['percentual_acertos'] + '%;')
+                        }
+
+                        if(data['percentual_andamento'] != null){
+                            $('#texto-percentual-andamento')[0].innerText = '(' + data['percentual_andamento'] + '%)'
+                            $('#pb-andamento').attr('style', 'width: ' + data['percentual_andamento'] + '%;')
+                        }
+
+                        if(data['situacao_aluno'] != null){
+                            $('#situacao-aluno')[0].innerText = data['situacao_aluno']
+
+                            if(data['situacao_aluno'] == "REPROVADO")
+                                $('#situacao-aluno').attr('style', 'color: red;')
+                            else
+                                if(data['situacao_aluno'] == "APROVADO")
+                                    $('#situacao-aluno').attr('style', 'color: green;')
+                                else
+                                    $('#situacao-aluno').attr('style', 'color: #007bff;')
+                        }
+
                     },
                     error: function(data){
                         $('#modal-aguarde').modal('hide');
+                        $('.modal-falha').modal('show');
                     }
                 })
             })

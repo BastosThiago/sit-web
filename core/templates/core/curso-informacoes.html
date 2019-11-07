@@ -173,14 +173,14 @@
               <div class="alert alert-secondary" role="alert" style="background-color: white;">
                   {% if perfil_aluno == True and aluno_inscrito_curso == False or usuario_anonimo == True %}
                   <div class="col text-center" style="margin-bottom: 0px;">
-                      <a href="/inscricao-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button">
+                      <a href="/inscricao-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button" title="Realiza inscrição no curso">
                           <i class="fas fa-user-graduate class-icone-button"></i>
                               Inscreva-se
                       </a>
                   </div>
                   {% else %}
                   <div class="col text-center" style="margin-bottom: 0px;">
-                      <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button">
+                      <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary btn-lg" role="button" title="Acessa página de conteúdos do curso">
                           <i class="fas fa-angle-double-right class-icone-button"></i>
                               Acessar curso
                       </a>
@@ -191,17 +191,17 @@
               <!-- <ul class="nav nav-pills justify-content-center" id="pills-tab" role="tablist"> -->
               <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
                   <li class="nav-item">
-                      <a class="nav-link nav-link-content active" id="informacoes-tab" data-toggle="tab" href="#informacoes-curso" role="tab" aria-controls="informacoes-curso" aria-selected="false">
+                      <a class="nav-link nav-link-content active" id="informacoes-tab" data-toggle="tab" href="#informacoes-curso" role="tab" aria-controls="informacoes-curso" aria-selected="false" title="Informações gerais do curso">
                           <i class="fa fa-info-circle class-icone-content"></i>Informações
                       </a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link nav-link-content" id="conteudo-tab" data-toggle="tab" href="#conteudo-curso" role="tab" aria-controls="conteudo-curso" aria-selected="false">
+                      <a class="nav-link nav-link-content" id="conteudo-tab" data-toggle="tab" href="#conteudo-curso" role="tab" aria-controls="conteudo-curso" aria-selected="false" title="Informações dos conteúdos do curso">
                           <i class="fab fa-contao class-icone-content"></i>Conteúdo
                       </a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false">
+                      <a class="nav-link nav-link-content" id="avaliacoes-tab" data-toggle="tab" href="#avaliacoes-curso" role="tab" aria-controls="avaliacoes-curso" aria-selected="false" title="Informações de avaliações do curso pelos alunos">
                           <i class="fa fa-comments class-icone-content"></i>Avaliações
                       </a>
                   </li>
@@ -431,7 +431,7 @@
                                         <span class="star on"></span>
                                         <span class="star "></span>
                                         {% endif %}
-                                        {% if avaliacao.nota == 7 %}
+                                        {% if avaliacao.nota == 5 %}
                                         <span class="star on"></span>
                                         <span class="star on"></span>
                                         <span class="star on"></span>

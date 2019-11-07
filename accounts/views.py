@@ -12,21 +12,21 @@ from django.contrib import messages
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
-from core.views import paginaInicialView, trata_usuario_sem_permissao, trata_erro_404
+from core.views import paginaInicialView, trata_usuario_sem_permissao
 
 
 class SignUpView(CreateView):
+    """
+    Classe para tratamento de registro do usuário no sistema
+    """
     form_class = CustomUserCreationForm
     success_url = reverse_lazy(paginaInicialView)
     template_name = 'signup.html'
 
     def form_valid(self, form):
-        #save the new user first
         form.save()
-        #get the username and password
         username = self.request.POST['username']
         password = self.request.POST['password1']
-        #authenticate user then login
         user = authenticate(username=username, password=password)
         login(self.request, user)
         return HttpResponseRedirect('/area-usuario')
@@ -34,23 +34,30 @@ class SignUpView(CreateView):
 
 @login_required
 def EditUserView(request, id):
-
+    """
+    View para edição de um usuário
+    """
     usuario = get_object_or_404(CustomUser, pk=id)
     form = CustomUserChangeForm(instance=usuario)
 
     perfil_aluno = False
     perfil_instrutor = False
     perfil_administrador = False
+    menu_usuarios = False
+    menu_dados_cadastrais = False
 
     # Avalia o perfil do usuário da requsição
     if request.user.tem_perfil_aluno():
         perfil_aluno = True
+        menu_dados_cadastrais = True
 
     if request.user.tem_perfil_administrador():
         perfil_administrador = True
+        menu_usuarios = True
 
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
+        menu_dados_cadastrais = True
 
     if perfil_administrador:
         form.fields['first_name'].widget.attrs['readonly'] = False
@@ -82,6 +89,11 @@ def EditUserView(request, id):
                     'perfil_aluno': perfil_aluno,
                     'perfil_administrador': perfil_administrador,
                     'perfil_instrutor': perfil_instrutor,
+                    'menu_meus_cursos': False,
+                    'menu_cadastros': False,
+                    'menu_relatorios': False,
+                    'menu_usuarios': menu_usuarios,
+                    'menu_dados_cadastrais': menu_dados_cadastrais,
                 }
             )
     else:
@@ -98,7 +110,8 @@ def EditUserView(request, id):
                 'menu_meus_cursos': False,
                 'menu_cadastros': False,
                 'menu_relatorios': False,
-                'menu_usuarios': True,
+                'menu_usuarios': menu_usuarios,
+                'menu_dados_cadastrais': menu_dados_cadastrais,
 
             }
         )
@@ -160,6 +173,7 @@ def listaUsuariosView(request):
                 'menu_cadastros': False,
                 'menu_relatorios': False,
                 'menu_usuarios': True,
+                'menu_dados_cadastrais': False,
             }
         )
     else:
@@ -202,6 +216,7 @@ def novoUsuarioView(request):
                 'menu_cadastros': False,
                 'menu_relatorios': False,
                 'menu_usuarios': True,
+                'menu_dados_cadastrais': False,
             }
         )
     else:

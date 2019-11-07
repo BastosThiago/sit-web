@@ -19,6 +19,10 @@
                 <label>Senha de acesso</label>
                 <p><a href="/accounts/password_change">Clique aqui para acessar o formuário de troca de senha</a></p>
             {% endif %}
-            <button type="submit" class="btn btn-primary">Confirmar alterações</button>
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="col text-center">
+                    <button type="submit" class="btn btn-primary" title="Salva as alterações realizadas">Confirmar alterações</button>
+                </div>
+            </div>
         </form>
  {% endblock %}

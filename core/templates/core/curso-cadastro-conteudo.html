@@ -8,12 +8,12 @@
 
         .fa-save {
             color: green;
-            font-size: 1.7rem;
+            font-size: 1.5rem;
         }
 
         .fa-trash {
             color: red;
-            font-size: 1.7rem;
+            font-size: 1.5rem;
         }
 
         .fa-save:hover {
@@ -28,7 +28,7 @@
 
         .btn-link {
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.0rem;
             cursor: pointer;
         }
 
@@ -41,8 +41,9 @@
         .btn-add-panel1,
         .btn-add-panel-conteudo,
         .btn-add-alternativa {
-            padding: .35rem .4rem;
-            font-weight: bold;
+            padding: .30rem .4rem;
+            font-size: 1rem;
+            //font-weight: bold;
             margin-top: 5px;
             margin-bottom: 5px;
         }
@@ -119,7 +120,7 @@
         }
 
         .card-header {
-            padding: .2rem 1rem
+            padding: .04rem 1rem
         }
 
         .class-icone-content {
@@ -142,486 +143,494 @@
         <h2 class="text-center" style="margin-top: 5px;">Cadastro de conteúdos: {{ curso.titulo }}</h2>
     </div>
 
-    <div class="panel-group" id="accordion">
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+        <p class="text-center" style="margin-top: 10px;">Cadastrar abaixo o conteúdo didático do curso agrupando-os em Unidades contendo Vídeos, Arquivos e Questionáticos com questões de multiplas escolhas.</p>
+    </div>
 
-    {% for unidade in unidades %}
-    <div class="card card-unidade unidade" id="unidade-{{ unidade.ordem }}">
-      <div class="card-header" id="heading{{ unidade.ordem }}" style="text-align-last: justify;">
-        <h5 class="mb-0">
 
-          <div class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse{{ unidade.ordem }}">
-              Unidade - {{ unidade.ordem }}
-          </div>
+    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
+             <button class="btn btn-primary btn-add-panel" title="Cria uma nova unidade"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar Unidade</button>
+        </div>
+    </div>
 
-          <div class="icone">
-              <div class="btn" style="font-size: 1rem">
-                  <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                  <b>Salvar</b>
+   <div id="accordion">
+   {% for unidade in unidades %}
+
+    <div class="panel-group" id="accordion-{{ unidade.ordem }}">
+        <div class="card card-unidade unidade" id="unidade-{{ unidade.ordem }}">
+          <div class="card-header" id="heading{{ unidade.ordem }}" style="text-align-last: justify;">
+            <h5 class="mb-0">
+
+              <div class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse{{ unidade.ordem }}" title="Clique aqui para exibir ou omitir detalhes da unidade">
+                  Unidade - {{ unidade.ordem }}
               </div>
+
+              <div class="icone">
+                  <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                      <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
+                  </div>
+              </div>
+
+              <div class="icone">
+                <div class="btn"  style="float:right; font-size: 1rem" title="Exclui unidade">
+                  <i class="fa fa-trash fa-1x" id="elimina-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'unidade', {{ unidade.id }})" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
+                </div>
+              </div>
+
+            </h5>
           </div>
+          <div id="collapse{{ unidade.ordem }}" class="collapse" aria-labelledby="heading{{ unidade.ordem }}" data-parent="#accordion-{{ unidade.ordem }}" style="padding: 10px;">
 
-          <div class="icone">
-            <div class="btn"  style="float:right; font-size: 1rem">
-              <i class="fa fa-trash fa-1x" id="elimina-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'unidade', {{ unidade.id }})" style="margin-left: 10px;"></i>
-              <b>Excluir</b>
-            </div>
-          </div>
+            <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-{{ unidade.ordem }}">
 
-        </h5>
-      </div>
-      <div id="collapse{{ unidade.ordem }}" class="collapse" aria-labelledby="heading{{ unidade.ordem }}" data-parent="#accordion" style="padding: 10px;">
+                <div class="resultado-unidade" id="resultado-unidade-{{ unidade.ordem }}"></div>
 
-        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-{{ unidade.ordem }}">
+                {% csrf_token %}
 
-            <div class="resultado-unidade" id="resultado-unidade-{{ unidade.ordem }}"></div>
+                <input type="hidden" name="conteudo_id"   value="{{ unidade.id }}">
+                <input type="hidden" name="conteudo_tipo" value="unidade">
+                <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
 
-            {% csrf_token %}
-
-            <input type="hidden" name="conteudo_id"   value="{{ unidade.id }}">
-            <input type="hidden" name="conteudo_tipo" value="unidade">
-            <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
-
-            <div class="form-group">
-                <label for="titulo-unidade" id="label-unidade">Titulo:</label>
-                <input type="text" class="form-control" id="titulo-unidade" value="{{ unidade.titulo }}" aria-describedby="" placeholder="Digite um título" name="titulo-unidade">
-                <span id="titulo-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-            </div>
-
-            <div class="form-group">
-                <label for="descricao-unidade" id="label-descricao">Descrição:</label>
-                <input type="text" class="form-control" id="descricao-unidade" value="{{ unidade.descricao }}" aria-describedby="" placeholder="Digite uma descrição" name="descricao-unidade">
-            </div>
-
-        </form>
-
-        <!-- <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist"> -->
-        <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link nav-link-content active" id="videos-tab" data-toggle="tab" href="#videos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="videos-unidade-{{ unidade.ordem }}" aria-selected="true">
-                    <i class="fas fa-video class-icone-content"></i>Vídeos
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link nav-link-content" id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="arquivos-unidade-{{ unidade.ordem }}" aria-selected="false">
-                    <i class="fas fa-file-alt class-icone-content"></i>Arquivos
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link nav-link-content" id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-{{ unidade.ordem }}" role="tab" aria-controls="questionarios-unidade-{{ unidade.ordem }}" aria-selected="false">
-                    <i class="fas fa-tasks class-icone-content"></i>Questionários
-                </a>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="navegacao-conteudo">
-
-        <div class="tab-pane fade show active" id="videos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="videos-tab">
-            <div class="card-body  accordion-videos-unidade-{{ unidade.ordem }} card-videos">
-
-                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
-                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")'>
-                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo vídeo
-                        </button>
-                    </div>
+                <div class="form-group">
+                    <label for="titulo-unidade" id="label-unidade">Titulo:</label>
+                    <input type="text" class="form-control" id="titulo-unidade" value="{{ unidade.titulo }}" aria-describedby="" placeholder="Digite um título" name="titulo-unidade">
+                    <span id="titulo-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                 </div>
 
-                {% for video in videos %}
-                    {% if video.unidade.id == unidade.id %}
+                <div class="form-group">
+                    <label for="descricao-unidade" id="label-descricao">Descrição:</label>
+                    <input type="text" class="form-control" id="descricao-unidade" value="{{ unidade.descricao }}" aria-describedby="" placeholder="Digite uma descrição" name="descricao-unidade">
+                </div>
 
-                    <div class="card card-video-{{ video.ordem }}-unidade-{{ unidade.ordem }} video" id="video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
+            </form>
 
-                        <div class="card-header" id="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
-                            <h5 class="mb-0">
+            <!-- <ul class="nav nav-tabs" id="navegacao-unidade" role="tablist"> -->
+            <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-content active" id="videos-tab" data-toggle="tab" href="#videos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="videos-unidade-{{ unidade.ordem }}" aria-selected="true" title="Cadastro de vídeos da unidade">
+                        <i class="fas fa-video class-icone-content"></i>Vídeos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-content" id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-{{ unidade.ordem }}" role="tab" aria-controls="arquivos-unidade-{{ unidade.ordem }}" aria-selected="false" title="Cadastro de arquivos da unidade">
+                        <i class="fas fa-file-alt class-icone-content"></i>Arquivos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-content" id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-{{ unidade.ordem }}" role="tab" aria-controls="questionarios-unidade-{{ unidade.ordem }}" aria-selected="false" title="Cadastro de questionários da unidade">
+                        <i class="fas fa-tasks class-icone-content"></i>Questionários
+                    </a>
+                </li>
+            </ul>
 
-                                <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
-                                    Vídeo - {{ video.ordem }}
-                                </div>
+            <div class="tab-content" id="navegacao-conteudo">
 
-                                <div class="icone">
-                                    <div class="btn" style="font-size: 1rem">
-                                        <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                        <b>Salvar</b>
-                                    </div>
-                                </div>
+            <div class="tab-pane fade show active" id="videos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="videos-tab">
+                <div class="card-body  accordion-videos-unidade-{{ unidade.ordem }} card-videos">
 
-                                <div class="icone">
-                                  <div class="btn"  style="float:right; font-size: 1rem">
-                                    <i class="fa fa-trash fa-1x" id="elimina-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'video', {{ video.id }})" style="margin-left: 10px;"></i>
-                                    <b>Excluir</b>
-                                  </div>
-                                </div>
-
-                            </h5>
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                            <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")' title="Cria um novo vídeo">
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo vídeo
+                            </button>
                         </div>
+                    </div>
 
-                        <div id="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-videos-unidade-{{ unidade.ordem }}">
-                            <div class="card-body  accordion-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
-                                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
+                    {% for video in videos %}
+                        {% if video.unidade.id == unidade.id %}
 
-                                    <div class="resultado-video" id="resultado-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"></div>
+                        <div class="card card-video-{{ video.ordem }}-unidade-{{ unidade.ordem }} video" id="video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
 
-                                    {% csrf_token %}
+                            <div class="card-header" id="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                                <h5 class="mb-0">
 
-                                    <input type="hidden" name="conteudo_id" value="{{ video.id }}">
-                                    <input type="hidden" name="conteudo_tipo" value="video">
-                                    <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
-                                    <input type="hidden" name="conteudo_ordem" value="{{ video.ordem }}">
-                                    <input type="hidden" name="path_arquivo" value="{{ video.caminho }}">
-
-                                    <div class="form-group">
-                                        <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
-                                        <input type="text" class="form-control" id="titulo-conteudo" value="{{ video.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
-                                        <span id="titulo-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                    <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" title="Clique aqui para exibir ou omitir detalhes do conteúdo">
+                                        Vídeo - {{ video.ordem }}
                                     </div>
 
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            {% if video.video_interno == False %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-url" value="url" name="tipo-video" checked>Vídeo - URL
-                                            {% else %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-url" value="url" name="tipo-video">Vídeo - URL
-                                            {% endif %}
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            {% if video.video_interno == True %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-arquivo" value="arquivo" name="tipo-video" checked>Vídeo - Arquivo
-                                            {% else %}
-                                                <input type="radio" class="form-check-input" id="tipo-video-arquivo" value="arquivo" name="tipo-video">Vídeo - Arquivo
-                                            {% endif %}
-                                        </label>
+                                    <div class="icone">
+                                        <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                            <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
+                                        </div>
                                     </div>
 
-                                    {% if video.video_interno == False %}
+                                    <div class="icone">
+                                      <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                                        <i class="fa fa-trash fa-1x" id="elimina-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'video', {{ video.id }})" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
+                                      </div>
+                                    </div>
 
-                                        <div class="form-group grupo-url">
-                                            <label for="conteudo-url" id="label-url">URL:</label>
-                                            <input type="url" class="form-control" id="conteudo-url" value="{{ video.url  }}" placeholder="Digite uma URL" name="url">
-                                            <span id="url-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-                                        </div>
-
-                                        <div class="form-group grupo-arquivo" hidden="true">
-                                            <label for="conteudo-path" id="label-path">Arquivo:</label>
-                                            <span><a href="/media/{{ video.path }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
-                                            <input type="file" class="form-control" id="conteudo-path" name="caminho">
-                                            <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-                                        </div>
-
-                                    {% else %}
-
-                                        <div class="form-group grupo-url" hidden="true">
-                                            <label for="conteudo-url" id="label-url">URL:</label>
-                                            <input type="url" class="form-control" id="conteudo-url" value="{{ video.url  }}" placeholder="Digite uma URL" name="url">
-                                            <span id="url-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-                                        </div>
-
-                                        <div class="form-group grupo-arquivo">
-                                            <label for="conteudo-path" id="label-path">Arquivo:</label>
-                                            <span><a href="/media/{{ video.path }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
-                                            <input type="file" class="form-control" id="conteudo-path" name="caminho">
-                                            <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-                                        </div>
-                                    {% endif %}
-
-                                </form>
+                                </h5>
                             </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
 
-        <div class="tab-pane fade" id="arquivos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="arquivos-tab">
-            <div class="card-body  accordion-arquivos-unidade-{{ unidade.ordem }} card-arquivos">
+                            <div id="collapse-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-videos-unidade-{{ unidade.ordem }}">
+                                <div class="card-body  accordion-video-{{ video.ordem  }}-unidade-{{ unidade.ordem }}">
+                                    <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}">
 
-                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
-                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")'>
-                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo arquivo
-                        </button>
-                    </div>
-                </div>
-                {% for arquivo in arquivos %}
-                    {% if arquivo.unidade.id == unidade.id %}
+                                        <div class="resultado-video" id="resultado-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"></div>
 
-                    <div class="card card-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }} arquivo" id="arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
+                                        {% csrf_token %}
 
-                        <div class="card-header" id="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
-                            <h5 class="mb-0">
+                                        <input type="hidden" name="conteudo_id" value="{{ video.id }}">
+                                        <input type="hidden" name="conteudo_tipo" value="video">
+                                        <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                        <input type="hidden" name="conteudo_ordem" value="{{ video.ordem }}">
+                                        <input type="hidden" name="path_arquivo" value="{{ video.caminho }}">
 
-                                <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
-                                    Arquivo - {{ arquivo.ordem }}
-                                </div>
+                                        <div class="form-group">
+                                            <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
+                                            <input type="text" class="form-control" id="titulo-conteudo" value="{{ video.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
+                                            <span id="titulo-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                        </div>
 
-                                <div class="icone">
-                                    <div class="btn" style="font-size: 1rem">
-                                        <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                        <b>Salvar</b>
-                                    </div>
-                                </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                {% if video.video_interno == False %}
+                                                    <input type="radio" class="form-check-input" id="tipo-video-url" value="url" name="tipo-video" checked>Vídeo - URL
+                                                {% else %}
+                                                    <input type="radio" class="form-check-input" id="tipo-video-url" value="url" name="tipo-video">Vídeo - URL
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                {% if video.video_interno == True %}
+                                                    <input type="radio" class="form-check-input" id="tipo-video-arquivo" value="arquivo" name="tipo-video" checked>Vídeo - Arquivo
+                                                {% else %}
+                                                    <input type="radio" class="form-check-input" id="tipo-video-arquivo" value="arquivo" name="tipo-video">Vídeo - Arquivo
+                                                {% endif %}
+                                            </label>
+                                        </div>
 
-                                <div class="icone">
-                                  <div class="btn"  style="float:right; font-size: 1rem">
-                                    <i class="fa fa-trash fa-1x" id="elimina-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'arquivo', {{ arquivo.id }})" style="margin-left: 10px;"></i>
-                                    <b>Excluir</b>
-                                  </div>
-                                </div>
+                                        {% if video.video_interno == False %}
 
-                            </h5>
-                        </div>
-
-                        <div id="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-arquivos-unidade-{{ unidade.ordem }}">
-                            <div class="card-body  accordion-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
-                                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
-
-                                    <div class="resultado-arquivo" id="resultado-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"></div>
-
-                                    {% csrf_token %}
-
-                                    <input type="hidden" name="conteudo_id" value="{{ arquivo.id }}">
-                                    <input type="hidden" name="conteudo_tipo" value="arquivo">
-                                    <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
-                                    <input type="hidden" name="conteudo_ordem" value="{{ arquivo.ordem }}">
-                                    <input type="hidden" name="path_arquivo" value="{{ arquivo.caminho }}">
-
-                                    <div class="form-group">
-                                        <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
-                                        <input type="text" class="form-control" id="titulo-conteudo" value="{{ arquivo.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
-                                        <span id="titulo-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="conteudo-path" id="label-path">Arquivo:</label>
-                                        <span><a href="/media/{{ arquivo.caminho }}" target="_blank" id="link-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"> {{ arquivo.caminho }}</a></span>
-                                        <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho">
-                                        <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-                                    </div>
-
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="questionarios-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="questionarios-tab">
-            <div class="card-body  accordion-questionarios-unidade-{{ unidade.ordem }} card-questionarios">
-
-                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
-                        <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")'>
-                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo questionário
-                        </button>
-                    </div>
-                </div>
-                {% for questionario in questionarios %}
-                    {% if questionario.unidade.id == unidade.id %}
-
-                    <div class="card card-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questionario" id="questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-
-                        <div class="card-header" id="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
-                            <h5 class="mb-0">
-
-                                <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
-                                    Questionário - {{ questionario.ordem }}
-                                </div>
-
-                                <div class="icone">
-                                    <div class="btn" style="font-size: 1rem">
-                                        <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                        <b>Salvar</b>
-                                    </div>
-                                </div>
-
-                                <div class="icone">
-                                  <div class="btn"  style="float:right; font-size: 1rem">
-                                    <i class="fa fa-trash fa-1x" id="elimina-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'questionario', {{ questionario.id }})" style="margin-left: 10px;"></i>
-                                    <b>Excluir</b>
-                                  </div>
-                                </div>
-
-                            </h5>
-                        </div>
-
-                        <div id="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questionarios-unidade-{{ unidade.ordem }}">
-                            <div class="card-body  accordion-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
-                                <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                    <div class="resultado-questionario" id="resultado-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"></div>
-
-                                    {% csrf_token %}
-
-                                    <input type="hidden" name="conteudo_id" value="{{ questionario.id }}">
-                                    <input type="hidden" name="conteudo_tipo" value="questionario">
-                                    <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
-                                    <input type="hidden" name="conteudo_ordem" value="{{ questionario.ordem }}">
-                                    <input type="hidden" name="path_arquivo" value="">
-
-                                    <div class="form-group">
-                                        <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
-                                        <input type="text" class="form-control" id="titulo-conteudo" value="{{ questionario.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
-                                        <span id="titulo-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-                                    </div>
-
-                                </form>
-
-                                <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes" style="padding: 0;">
-                                    <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
-                                        <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
-                                    </button>
-
-                                    {% for questao in questoes %}
-                                        {% if questao.questionario.id == questionario.id %}
-                                        <div class="card card-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questao" id="questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-
-                                            <div class="card-header" id="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
-                                                <h5 class="mb-0">
-
-                                                    <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                        Questão - {{ questao.ordem }}
-                                                    </div>
-
-                                                    <div class="icone">
-                                                        <div class="btn" style="font-size: 1rem">
-                                                            <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                                            <b>Salvar</b>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="icone">
-                                                        <div class="btn"  style="float:right; font-size: 1rem">
-                                                            <i class="fa fa-trash fa-1x" id="elimina-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'questao', {{ questao.id }})" style="margin-left: 10px;"></i>
-                                                            <b>Excluir</b>
-                                                        </div>
-                                                    </div>
-
-                                                </h5>
+                                            <div class="form-group grupo-url">
+                                                <label for="conteudo-url" id="label-url">URL:</label>
+                                                {% if video.url != None %}
+                                                <input type="url" class="form-control" id="conteudo-url" value="{{ video.url  }}" placeholder="Digite uma URL" name="url">
+                                                {% else %}
+                                                <input type="url" class="form-control" id="conteudo-url" placeholder="Digite uma URL" name="url">
+                                                {% endif %}
+                                                <span id="url-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                             </div>
 
-                                            <div id="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                <div class="card-body  accordion-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                    <form id="form-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                            <div class="form-group grupo-arquivo" hidden="true">
+                                                <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                                <span><a class="caminho-arquivo-span" href="/media/{{ video.caminho }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
+                                                <input type="file" class="form-control" id="conteudo-path" name="caminho">
+                                                <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                            </div>
 
-                                                        <div class="resultado-questao" id="resultado-questao-0-questionario-0-unidade-0"></div>
+                                        {% else %}
 
-                                                        {% csrf_token %}
+                                            <div class="form-group grupo-url" hidden="true">
+                                                <label for="conteudo-url" id="label-url">URL:</label>
+                                                <input type="url" class="form-control" id="conteudo-url" value="{{ video.url  }}" placeholder="Digite uma URL" name="url">
+                                                <span id="url-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                            </div>
 
-                                                        <input type="hidden" name="conteudo_id" value="{{ questao.id }}">
-                                                        <input type="hidden" name="conteudo_tipo" value="questao">
-                                                        <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
-                                                        <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
-                                                        <input type="hidden" name="questao_ordem" value="0">
+                                            <div class="form-group grupo-arquivo">
+                                                <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                                <span><a class="caminho-arquivo-span" href="/media/{{ video.caminho }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
+                                                <input type="file" class="form-control" id="conteudo-path" name="caminho">
+                                                <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                            </div>
 
-                                                        <div class="form-group">
-                                                            <label for="titulo-questao" id="label-questao">Enunciado:</label>
-                                                            <input type="text" class="form-control" id="titulo-questao" value="{{ questao.enunciado }}" aria-describedby="" placeholder="Digite um enunciado" name="questao">
-                                                            <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                                        {% endif %}
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="arquivos-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="arquivos-tab">
+                <div class="card-body  accordion-arquivos-unidade-{{ unidade.ordem }} card-arquivos">
+
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                            <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")' title="Cria um novo arquivo">
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo arquivo
+                            </button>
+                        </div>
+                    </div>
+                    {% for arquivo in arquivos %}
+                        {% if arquivo.unidade.id == unidade.id %}
+
+                        <div class="card card-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }} arquivo" id="arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
+
+                            <div class="card-header" id="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                                <h5 class="mb-0">
+
+                                    <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}"  title="Clique aqui para exibir ou omitir detalhes do conteúdo">
+                                        Arquivo - {{ arquivo.ordem }}
+                                    </div>
+
+                                    <div class="icone">
+                                        <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                            <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="icone">
+                                      <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                                        <i class="fa fa-trash fa-1x" id="elimina-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'arquivo', {{ arquivo.id }})" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
+                                      </div>
+                                    </div>
+
+                                </h5>
+                            </div>
+
+                            <div id="collapse-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-arquivos-unidade-{{ unidade.ordem }}">
+                                <div class="card-body  accordion-arquivo-{{ arquivo.ordem  }}-unidade-{{ unidade.ordem }}">
+                                    <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}">
+
+                                        <div class="resultado-arquivo" id="resultado-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"></div>
+
+                                        {% csrf_token %}
+
+                                        <input type="hidden" name="conteudo_id" value="{{ arquivo.id }}">
+                                        <input type="hidden" name="conteudo_tipo" value="arquivo">
+                                        <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                        <input type="hidden" name="conteudo_ordem" value="{{ arquivo.ordem }}">
+                                        <input type="hidden" name="path_arquivo" value="{{ arquivo.caminho }}">
+
+                                        <div class="form-group">
+                                            <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
+                                            <input type="text" class="form-control" id="titulo-conteudo" value="{{ arquivo.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
+                                            <span id="titulo-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                            <span><a class="caminho-arquivo-span" href="/media/{{ arquivo.caminho }}" target="_blank" id="link-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"> {{ arquivo.caminho }}</a></span>
+                                            <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho">
+                                            <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="questionarios-unidade-{{ unidade.ordem }}" role="tabpanel" aria-labelledby="questionarios-tab">
+                <div class="card-body  accordion-questionarios-unidade-{{ unidade.ordem }} card-questionarios">
+
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
+                            <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")' title="Cria um novo questionário">
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo questionário
+                            </button>
+                        </div>
+                    </div>
+                    {% for questionario in questionarios %}
+                        {% if questionario.unidade.id == unidade.id %}
+
+                        <div class="card card-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questionario" id="questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+
+                            <div class="card-header" id="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                                <h5 class="mb-0">
+
+                                    <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}"  title="Clique aqui para exibir ou omitir detalhes do conteúdo">
+                                        Questionário - {{ questionario.ordem }}
+                                    </div>
+
+                                    <div class="icone">
+                                        <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                            <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="icone">
+                                      <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                                        <i class="fa fa-trash fa-1x" id="elimina-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'questionario', {{ questionario.id }})" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
+                                      </div>
+                                    </div>
+
+                                </h5>
+                            </div>
+
+                            <div id="collapse-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questionarios-unidade-{{ unidade.ordem }}">
+                                <div class="card-body  accordion-questionario-{{ questionario.ordem  }}-unidade-{{ unidade.ordem }}">
+                                    <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                        <div class="resultado-questionario" id="resultado-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"></div>
+
+                                        {% csrf_token %}
+
+                                        <input type="hidden" name="conteudo_id" value="{{ questionario.id }}">
+                                        <input type="hidden" name="conteudo_tipo" value="questionario">
+                                        <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                        <input type="hidden" name="conteudo_ordem" value="{{ questionario.ordem }}">
+                                        <input type="hidden" name="path_arquivo" value="">
+
+                                        <div class="form-group">
+                                            <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
+                                            <input type="text" class="form-control" id="titulo-conteudo" value="{{ questionario.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
+                                            <span id="titulo-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+                                        </div>
+
+                                    </form>
+
+                                    <div class="card-body accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-questoes" style="padding: 0;">
+
+                                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                            <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
+                                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaQuestoes(this, {{ questionario.ordem }}, {{ unidade.ordem }})'  title="Cria uma nova questão">
+                                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar Questão
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {% for questao in questoes %}
+                                            {% if questao.questionario.id == questionario.id %}
+                                            <div class="card card-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} questao" id="questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+
+                                                <div class="card-header" id="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                                                    <h5 class="mb-0">
+
+                                                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"  title="Clique aqui para exibir ou omitir detalhes do conteúdo">
+                                                            Questão - {{ questao.ordem }}
                                                         </div>
 
-                                                    </form>
-                                                    <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas" style="padding: 0;">
-                                                        <button class="btn btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaAlternativas(this, {{ questionario.ordem }}, {{ unidade.ordem }})'>
-                                                            <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
-                                                        </button>
+                                                        <div class="icone">
+                                                            <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
+                                                            </div>
+                                                        </div>
 
-                                                        {% for alternativa in alternativas %}
-                                                            {% if alternativa.questao.id == questao.id %}
-                                                            <div class="card card-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} alternativa" id="alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                        <div class="icone">
+                                                            <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                                                                <i class="fa fa-trash fa-1x" id="elimina-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'questao', {{ questao.id }})" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
+                                                            </div>
+                                                        </div>
 
-                                                                <div class="card-header" id="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
-                                                                    <h5 class="mb-0">
+                                                    </h5>
+                                                </div>
 
-                                                                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                                            Alternativa - 0
-                                                                        </div>
+                                                <div id="collapse-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" data-parent="#accordion-questoes-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                    <div class="card-body  accordion-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                        <form id="form-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
 
-                                                                        <div class="icone">
-                                                                            <div class="btn" style="font-size: 1rem">
-                                                                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                                                                <b>Salvar</b>
-                                                                            </div>
-                                                                        </div>
+                                                            <div class="resultado-questao" id="resultado-questao-0-questionario-0-unidade-0"></div>
 
-                                                                        <div class="icone">
-                                                                            <div class="btn"  style="float:right; font-size: 1rem">
-                                                                                <i class="fa fa-trash fa-1x" id="elimina-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'alternativa', {{ alternativa.id }})" style="margin-left: 10px;"></i>
-                                                                                <b>Excluir</b>
-                                                                            </div>
-                                                                        </div>
+                                                            {% csrf_token %}
 
-                                                                    </h5>
-                                                                </div>
+                                                            <input type="hidden" name="conteudo_id" value="{{ questao.id }}">
+                                                            <input type="hidden" name="conteudo_tipo" value="questao">
+                                                            <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                                            <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
+                                                            <input type="hidden" name="questao_ordem" value="0">
 
-                                                                <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                                    <div class="card-body  accordion-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                                        <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
-                                                                            <div class="resultado-alternativa" id="resultado-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"></div>
+                                                            <div class="form-group">
+                                                                <label for="titulo-questao" id="label-questao">Enunciado:</label>
+                                                                <input type="text" class="form-control" id="titulo-questao" value="{{ questao.enunciado }}" aria-describedby="" placeholder="Digite um enunciado" name="questao">
+                                                                <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
+                                                            </div>
 
-                                                                            {% csrf_token %}
+                                                        </form>
+                                                        <div class="card-body  accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} card-alternativas" style="padding: 0;">
 
-                                                                            <input type="hidden" name="conteudo_id" value="{{ alternativa.id }}">
-                                                                            <input type="hidden" name="conteudo_tipo" value="alternativa">
-                                                                            <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
-                                                                            <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
-                                                                            <input type="hidden" name="questao_ordem" value="{{ questao.ordem }}">
-                                                                            <input type="hidden" name="alternativa_ordem" value="{{ alternativa.ordem }}">
-
-                                                                            <label for="titulo-alternativa" id="label-alternativa">Descrição:</label>
-                                                                            <div class="input-group mb-3">
-                                                                              <div class="input-group-prepend">
-                                                                                <div class="input-group-text">
-                                                                                  {% if alternativa.correta == True %}
-                                                                                      <input type="checkbox" aria-label="" name="alternativa-correta" checked>&nbspCorreta
-                                                                                  {% else %}
-                                                                                      <input type="checkbox" aria-label="" name="alternativa-correta">&nbspCorreta
-                                                                                  {% endif %}
-                                                                                </div>
-                                                                              </div>
-                                                                              <input type="text" class="form-control" id="titulo-alternativa" value="{{ alternativa.descricao }} "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
-                                                                            </div>
-                                                                            <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
-
-                                                                        </form>
-                                                                    </div>
+                                                            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                                                <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
+                                                                    <button class="btn btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick='adicionaAlternativas(this, {{ questionario.ordem }}, {{ unidade.ordem }})' title="Cria uma nova alternativa">
+                                                                        <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar Alternativa
+                                                                    </button>
                                                                 </div>
                                                             </div>
-                                                            {% endif %}
-                                                        {% endfor %}
+
+                                                            {% for alternativa in alternativas %}
+                                                                {% if alternativa.questao.id == questao.id %}
+                                                                <div class="card card-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} alternativa" id="alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+
+                                                                    <div class="card-header" id="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="text-align-last: justify;">
+                                                                        <h5 class="mb-0">
+
+                                                                            <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" aria-expanded="true" aria-controls="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"  title="Clique aqui para exibir ou omitir detalhes do conteúdo">
+                                                                                Alternativa - 0
+                                                                            </div>
+
+                                                                            <div class="icone">
+                                                                                <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                                                                    <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="icone">
+                                                                                <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                                                                                    <i class="fa fa-trash fa-1x" id="elimina-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" onclick="removeCard(this, 'alternativa', {{ alternativa.id }})" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </h5>
+                                                                    </div>
+
+                                                                    <div id="collapse-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }} data-parent="#accordion-alternativas-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                        <div class="card-body  accordion-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                            <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}">
+                                                                                <div class="resultado-alternativa" id="resultado-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}"></div>
+
+                                                                                {% csrf_token %}
+
+                                                                                <input type="hidden" name="conteudo_id" value="{{ alternativa.id }}">
+                                                                                <input type="hidden" name="conteudo_tipo" value="alternativa">
+                                                                                <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
+                                                                                <input type="hidden" name="questionario_ordem" value="{{ questionario.ordem }}">
+                                                                                <input type="hidden" name="questao_ordem" value="{{ questao.ordem }}">
+                                                                                <input type="hidden" name="alternativa_ordem" value="{{ alternativa.ordem }}">
+
+                                                                                <label for="titulo-alternativa" id="label-alternativa">Descrição:</label>
+                                                                                <div class="input-group mb-3">
+                                                                                  <div class="input-group-prepend">
+                                                                                    <div class="input-group-text">
+                                                                                      {% if alternativa.correta == True %}
+                                                                                          <input type="checkbox" aria-label="" name="alternativa-correta" checked title="Marque para indicar que está alternativa é a correta">&nbspCorreta
+                                                                                      {% else %}
+                                                                                          <input type="checkbox" aria-label="" name="alternativa-correta" title="Marque para indicar que está alternativa é a correta">&nbspCorreta
+                                                                                      {% endif %}
+                                                                                    </div>
+                                                                                  </div>
+                                                                                  <input type="text" class="form-control" id="titulo-alternativa" value="{{ alternativa.descricao }} "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
+                                                                                </div>
+                                                                                <span id="titulo-alternativa-{{ alternativa.ordem }}-questao-{{ questao.ordem }}-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
+
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        {% endif %}
-                                    {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </div>
 
                                 </div>
-
                             </div>
                         </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
 
+            </div>
+          </div>
         </div>
-      </div>
     </div>
-
     {% endfor %}
 
     </div>
-
-<div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
-         <button class="btn btn-primary btn-add-panel"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Unidade</button>
-    </div>
-</div>
-
 
 <div class="modal fade bd-example-modal-lg modal-aguarde" data-backdrop="static" data-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-sm">
@@ -683,31 +692,30 @@
 
         $("#accordion").append(
          `
+            <div class="panel-group" id="accordion-${numero_unidade}">
             <div class="card card-unidade unidade" id="unidade-${numero_unidade}">
               <div class="card-header" id="heading${numero_unidade}" style="text-align-last: justify;">
                 <h5 class="mb-0">
 
-                  <div class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${numero_unidade}" aria-expanded="true" aria-controls="collapse${numero_unidade}">
+                  <div class="btn btn-link link-unidade" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${numero_unidade}" aria-expanded="true" aria-controls="collapse${numero_unidade}" title="Clique aqui para exibir ou omitir detalhes da unidade">
                       Unidade - ${numero_unidade}
                   </div>
 
                   <div class="icone">
-                      <div class="btn" style="font-size: 1rem">
-                          <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                          <b>Salvar</b>
+                      <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                          <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
                       </div>
                   </div>
 
                   <div class="icone">
-                    <div class="btn"  style="float:right; font-size: 1rem">
-                      <i class="fa fa-trash fa-1x" id="elimina-unidade-0" onclick="removeCard(this, 'unidade', 0)" style="margin-left: 10px;"></i>
-                      <b>Excluir</b>
+                    <div class="btn"  style="float:right; font-size: 1rem" title="Exclui unidade" title="Exclui conteúdo">
+                      <i class="fa fa-trash fa-1x" id="elimina-unidade-0" onclick="removeCard(this, 'unidade', 0)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
                     </div>
                   </div>
 
                 </h5>
               </div>
-              <div id="collapse${numero_unidade}" class="collapse show" aria-labelledby="heading${numero_unidade}" data-parent="#accordion" style="padding: 10px;">
+              <div id="collapse${numero_unidade}" class="collapse show" aria-labelledby="heading${numero_unidade}" data-parent="#accordion-${numero_unidade}" style="padding: 10px;">
 
                 <form action="/cadastro-conteudo-curso/{{ curso.id }}" method="POST" id="form-unidade-0">
 
@@ -735,17 +743,17 @@
 
                 <ul class="nav nav-tabs nav-tabs-content justify-content-center" id="navegacao-curso" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link nav-link-content active" id="videos-tab" data-toggle="tab" href="#videos-unidade-${numero_unidade}" role="tab" aria-controls="videos-unidade-${numero_unidade}" aria-selected="true">
+                        <a class="nav-link nav-link-content active" id="videos-tab" data-toggle="tab" href="#videos-unidade-${numero_unidade}" role="tab" aria-controls="videos-unidade-${numero_unidade}" aria-selected="true" title="Cadastro de vídeos da unidade">
                             <i class="fas fa-video class-icone-content"></i>Vídeos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-content " id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-${numero_unidade}" role="tab" aria-controls="arquivos-unidade-${numero_unidade}" aria-selected="false">
+                        <a class="nav-link nav-link-content " id="arquivos-tab" data-toggle="tab" href="#arquivos-unidade-${numero_unidade}" role="tab" aria-controls="arquivos-unidade-${numero_unidade}" aria-selected="false" title="Cadastro de arquivos da unidade">
                             <i class="fas fa-file-alt class-icone-content"></i>Arquivos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-content " id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-${numero_unidade}" role="tab" aria-controls="questionarios-unidade-${numero_unidade}" aria-selected="false">
+                        <a class="nav-link nav-link-content " id="questionarios-tab" data-toggle="tab" href="#questionarios-unidade-${numero_unidade}" role="tab" aria-controls="questionarios-unidade-${numero_unidade}" aria-selected="false" title="Cadastro de questionários da unidade">
                             <i class="fas fa-tasks class-icone-content"></i>Questionários
                         </a>
                     </li>
@@ -758,7 +766,7 @@
 
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
-                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")'>
+                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")' title="Cria um novo vídeo">
                                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo vídeo
                                 </button>
                             </div>
@@ -772,7 +780,7 @@
 
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
-                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")'>
+                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")' title="Cria um novo arquivo">
                                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo arquivo
                                 </button>
                             </div>
@@ -785,7 +793,7 @@
 
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
-                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")'>
+                                <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")' title="Cria um novo questionário">
                                     <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo questionário
                                 </button>
                             </div>
@@ -838,21 +846,19 @@
                 <div class="card-header" id="heading${hash1}b" style="text-align-last: justify;">
                     <h5 class="mb-0">
 
-                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${hash1}b" aria-expanded="true" aria-controls="collapse${hash1}b">
+                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${hash1}b" aria-expanded="true" aria-controls="collapse${hash1}b"  title="Clique aqui para exibir ou omitir detalhes do conteúdo">
                             ${titulo_card} - 0
                         </div>
 
                         <div class="icone">
-                            <div class="btn" style="font-size: 1rem">
-                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                <b>Salvar</b>
+                            <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
                             </div>
                         </div>
 
                         <div class="icone">
-                          <div class="btn"  style="float:right; font-size: 1rem">
-                            <i class="fa fa-trash fa-1x" id="elimina-${tipo_conteudo}-0-unidade-${unidade}" onclick="removeCard(this, '${tipo_conteudo}', 0)" style="margin-left: 10px;"></i>
-                            <b>Excluir</b>
+                          <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                            <i class="fa fa-trash fa-1x" id="elimina-${tipo_conteudo}-0-unidade-${unidade}" onclick="removeCard(this, '${tipo_conteudo}', 0)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
                           </div>
                         </div>
                     </h5>
@@ -880,12 +886,12 @@
 
                             <div class="form-check">
                                 <label class="form-check-label" id="check-video-url">
-                                    <input type="radio" class="form-check-input" id="tipo-video-url" name="tipo-video" checked>Vídeo - URL
+                                    <input type="radio" class="form-check-input" id="tipo-video-url" value="url" name="tipo-video" checked>Vídeo - URL
                                 </label>
                             </div>
                             <div class="form-check" id="check-video-arquivo">
                                 <label class="form-check-label">
-                                    <input type="radio" class="form-check-input" id="tipo-video-arquivo" name="tipo-video">Vídeo - Arquivo
+                                    <input type="radio" class="form-check-input" id="tipo-video-arquivo" value="arquivo" name="tipo-video">Vídeo - Arquivo
                                 </label>
                             </div>
 
@@ -895,18 +901,24 @@
                                 <span id="url-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
 
-                            <div class="form-group grupo-arquivo">
-                                <label for="conteudo-path" id="label-path" hidden="true">Arquivo:</label>
-                                <span><a href="" target="_blank" id="link-conteudo-0-unidade-0"></a></span>
-                                <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho" hidden="true">
+                            <div class="form-group grupo-arquivo" hidden="true">
+                                <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                <span><a class="caminho-arquivo-span" href="" target="_blank" id="link-conteudo-0-unidade-0"></a></span>
+                                <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho">
                                 <span id="path-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
 
                         </form>
                         <div class="card-body  accordion-questoes-questionario-0-unidade-${numero_unidade - 1} card-questoes" style="padding: 0;">
-                            <button class="btn btn-primary btn-add-panel1" id="accordion-questoes-questionario-0-unidade-${numero_unidade - 1}" onclick='adicionaQuestoes(this, 0, ${(numero_unidade - 1)})'>
-                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Questão
-                            </button>
+
+                            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
+                                    <button class="btn btn-primary btn-add-panel1" id="accordion-questoes-questionario-0-unidade-${numero_unidade - 1}" onclick='adicionaQuestoes(this, 0, ${(numero_unidade - 1)})'  title="Cria uma nova questão">
+                                        <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar Questão
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -915,12 +927,11 @@
         );
         var classe_card_conteudo = 'card-' + tipo_conteudo + '-' + 0 + '-unidade-' + unidade
 
-        var label_titulo = $('.' + classe_card_conteudo).find('#label-titulo')[0]
-        var input_titulo = $('.' + classe_card_conteudo).find('input[name="titulo"]')[0]
-        var label_url    = $('.' + classe_card_conteudo).find('#label-url')[0]
-        var input_url    = $('.' + classe_card_conteudo).find('input[name="url"]')[0]
-        var label_path   = $('.' + classe_card_conteudo).find('#label-path')[0]
-        var input_path   = $('.' + classe_card_conteudo).find('input[name="caminho"]')[0]
+        var label_titulo  = $('.' + classe_card_conteudo).find('#label-titulo')[0]
+        var input_titulo  = $('.' + classe_card_conteudo).find('input[name="titulo"]')[0]
+        var label_url     = $('.' + classe_card_conteudo).find('#label-url')[0]
+        var input_url     = $('.' + classe_card_conteudo).find('input[name="url"]')[0]
+        var grupo_arquivo = $('.' + classe_card_conteudo).find('.grupo-arquivo')[0]
 
         var check_video_url   = $('.' + classe_card_conteudo).find('#check-video-url')[0]
         var check_video_arquivo   = $('.' + classe_card_conteudo).find('#check-video-arquivo')[0]
@@ -933,13 +944,11 @@
 
         if(tipo_conteudo == "arquivo"){
             if(label_url)
-                label_url.hidden  = true
+               label_url.hidden  = true
             if(input_url)
                input_url.hidden  = true
-            if(label_path)
-                label_path.hidden = false
-            if(input_path)
-               input_path.hidden = false
+            if(grupo_arquivo)
+                grupo_arquivo.hidden = false
             if(div_questoes)
                 div_questoes.remove()
             if(check_video_url)
@@ -953,10 +962,8 @@
                 label_url.hidden  = true
             if(input_url)
                 input_url.hidden  = true
-            if(label_path)
-                label_path.hidden = true
-            if(input_path)
-               input_path.hidden = true
+            if(grupo_arquivo)
+                grupo_arquivo.hidden = true
             if(check_video_url)
                 check_video_url.hidden  = true
             if(check_video_arquivo)
@@ -981,21 +988,19 @@
                 <div class="card-header" id="heading${hash2}c" style="text-align-last: justify;">
                     <h5 class="mb-0">
 
-                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)"data-toggle="collapse" data-target="#collapse${hash2}c" aria-expanded="true" aria-controls="collapse${hash2}c">
+                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)"data-toggle="collapse" data-target="#collapse${hash2}c" aria-expanded="true" aria-controls="collapse${hash2}c"  title="Clique aqui para exibir ou omitir detalhes do conteúdo">
                             Questão - 0
                         </div>
 
                         <div class="icone">
-                            <div class="btn" style="font-size: 1rem">
-                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                <b>Salvar</b>
+                            <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
                             </div>
                         </div>
 
                         <div class="icone">
-                            <div class="btn"  style="float:right; font-size: 1rem">
-                                <i class="fa fa-trash fa-1x" id="elimina-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick="removeCard(this, 'questao', 0)" style="margin-left: 10px;"></i>
-                                <b>Excluir</b>
+                            <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                                <i class="fa fa-trash fa-1x" id="elimina-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick="removeCard(this, 'questao', 0)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
                             </div>
                         </div>
                     </h5>
@@ -1022,9 +1027,15 @@
 
                         </form>
                         <div class="card-body  accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade} card-alternativas" style="padding: 0;">
-                            <button class="btn btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick='adicionaAlternativas(this, ${numero_questionario}, ${(numero_unidade)})'>
-                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Adiciona Alternativa
-                            </button>
+
+                            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
+                                    <button class="btn btn-primary btn-add-alternativa" id="accordion-alternativas-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick='adicionaAlternativas(this, ${numero_questionario}, ${(numero_unidade)})'  title="Cria uma nova alternativa">
+                                        <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar Alternativa
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -1050,21 +1061,19 @@
                 <div class="card-header" id="heading${hash3}d" style="text-align-last: justify;">
                     <h5 class="mb-0">
 
-                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${hash3}d" aria-expanded="true" aria-controls="collapse${hash3}d">
+                        <div class="btn btn-link link-conteudo" onclick="expandeArea(this)" data-toggle="collapse" data-target="#collapse${hash3}d" aria-expanded="true" aria-controls="collapse${hash3}d"  title="Clique aqui para exibir ou omitir detalhes do conteúdo">
                             Alternativa - 0
                         </div>
 
                         <div class="icone">
-                            <div class="btn" style="font-size: 1rem">
-                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"></i>
-                                <b>Salvar</b>
+                            <div class="btn" style="font-size: 1rem" title="Persiste as alterações realizadas na página">
+                                <i class="fa fa-save fa-1x" onclick="enviaForm(event)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Salvar</strong></i>
                             </div>
                         </div>
 
                         <div class="icone">
-                            <div class="btn"  style="float:right; font-size: 1rem">
-                                <i class="fa fa-trash fa-1x" id="elimina-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick="removeCard(this, 'alternativa', 0)" style="margin-left: 10px;"></i>
-                                <b>Excluir</b>
+                            <div class="btn"  style="float:right; font-size: 1rem" title="Exclui conteúdo">
+                                <i class="fa fa-trash fa-1x" id="elimina-alternativa-0-questao-0-questionario-${numero_questionario}-unidade-${numero_unidade}" onclick="removeCard(this, 'alternativa', 0)" style="margin-left: 10px;"><strong style="margin-left: 5px; font-size: 1.1rem; font-weight: bold">Excluir</strong></i>
                             </div>
                         </div>
                     </h5>
@@ -1088,7 +1097,7 @@
                             <div class="input-group mb-3">
                               <div class="input-group-prepend">
                                 <div class="input-group-text">
-                                    <input type="checkbox" aria-label="" name="alternativa-correta">&nbspCorreta
+                                    <input type="checkbox" aria-label="" name="alternativa-correta" title="Marque para indicar que está alternativa é a correta">&nbspCorreta
                                 </div>
                               </div>
                               <input type="text" class="form-control" id="titulo-alternativa" "aria-describedby="" placeholder="Digite uma resposta" name="alternativa">
@@ -1365,20 +1374,20 @@
                   $(form).find('input[name="conteudo_id"]')[0].value = resposta['conteudo_id']
 
                   if(resposta['path_conteudo'] && resposta['path_conteudo'] != '') {
-                    $(form).find('a')[0].innerHTML = resposta['path_conteudo']
-                    $(form).find('a').attr('href', "/media/" + resposta['path_conteudo'])
-                    $(form).find('a')[0].hidden = false
+                    $(form).find('.caminho-arquivo-span')[0].innerHTML = resposta['path_conteudo']
+                    $(form).find('.caminho-arquivo-span').attr('href', "/media/" + resposta['path_conteudo'])
+                    $(form).find('.caminho-arquivo-span')[0].hidden = false
                   }
                   else {
-                      if($(form).find('a')[0]) {
-                          $(form).find('a')[0].hidden = true
+                      if($(form).find('.caminho-arquivo-span')[0]) {
+                          $(form).find('.caminho-arquivo-span')[0].hidden = true
                       }
                   }
 
                   if($(form).find('.resultado-' + resposta['conteudo_tipo'])[0]) {
                       $(form).find('.resultado-' + resposta['conteudo_tipo'])[0].innerHTML =
                       `
-                          <div class="alert alert-success alert-dismissable">
+                          <div class="alert alert-success alert-dismissable" style="padding: 0.3rem;">
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times</a>
                             <strong>${resposta['resultado']}</strong>
                           </div>
@@ -1420,7 +1429,7 @@
                   if($(form).find('.resultado-' + errors['conteudo_tipo'])[0]) {
                       $(form).find('.resultado-' + errors['conteudo_tipo'])[0].innerHTML =
                       `
-                          <div class="alert alert-danger alert-dismissable">
+                          <div class="alert alert-danger alert-dismissable" style="padding: 0.3rem;">
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times</a>
                             <strong>${errors['resultado']}</strong>
                           </div>
@@ -1676,11 +1685,11 @@
         if ($('body').find('.dados-modificados')[0]){
             // For IE and Firefox prior to version 4
             if (e) {
-                //e.returnValue = 'Existem dados alterados não salvos. Deseja sair mesmo assim?';
+                e.returnValue = 'Existem dados alterados não salvos. Deseja sair mesmo assim?';
             }
 
            // For Safari
-           //return 'Existem dados alterados não salvos. Deseja sair mesmo assim?';
+           return 'Existem dados alterados não salvos. Deseja sair mesmo assim?';
         }
     };
 

@@ -9,6 +9,9 @@ class CategoriaForm(forms.ModelForm):
         model = Categoria
         fields = ('titulo',)
 
+    def __init__(self, user, *args, **kwargs):
+        super(CategoriaForm, self).__init__(*args, **kwargs)
+
 
 class CursoForm(forms.ModelForm):
 
@@ -17,6 +20,9 @@ class CursoForm(forms.ModelForm):
         fields = ('titulo', 'categoria',
                   'palavras_chaves', 'descricao', 'publicado',
                   )
+
+    def __init__(self, user, *args, **kwargs):
+        super(CursoForm, self).__init__(*args, **kwargs)
 
 
 class CursoAdminForm(forms.ModelForm):
@@ -27,6 +33,10 @@ class CursoAdminForm(forms.ModelForm):
                   'palavras_chaves', 'descricao', 'publicado',
                   )
 
+    def __init__(self, user, *args, **kwargs):
+        super(CursoAdminForm, self).__init__(*args, **kwargs)
+
+
 class InscricaoForm(forms.ModelForm):
 
     class Meta:
@@ -34,6 +44,9 @@ class InscricaoForm(forms.ModelForm):
         fields = ('curso', 'usuario', 'percentual_andamento',
                   'percentual_acertos', 'situacao', 'obteve_certificado',
                   )
+
+    def __init__(self, user, *args, **kwargs):
+        super(InscricaoForm, self).__init__(*args, **kwargs)
 
 
 class AvaliacaoForm(forms.ModelForm):
@@ -44,6 +57,9 @@ class AvaliacaoForm(forms.ModelForm):
                   'comentario',
                   )
 
+    def __init__(self, user, *args, **kwargs):
+        super(AvaliacaoForm, self).__init__(*args, **kwargs)
+
 
 class UnidadeForm(forms.ModelForm):
 
@@ -51,8 +67,7 @@ class UnidadeForm(forms.ModelForm):
         model = Unidade
         fields = ('titulo', 'curso', 'ordem',)
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+    def __init__(self, user, *args, **kwargs):
         super(UnidadeForm, self).__init__(*args, **kwargs)
         if user != None and user.tem_perfil_instrutor():
             self.fields['curso'].queryset = Curso.objects.filter(usuario=user)
@@ -64,8 +79,7 @@ class VideoForm(forms.ModelForm):
         model = Video
         fields = ('titulo', 'unidade', 'url', 'caminho', 'ordem',)
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+    def __init__(self, user, *args, **kwargs):
         super(VideoForm, self).__init__(*args, **kwargs)
         if user != None and user.tem_perfil_instrutor():
             self.fields['unidade'].queryset = Unidade.objects.filter(curso__usuario=user)
@@ -96,8 +110,7 @@ class ArquivoForm(forms.ModelForm):
         model = Arquivo
         fields = ('titulo', 'unidade', 'caminho', 'ordem',)
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+    def __init__(self, user, *args, **kwargs):
         super(ArquivoForm, self).__init__(*args, **kwargs)
         if user != None and user.tem_perfil_instrutor():
             self.fields['unidade'].queryset = Unidade.objects.filter(curso__usuario=user)
@@ -109,8 +122,7 @@ class QuestionarioForm(forms.ModelForm):
         model = Questionario
         fields = ('titulo', 'unidade', 'ordem')
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+    def __init__(self, user, *args, **kwargs):
         super(QuestionarioForm, self).__init__(*args, **kwargs)
         if user != None and user.tem_perfil_instrutor():
             self.fields['unidade'].queryset = Unidade.objects.filter(curso__usuario=user)
@@ -122,8 +134,7 @@ class QuestaoForm(forms.ModelForm):
         model = Questao
         fields = ('questionario', 'enunciado', 'ordem',)
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+    def __init__(self,  user, *args, **kwargs):
         super(QuestaoForm, self).__init__(*args, **kwargs)
         if user != None and user.tem_perfil_instrutor():
             self.fields['questionario'].queryset = Questionario.objects.filter(
@@ -137,8 +148,7 @@ class AlternativaForm(forms.ModelForm):
         model = Alternativa
         fields = ('questao', 'descricao', 'ordem', 'correta',)
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+    def __init__(self,  user, *args, **kwargs):
         super(AlternativaForm, self).__init__(*args, **kwargs)
         if user != None and user.tem_perfil_instrutor():
             self.fields['questao'].queryset = Questao.objects.filter(

@@ -13,7 +13,7 @@
             <div class="container">
                 <div class="form-group">
                     <label for="select-alunos">Selecione um aluno:</label>
-                    <select class="form-control" id="select-alunos" name="alunos">
+                    <select class="form-control" id="select-alunos" name="alunos" title="Selecione aqui um aluno para gerar seu relatório de acompanhamento">
                         {% for user in usuarios %}
                             {% if usuario != None and usuario.id == user.id %}
                                 <option value="{{ user.id }}" selected="selected">{{ user.get_full_name }}</option>
@@ -28,7 +28,7 @@
             <hr/>
             <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                 <div class="col text-center" style="margin-top: 10px; margin-bottom: 20px; padding: 0;">
-                  <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem; cursor: pointer;"  onclick="geraRelatorio()">
+                  <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem; cursor: pointer;"  onclick="geraRelatorio()" title="Gera relatório na página">
                       Gerar Relatório
                       <i class="fas fa-share-square"></i>
                   </span>
@@ -38,6 +38,15 @@
         {% else %}
             <h5 class="text-center" style="margin-top: 20px;">Sem usuários para geração de relatório</h5>
         {% endif %}
+    {% else %}
+    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="col text-center" style="margin-top: 10px; margin-bottom: 20px; padding: 0;">
+          <a class="btn btn-primary" href="/relatorio-acompanhamento/" style="font-size: 1.2rem; cursor: pointer;"title="Atualiza relatório na página">
+              Atualiza Relatório
+              <i class="fas fa-sync-alt"></i>
+          </a>
+        </div>
+    </div>
     {% endif %}
 
 

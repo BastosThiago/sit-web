@@ -10,9 +10,9 @@
 
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
         <div class="col text-center" style="margin-top: 0px; margin-bottom: 5px;">
-          <a href="/accounts/novo-usuario/" class="btn btn-primary btn-lg" role="button">
+          <a href="/accounts/novo-usuario/" class="btn btn-primary" role="button" title="Adiciona um novo usuário">
               <i class="fas fa-plus class-icone-button"></i>
-                  Adicionar
+                  Adicionar usuário
           </a>
         </div>
     </div>
@@ -21,7 +21,9 @@
         <form method="GET" id="search-form">
             <input class="form-control" type="text" id="search" name="search"
                    placeholder="Digite qualquer coisa para buscar"
-                   value="{{ request.GET.search }}">
+                   value="{{ request.GET.search }}"
+                   style="font-size: 0.9rem"
+                   title="Informe qualquer caracteristica de um usuário para filtrar">>
             <i class="fas fa-search" id="search-btn"></i>
         </form>
     </div>
@@ -50,11 +52,11 @@
                             <a href="/accounts/edit/{{objeto.id}}">{{ objeto }}</a>
                         </span>
 
-                        <span class="delete-btn2" onclick="removeItem({{ objeto.id }}, '/accounts/remove-usuario/{{ objeto.id }}')">
+                        <span class="delete-btn2" onclick="removeItem({{ objeto.id }}, '/accounts/remove-usuario/{{ objeto.id }}')" title="Remove o usuário selecionado">
                             <i class="fas fa-trash" style="margin-right: 15px;"></i>
                         </span>
 
-                        <a href="/accounts/edit/{{ objeto.id }}">
+                        <a href="/accounts/edit/{{ objeto.id }}" title="Abre edição do usuário selecionado">
                             <span>
                                 <i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 30px; font-size: 20px; float: right; color: green;"></i>
                             </span>

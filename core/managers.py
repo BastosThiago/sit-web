@@ -311,15 +311,32 @@ class UsuarioVideoManager(models.Manager):
     """
         Manager associado ao modelo UsuarioVideo
     """
-    def obtem_videos_assistindos_por_usuario(self, curso, usuario):
+    def obtem_videos_assistidos_por_usuario(self, curso, usuario):
         """
             Método para obter a lista de associação entre usuários e videos
         """
         usuarios_videos = self.filter(
             usuario=usuario,
-            video__unidade__curso=curso
+            video__unidade__curso=curso,
+            assistido=True
         )
         return usuarios_videos
+
+class UsuarioArquivoManager(models.Manager):
+    """
+        Manager associado ao modelo UsuarioArquivo
+    """
+
+    def obtem_arquivos_acessados_por_usuario(self, curso, usuario):
+        """
+            Método para obter a lista de associação entre usuários e questionários
+        """
+        arquivos_acessados = self.filter(
+            usuario=usuario,
+            arquivo__unidade__curso=curso,
+            acessado=True
+        )
+        return arquivos_acessados
 
 
 class UsuarioQuestionarioManager(models.Manager):
@@ -333,7 +350,8 @@ class UsuarioQuestionarioManager(models.Manager):
         """
         questionarios_respondidos = self.filter(
             usuario=usuario,
-            questionario__unidade__curso=curso
+            questionario__unidade__curso=curso,
+            respondido=True
         )
         return questionarios_respondidos
 

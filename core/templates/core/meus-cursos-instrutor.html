@@ -20,7 +20,9 @@
             <form method="GET" id="search-form">
                 <input class="form-control" type="text" id="search" name="search"
                        placeholder="Digite qualquer coisa para buscar"
-                       value="{{ request.GET.search }}">
+                       value="{{ request.GET.search }}"
+                       style="font-size: 0.9rem"
+                       title="Informe qualquer caracteristica de um curso para filtrar">
                 <i class="fas fa-search" id="search-btn"></i>
             </form>
         </div>
@@ -48,7 +50,7 @@
 
                             <p>
                                 <div class="col text-center">
-                                    <a href="/edita-curso/{{curso.id}}" class="btn btn-primary" role="button">
+                                    <a href="/edita-curso/{{curso.id}}" class="btn btn-primary" role="button" title="Acessa edição do cadastro do curso">
                                         <i class="fas fa-edit class-icone-button" style="color: white;"></i>
                                             Editar
                                     </a>
@@ -57,7 +59,7 @@
 
                             <p>
                                 <div class="col text-center">
-                                    <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary" role="button">
+                                    <a href="/conteudo-curso/{{curso.id}}" class="btn btn-primary" role="button" title="Acessa representação do curso na visão de um aluno">
                                         <i class="fas fa-angle-double-right class-icone-button"></i>
                                             Preview
                                     </a>
