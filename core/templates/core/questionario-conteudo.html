@@ -144,6 +144,7 @@
       border: none;
     }
 
+
 </style>
 
 <div class="modal fade bd-example-modal-lg" id="modal-aguarde" id_conteudo="" tipo_conteudo="" status_conteudo="" data-backdrop="static" data-keyboard="false" tabindex="-1">
@@ -178,27 +179,30 @@
 
     <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px;">
         <div class="container" style="padding: 0; margin-top: 5px; margin-bottom: 5px;">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="col-sm-3 text-center" id="botao-anterior-container" style="margin-bottom: 2px;">
+                          <span class="btn btn-primary botao-navegacao"  id="botao-anterior" role="button" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')" title="Retorna para conteúdo anterior">
+                              <i class="fas fa-angle-double-left" ></i>
+                               Anterior
+                          </span>
+                        </div>
 
-            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="text-center" id="botao-anterior-container" style="margin-bottom: 0px; padding: 0;">
-                  <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem; cursor: pointer;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')" title="Retorna para conteúdo anterior">
-                      <i class="fas fa-angle-double-left" ></i>
-                       Anterior
-                  </span>
-                </div>
+                        <div class="col-sm-3 text-center" id="botao-conteudo-curso" style="margin-bottom: 2px;">
+                          <a href="/conteudo-curso/{{questionario.unidade.curso.id}}#conteudo-curso" class="btn btn-primary botao-navegacao" id="botao-conteudo" role="button" title="Retorna para página de conteúdos do curso">
+                              <i class="fab fa-contao "></i>
+                              Conteúdos
+                          </a>
+                        </div>
 
-                <div class="text-center" id="botao-conteudo-curso" style="margin-bottom: 0x; padding: 0;">
-                  <a href="/conteudo-curso/{{questionario.unidade.curso.id}}#conteudo-curso" class="btn btn-primary" id="botao-conteudo" role="button" style="font-size: 1.2rem;" title="Retorna para página de conteúdos do curso">
-                      <i class="fas fa-arrow-circle-left"></i>
-                      Conteúdos
-                  </a>
-                </div>
-
-                <div class="text-center" id="botao-proximo-container" style="margin-bottom: 0x; padding: 0;">
-                  <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem; cursor: pointer;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')" title="Avança para próximo conteúdo">
-                      Próximo
-                      <i class="fas fa-angle-double-right"></i>
-                  </span>
+                        <div class="col-sm-3 text-center" id="botao-proximo-container" style="margin-bottom: 2px;">
+                          <span class="btn btn-primary botao-navegacao" id="botao-proximo" role="button" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')" title="Avança para próximo conteúdo">
+                              Próximo
+                              <i class="fas fa-angle-double-right"></i>
+                          </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -237,7 +241,7 @@
 
     {% endif %}
 
-    {% if perfil_aluno == True %}
+    {% if perfil_aluno == True and questionario_sem_questoes == False%}
     <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px; margin-top: 10px;">
 
         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
@@ -258,6 +262,12 @@
         </div>
 
     </div>
+    {% endif %}
+
+    {% if questionario_sem_questoes == True %}
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); margin-top: 20px; padding: 0px;">
+            <p class="text-center" style="margin-top: 10px;">Questionário sem questões cadastradas.</p>
+        </div>
     {% endif %}
 
     <form action="/teste" method="POST" id="form-questionario">
@@ -324,7 +334,7 @@
         var inputs = document.getElementsByClassName("input-radio");
         {% if usuario_questionario is not none%}
 
-            {% if questionario_sem_questoes == False%}
+            {% if questionario_sem_questoes == False %}
                 {% if perfil_aluno == True %}
                     $("#enviar")[0].hidden = true;
                     $("#refazer")[0].hidden = false;

@@ -71,8 +71,31 @@
 
         @media (max-width: 540px) {
           .navbar-dark {
-              background-color: rgba(0,0,0,0.8) !important;
+              background-color: rgba(0,0,0,0.9) !important;
           }
+        }
+
+        .classe-menu-lista-cursos {
+            float: left;
+        }
+
+        .classe-menu-usuario {
+            float: right;
+        }
+
+        @media (max-width: 768px) {
+            .classe-menu-lista-cursos {
+                float: none;
+            }
+
+            .classe-menu-usuario {
+
+                display: block !important;
+                float: none;
+            }
+            .navbar-nav {
+                display: block !important;
+            }
         }
       </style>
 
@@ -94,7 +117,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav " style="float: left;">
+            <ul class="navbar-nav classe-menu-lista-cursos">
                 <li class="nav-item">
                   <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;  padding-right: 20px;" href="/cursos" title="Acessa lista de cursos disponíveis no sistema">
                       <i class="fas fa-list-alt class-icone"></i>Lista de Cursos
@@ -102,7 +125,7 @@
                 </li>
             </ul>
 
-              <ul class="navbar-nav ml-auto" style="float: right;">
+              <ul class="navbar-nav ml-auto classe-menu-usuario">
                 {% if not user.is_authenticated %}
                     <li class="nav-item">
                       <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem; padding-right: 20px;" href="/accounts/register" title="Cria registro de acesso ao sistema"><i class="fas fa-user-plus class-icone"></i>Registrar-se</a>
@@ -116,9 +139,9 @@
                       <a class="nav-link" style="color: #f8f9fa; font-size: 1.2rem;" href="/area-usuario" title="Acessa área do usuário logado"><i class="fas fa-user-circle class-icone"></i>Minha área</a>
                     </li>
 
-                    <ul class="navbar-nav ml-auto">
+                    <ul class="navbar-nav ml-auto" classe-menu-usuario>
                           <li class="nav-item active dropdown">
-                            <a class="nav-link dropdown-toggle" style="font-size: 1.2rem;" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle " style="font-size: 1.2rem;" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               <i class="fas fa-user class-icon icone-usuario"></i>{{ user.username }}
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">

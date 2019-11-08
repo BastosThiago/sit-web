@@ -144,7 +144,29 @@
         .btn-link {
            font-weight: bold;
         }
+        
+        .classe-menu-lista-cursos {
+            float: left;
+        }
 
+        .classe-menu-usuario {
+            float: right;
+        }
+
+        @media (max-width: 768px) {
+            .classe-menu-lista-cursos {
+                float: none;
+            }
+
+            .classe-menu-usuario {
+
+                display: block !important;
+                float: none;
+            }
+            .navbar-nav {
+                display: block !important;
+            }
+        }
     </style>
 
 {% endblock %}

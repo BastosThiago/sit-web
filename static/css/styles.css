@@ -117,47 +117,7 @@ ul.messages li {
     text-align: center;
 }
 
-.player-container.ended::after {
-    content:"";
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    cursor: pointer;
-    background-color: black;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 64px 64px;
-    background-image: url(data:image/svg+xml;utf8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiB2aWV3Qm94PSIwIDAgNTEwIDUxMCI+PHBhdGggZD0iTTI1NSAxMDJWMEwxMjcuNSAxMjcuNSAyNTUgMjU1VjE1M2M4NC4xNSAwIDE1MyA2OC44NSAxNTMgMTUzcy02OC44NSAxNTMtMTUzIDE1My0xNTMtNjguODUtMTUzLTE1M0g1MWMwIDExMi4yIDkxLjggMjA0IDIwNCAyMDRzMjA0LTkxLjggMjA0LTIwNC05MS44LTIwNC0yMDQtMjA0eiIgZmlsbD0iI0ZGRiIvPjwvc3ZnPg==);
-}
 
-.player-container {
-    position: relative;
-    overflow: hidden;
-    padding-top: 56.25%;
-}
-
-
-.player-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 80%;
-    border: 0;
-}
-
-
-#video_interno {
-  width: 100%;
-  height: auto;
-}
-
-
-  /*
-      DEMO STYLE
-  */
 
   @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
   body {
@@ -203,6 +163,23 @@ ul.messages li {
   .class-span {
       display: inline-block;
   }
+
+  #player-container {
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  .list-div {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+    .botao-navegacao {
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        word-break: break-all;
+    }
 
   /* ---------------------------------------------------
       SIDEBAR STYLE
@@ -390,5 +367,23 @@ ul.messages li {
       #sidebarCollapse span {
           display: none;
       }
+
+      #player-container {
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .list-div {
+        margin-left: 0px;
+        margin-right: 0px;
+      }
+
+        .botao-navegacao {
+            cursor: pointer;
+            width: 75%;
+            height: 100%;
+            word-break: break-all;
+        }
+
     }
 
