@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'gdstorage',
     'core',
     'crispy_forms',  # aplicação instalada através de pip install django-crispy-forms
     'accounts',      # aplicação de contas de usuário
@@ -142,6 +143,8 @@ LOGIN_REDIRECT_URL = '/area-usuario' #informa ao Django para qual URL a operaç�
 LOGOUT_REDIRECT_URL = '/accounts/login' #informa ao Django para qual URL a operação de logout deve levar o usuário
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = os.path.join(BASE_DIR, 'sit-web-947aff0b46b1.json')
 
 PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_VIDEOS = True
 PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_ARQUIVOS = True

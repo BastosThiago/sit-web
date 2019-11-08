@@ -12,6 +12,11 @@ from sistema_treinamentos.settings \
     PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_QUESTIONARIOS, \
     PERCENTUAL_ACERTOS_QUESTIONARIOS_APROVACAO
 
+from gdstorage.storage import GoogleDriveStorage
+
+# Define Google Drive Storage
+gd_storage = GoogleDriveStorage()
+
 class Categoria(models.Model):
     """
         Modelo de Categorias para um curso
@@ -339,7 +344,7 @@ class Video(models.Model):
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     video_interno = models.BooleanField(default=False)
     url = models.URLField(max_length=200, null=True, blank=True)
-    caminho = models.FileField(upload_to='videos', null=True, blank=True, default=None)
+    caminho = models.FileField(upload_to='videos', storage=gd_storage, null=True, blank=True, default=None)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:
@@ -364,7 +369,7 @@ class Arquivo(models.Model):
 
     titulo = models.CharField(max_length=70)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    caminho = models.FileField(upload_to='arquivos')
+    caminho = models.FileField(upload_to='arquivos', storage=gd_storage)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:
