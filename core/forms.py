@@ -65,7 +65,7 @@ class UnidadeForm(forms.ModelForm):
 
     class Meta:
         model = Unidade
-        fields = ('titulo', 'curso', 'ordem',)
+        fields = ('titulo', 'descricao', 'curso', 'ordem',)
 
     def __init__(self, user, *args, **kwargs):
         super(UnidadeForm, self).__init__(*args, **kwargs)

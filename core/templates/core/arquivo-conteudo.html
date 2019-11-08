@@ -4,21 +4,21 @@
     <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
         <div class="container" style="padding: 0; margin-top: 5px; margin-bottom: 5px;">
             <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="col text-center" id="botao-anterior-container" style="margin-bottom: 0px; padding: 0;">
+                <div class="text-center" id="botao-anterior-container" style="margin-bottom: 0px; padding: 0;">
                   <span class="btn btn-primary"  id="botao-anterior" role="button" style="float: left; font-size: 1.2rem; cursor: pointer;" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')" title="Retorna para conteúdo anterior">
                       <i class="fas fa-angle-double-left" ></i>
                        Anterior
                   </span>
                 </div>
 
-                <div class="col text-center" id="botao-conteudo-curso" style="margin-bottom: 0px; padding: 0;">
+                <div class="text-center" id="botao-conteudo-curso" style="margin-bottom: 0px; padding: 0;">
                   <a href="/conteudo-curso/{{arquivo.unidade.curso.id}}#conteudo-curso" class="btn btn-primary" id="botao-conteudo" role="button" style="font-size: 1.2rem;" title="Retorna para página de conteúdos do curso">
                       <i class="fas fa-arrow-circle-left"></i>
                       Conteúdos
                   </a>
                 </div>
 
-                <div class="col text-center" id="botao-proximo-container" style="margin-bottom: 0px; padding: 0;">
+                <div class="text-center" id="botao-proximo-container" style="margin-bottom: 0px; padding: 0;">
                   <span class="btn btn-primary" id="botao-proximo" role="button" style="float: right; font-size: 1.2rem; cursor: pointer;"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')" title="Avança para próximo conteúdo">
                       Próximo
                       <i class="fas fa-angle-double-right"></i>

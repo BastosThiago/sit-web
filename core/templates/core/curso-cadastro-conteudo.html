@@ -676,6 +676,25 @@
   </div>
 </div>
 
+<div class="modal modal-sucesso-alteracoes" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cadastro de conteúdo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Informações salvas com sucesso.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <script>
 
@@ -1384,7 +1403,7 @@
                       }
                   }
 
-                  if($(form).find('.resultado-' + resposta['conteudo_tipo'])[0]) {
+                  /*if($(form).find('.resultado-' + resposta['conteudo_tipo'])[0]) {
                       $(form).find('.resultado-' + resposta['conteudo_tipo'])[0].innerHTML =
                       `
                           <div class="alert alert-success alert-dismissable" style="padding: 0.3rem;">
@@ -1392,7 +1411,8 @@
                             <strong>${resposta['resultado']}</strong>
                           </div>
                       `
-                  }
+                  }*/
+                  $('.modal-sucesso-alteracoes').modal('show');
               }
               organizaUnidadesConteudos()
               enviaForms()
@@ -1400,6 +1420,8 @@
               $('.modal-aguarde').modal('hide');
           },
           error: function(data){
+              $('.modal-aguarde').modal('hide');
+              $('body').removeClass('disabledbutton')
               var errors = jQuery.parseJSON(data.responseText)
               console.log("teste")
               for (key in errors) {
@@ -1436,8 +1458,6 @@
                       `
                   }
               }
-              $('body').removeClass('disabledbutton')
-              $('.modal-aguarde').modal('hide');
           }
         });
 
