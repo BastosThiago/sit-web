@@ -317,7 +317,7 @@
 
                                             <div class="form-group grupo-arquivo" hidden="true">
                                                 <label for="conteudo-path" id="label-path">Arquivo:</label>
-                                                <span><a class="caminho-arquivo-span" href="/media/{{ video.caminho }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
+                                                <span><a class="caminho-arquivo-span" href="{{ video.arquivo_media_url }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
                                                 <input type="file" class="form-control" id="conteudo-path" name="caminho">
                                                 <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                             </div>
@@ -332,7 +332,7 @@
 
                                             <div class="form-group grupo-arquivo">
                                                 <label for="conteudo-path" id="label-path">Arquivo:</label>
-                                                <span><a class="caminho-arquivo-span" href="/media/{{ video.caminho }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
+                                                <span><a class="caminho-arquivo-span" href="{{ video.arquivo_media_url }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
                                                 <input type="file" class="form-control" id="conteudo-path" name="caminho">
                                                 <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                             </div>
@@ -407,7 +407,7 @@
 
                                         <div class="form-group">
                                             <label for="conteudo-path" id="label-path">Arquivo:</label>
-                                            <span><a class="caminho-arquivo-span" href="/media/{{ arquivo.caminho }}" target="_blank" id="link-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"> {{ arquivo.caminho }}</a></span>
+                                            <span><a class="caminho-arquivo-span" href="{{ arquivo.arquivo_media_url }}" target="_blank" id="link-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"> {{ arquivo.caminho }}</a></span>
                                             <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho">
                                             <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                         </div>
@@ -1394,7 +1394,7 @@
 
                   if(resposta['path_conteudo'] && resposta['path_conteudo'] != '') {
                     $(form).find('.caminho-arquivo-span')[0].innerHTML = resposta['path_conteudo']
-                    $(form).find('.caminho-arquivo-span').attr('href', "/media/" + resposta['path_conteudo'])
+                    $(form).find('.caminho-arquivo-span').attr('href', resposta['url_conteudo'])
                     $(form).find('.caminho-arquivo-span')[0].hidden = false
                   }
                   else {

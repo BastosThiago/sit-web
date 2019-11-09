@@ -182,21 +182,21 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="col-sm-3 text-center" id="botao-anterior-container" style="margin-bottom: 2px;">
+                        <div class="col-sm-3 text-center" id="botao-anterior-container" style="margin-top: 5px; margin-bottom: 5px;">
                           <span class="btn btn-primary botao-navegacao"  id="botao-anterior" role="button" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')" title="Retorna para conteúdo anterior">
                               <i class="fas fa-angle-double-left" ></i>
                                Anterior
                           </span>
                         </div>
 
-                        <div class="col-sm-3 text-center" id="botao-conteudo-curso" style="margin-bottom: 2px;">
+                        <div class="col-sm-3 text-center" id="botao-conteudo-curso" style="margin-bottom: 5px;">
                           <a href="/conteudo-curso/{{questionario.unidade.curso.id}}#conteudo-curso" class="btn btn-primary botao-navegacao" id="botao-conteudo" role="button" title="Retorna para página de conteúdos do curso">
                               <i class="fab fa-contao "></i>
                               Conteúdos
                           </a>
                         </div>
 
-                        <div class="col-sm-3 text-center" id="botao-proximo-container" style="margin-bottom: 2px;">
+                        <div class="col-sm-3 text-center" id="botao-proximo-container" style="margin-bottom: 5px;">
                           <span class="btn btn-primary botao-navegacao" id="botao-proximo" role="button" onclick="atualizaConteudo('{{ proximo_conteudo_url }}')" title="Avança para próximo conteúdo">
                               Próximo
                               <i class="fas fa-angle-double-right"></i>
@@ -244,7 +244,7 @@
     {% if perfil_aluno == True and questionario_sem_questoes == False%}
     <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px; margin-top: 10px;">
 
-        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="text-center">
             <div class="col text-center" style="margin-top: 5px; margin-bottom: 5px; padding: 0;">
               <span class="btn btn-primary"  id="refazer" role="button" style="font-size: 1.2rem;" onclick="atualizaDados()" title="Clique aqui para refazer o questionário">
                   <i class="fas fa-undo-alt" ></i>
@@ -252,8 +252,8 @@
               </span>
             </div>
         </div>
-        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-            <div class="col text-center" style="margin-top: 0px; margin-bottom: 5px; padding: 0;">
+        <div class="text-center">
+            <div class="col text-center" style="margin-top: 5px; margin-bottom: 5px; padding: 0;">
               <span class="btn btn-primary" id="enviar" role="button" style="font-size: 1.2rem;"  onclick="enviaForm()" title="Envia o questionário para avaliação">
                   Enviar
                   <i class="fas fa-share-square"></i>

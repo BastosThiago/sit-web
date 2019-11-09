@@ -169,7 +169,7 @@
 
     <div id="page-content">
 
-            <div id="content" class="container-fluid">
+
 
               <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
                   <h4 class="text-center" style="margin-top: 10px;">{{ curso.titulo }}</h4>
@@ -532,20 +532,26 @@
 
                       {% if situacao_aluno_curso == "APROVADO" %}
                       <div class="container">
-                          <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                              <div class="col text-center" style="margin-bottom: 10px;">
-                                  <a href="/certificado/{{ curso.id }}" class="btn btn-primary btn-lg" role="button" title="Abre página com a visualização do PDF do certificado">
-                                      <i class="fas fa-eye class-icone-button"></i>
-                                          Visualizar certificado
-                                  </a>
-                              </div>
-                              <div class="col text-center">
-                                  <a href="/certificado/{{ curso.id }}?download=download" class="btn btn-primary btn-lg" role="button" title="Realiza o download do arquivo PDF do certificado">
-                                      <i class="fas fa-download class-icone-button"></i>
-                                          Baixar certificado
-                                  </a>
-                              </div>
-                          </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="text-center">
+                                    <div class="offset-sm-4 col-sm-4 text-center" id="botao-anterior-container" style="margin-bottom: 10px; padding: 0;">
+                                          <a href="/certificado/{{ curso.id }}" class="btn btn-primary" role="button" title="Abre página com a visualização do PDF do certificado">
+                                              <i class="fas fa-eye class-icone-button"></i>
+                                                  Visualizar certificado
+                                          </a>
+                                    </div>
+
+                                    <div class="offset-sm-4 col-sm-4 text-center" id="botao-proximo-container" style="margin-bottom: 0px;  padding: 0;">
+                                        <a href="/certificado/{{ curso.id }}?download=download" class="btn btn-primary" role="button" title="Realiza o download do arquivo PDF do certificado">
+                                          <i class="fas fa-download class-icone-button"></i>
+                                              Baixar certificado
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                       </div>
                       {% endif %}
 
@@ -554,7 +560,7 @@
 
               </div>
 
-            </div>
+
 
             <div class="modal fade modal-delete-item" id="confirmDeleteModal" id_elemento="" id_conteudo="" tipo_conteudo="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">

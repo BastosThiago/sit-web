@@ -345,6 +345,7 @@ class Video(models.Model):
     video_interno = models.BooleanField(default=False)
     url = models.URLField(max_length=200, null=True, blank=True)
     caminho = models.FileField(upload_to='videos', storage=gd_storage, null=True, blank=True, default=None)
+    arquivo_media_url = models.CharField(max_length=250, null=True, blank=True)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:
@@ -370,6 +371,7 @@ class Arquivo(models.Model):
     titulo = models.CharField(max_length=70)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     caminho = models.FileField(upload_to='arquivos', storage=gd_storage)
+    arquivo_media_url = models.CharField(max_length=250, null=True, blank=True)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
     class Meta:

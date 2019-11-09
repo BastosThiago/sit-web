@@ -309,8 +309,20 @@ def novoRegistroView(request, modelo):
             if modelo == Video:
                 if objeto.caminho != None:
                     objeto.video_interno = True
+                    arquivo_media_url = gd_storage.url(objeto.caminho.file.name)
+                    arquivo_media_url = arquivo_media_url.replace('view',
+                                                                  'preview')
+                    objeto.arquivo_media_url = arquivo_media_url
+
                 else:
                     objeto.video_interno = False
+
+            # No caso do Arquivo, obtém a URL do arquivo e armazena
+            if modelo == Arquivo:
+                arquivo_media_url = gd_storage.url(objeto.caminho.file.name)
+                arquivo_media_url = arquivo_media_url.replace('view', 'preview')
+                objeto.arquivo_media_url = arquivo_media_url
+
 
             objeto.save()
             return redirect(
@@ -425,8 +437,19 @@ def editaRegistroView(request, id, modelo):
             if modelo == Video:
                 if objeto.caminho != None:
                     objeto.video_interno = True
+                    arquivo_media_url = gd_storage.url(objeto.caminho.file.name)
+                    arquivo_media_url = arquivo_media_url.replace('view',
+                                                                  'preview')
+                    objeto.arquivo_media_url = arquivo_media_url
+
                 else:
                     objeto.video_interno = False
+
+            # No caso do Arquivo, obtém a URL do arquivo e armazena
+            if modelo == Arquivo:
+                arquivo_media_url = gd_storage.url(objeto.caminho.file.name)
+                arquivo_media_url = arquivo_media_url.replace('view', 'preview')
+                objeto.arquivo_media_url = arquivo_media_url
 
             objeto.save()
 
@@ -1531,6 +1554,7 @@ def visualizacaoVideoView(request, id):
     tipo_video = ''
     tempo_corrente = 0
     caminho_video = ''
+    arquivo_media_url = ''
     usuario_video = None
 
     perfil_aluno = False
@@ -1575,6 +1599,7 @@ def visualizacaoVideoView(request, id):
     # Verifica o tipo de video para que o frontend possa realizar o tratamento adequado
     if video.video_interno:
         caminho_video = video.caminho.name
+        arquivo_media_url = video.arquivo_media_url
         tipo_video = 'interno'
     else:
         caminho_video = video.url
@@ -1674,6 +1699,7 @@ def visualizacaoVideoView(request, id):
             {
                 'titulo_video': video.titulo,
                 'caminho_video': caminho_video,
+                'arquivo_media_url': arquivo_media_url,
                 'tempo_corrente': tempo_corrente,
                 'tipo_video': tipo_video,
                 'conteudo_anterior_url': conteudo_anterior_url,
@@ -1709,6 +1735,7 @@ def visualizacaoVideoView(request, id):
                 'tipo_video': tipo_video,
                 'tempo_corrente': tempo_corrente,
                 'caminho_video': caminho_video,
+                'arquivo_media_url': arquivo_media_url,
                 'conteudo_anterior_url': conteudo_anterior_url,
                 'proximo_conteudo_url': proximo_conteudo_url,
                 'conteudo_anterior_nome': conteudo_anterior_nome,
@@ -1920,9 +1947,11 @@ def visualizacaoArquivoView(request, id):
     )
 
     # Verifica se o arquivo estático existe
-    arquivo_existe = False
-    if finders.find(arquivo.caminho.name) is not None:
-        arquivo_existe = True
+    arquivo_existe = True
+
+    # Monta a URL para download do conteúdo
+    arquivo_storage_id = arquivo.arquivo_media_url.split('/')[5]
+    download_url = f"https://drive.google.com/uc?export=download&id={arquivo_storage_id}"
 
     if not request.is_ajax():
         template_name = 'core/arquivo-visualizacao.html'
@@ -1934,6 +1963,7 @@ def visualizacaoArquivoView(request, id):
         template_name,
         {
             'arquivo': arquivo,
+            'download_url': download_url,
             'conteudo_anterior_url': conteudo_anterior_url,
             'proximo_conteudo_url': proximo_conteudo_url,
             'arquivo_existe': arquivo_existe,
@@ -2134,11 +2164,23 @@ def visualizacaoQuestionarioView(request, id):
 
 
 @login_required
-def downloadConteudo(request, file_path, diretorio):
+def downloadConteudo(request, id, tipo):
     """
       View responsável por permitir o download de algum conteúdo do curso
     """
     try:
+        # Obtém o tipo para então encontrar o objeto
+        if tipo == "video":
+            objeto = Video.objects.get(pk=id)
+        elif tipo == "arquivo":
+            objeto = Arquivo.objects.get(pk=id)
+        else:
+            return trata_erro_500()
+
+        arquivo_storage_id = objeto.arquivo_media_url.split('/')[5]
+
+        download_url = f"https://drive.google.com/uc?export=download&id={arquivo_storage_id}"
+
         file_path = f"{MEDIA_ROOT}//{diretorio}//{file_path}"
         wrapper = FileWrapper(open(file_path, 'rb'))
         response = HttpResponse(wrapper, content_type='application/force-download')
@@ -2763,9 +2805,15 @@ def cadastroConteudoCursoView(request, id):
 
                     objeto = form.save()
 
+                    arquivo_media_url = gd_storage.url(objeto.caminho.file.name)
+                    arquivo_media_url = arquivo_media_url.replace('view',
+                                                                  'preview')
+                    objeto.arquivo_media_url = arquivo_media_url
+
                     if conteudo_tipo == 'video':
                         objeto.video_interno = video_interno
-                        objeto.save()
+
+                    objeto.save()
 
                 else:
                     # Atualiza as informações do Objeto
@@ -2823,12 +2871,20 @@ def cadastroConteudoCursoView(request, id):
 
                 objeto = form.save()
 
+                if request.FILES.__len__() > 0:
+                    arquivo_media_url = gd_storage.url(objeto.caminho.file.name)
+                    arquivo_media_url = arquivo_media_url.replace('view',
+                                                                  'preview')
+                    objeto.arquivo_media_url = arquivo_media_url
+                    objeto.save()
+
                 if conteudo_tipo == 'video':
                     objeto.video_interno = video_interno
                     objeto.save()
 
             if(conteudo_tipo == "video" or conteudo_tipo == "arquivo"):
                 response_data['path_conteudo'] = objeto.caminho.name
+                response_data['url_conteudo'] = objeto.arquivo_media_url
 
             response_data['conteudo_id'] = objeto.id
 

@@ -7,21 +7,21 @@
                 <div class="col-sm-12">
                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
 
-                        <div class="col-sm-3 text-center" id="botao-anterior-container" style="margin-bottom: 2px;">
+                        <div class="col-sm-3 text-center" id="botao-anterior-container" style="margin-top: 5px; margin-bottom: 5px;">
                           <span class="btn btn-primary botao-navegacao"  id="botao-anterior" role="button" onclick="atualizaConteudo('{{ conteudo_anterior_url }}')" title="Retorna para conteúdo anterior">
                               <i class="fas fa-angle-double-left" ></i>
                                Anterior
                           </span>
                         </div>
 
-                       <div class="col-sm-3 text-center" id="botao-conteudo-curso" style="margin-bottom: 2px;">
+                       <div class="col-sm-3 text-center" id="botao-conteudo-curso" style="margin-bottom: 5px;">
                           <a href="/conteudo-curso/{{arquivo.unidade.curso.id}}#conteudo-curso" class="btn btn-primary botao-navegacao" id="botao-conteudo" role="button" title="Retorna para página de conteúdos do curso">
                               <i class="fab fa-contao "></i>
                               Conteúdos
                           </a>
                         </div>
 
-                        <div class="col-sm-3 text-center" id="botao-proximo-container" style="margin-bottom: 2px;">
+                        <div class="col-sm-3 text-center" id="botao-proximo-container" style="margin-bottom: 5px;">
                           <span class="btn btn-primary botao-navegacao" id="botao-proximo" role="button"  onclick="atualizaConteudo('{{ proximo_conteudo_url }}')" title="Avança para próximo conteúdo">
                               Próximo
                               <i class="fas fa-angle-double-right"></i>
@@ -40,7 +40,7 @@
     {% if arquivo_existe %}
         <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px;">
             <div class="col text-center" id="botao-download" style="margin-top: 5px; margin-bottom: 5px; padding: 0;">
-                <a class="btn btn-primary" href="/download/{{ arquivo.caminho }}" role="button" style="font-size: 1.2rem;" title="Realiza o download do arquivo">
+                <a class="btn btn-primary" href="{{ download_url }}" role="button" style="font-size: 1.2rem;" title="Realiza o download do arquivo">
                   Download
                   <i class="fas fa-download"></i>
                 </a>
@@ -53,12 +53,12 @@
         </div>
 
         <div class="embed-responsive embed-responsive-16by9" id="arquivo-embed">
-            <iframe class="embed-responsive-item" src="../media/{{ arquivo.caminho}}" allowfullscreen></iframe>
+            <iframe class="embed-responsive-item" src="{{ arquivo.arquivo_media_url }}" allowfullscreen></iframe>
         </div>
     {% else %}
 
         <div class="col text-center" id="botao-download" style="margin-bottom: 10px; padding: 0;" hidden>
-            <a class="btn btn-primary" href="/download/{{ arquivo.caminho }}" role="button" style="font-size: 1.2rem;">
+            <a class="btn btn-primary" href="{{ download_url }}" role="button" style="font-size: 1.2rem;">
               Download
               <i class="fas fa-download"></i>
             </a>
@@ -66,11 +66,11 @@
 
         <div class="alert alert-danger alert-dismissable" id="arquivo-nao-existe">
             <a href="#" data-dismiss="alert" aria-label="close"></a>
-            <strong>Arquivo não existe.</strong>
+            <strong>Arquivo não encontrado.</strong>
         </div>
 
         <div class="embed-responsive embed-responsive-16by9" id="arquivo-embed" hidden>
-            <iframe class="embed-responsive-item" src="../media/{{ arquivo.caminho}}" allowfullscreen></iframe>
+            <iframe class="embed-responsive-item" src="{{ arquivo_media_url }}" allowfullscreen></iframe>
         </div>
     {% endif %}
 
