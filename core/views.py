@@ -196,14 +196,21 @@ def registrosListView(request, modelo):
     if search:
         search_fields = modelo.CustomMeta.search_fields
         filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
-        objetos = modelo.objects.obtem_objetos_por_perfil_usuario(request.user).filter(filtro)
+
+        objetos = modelo.objects.obtem_objetos_por_perfil_usuario(
+            request.user
+        ).filter(
+            filtro
+        ).order_by(
+            '-data_atualizacao'
+        )
 
     # Caso não, obtém a lista de todos os objetos
     else:
         lista_objetos = modelo.objects.obtem_objetos_por_perfil_usuario(
             request.user
         ).order_by(
-            modelo.CustomMeta.ordering_field
+            '-data_atualizacao'
         )
 
         paginator = Paginator(lista_objetos, 10)
@@ -619,7 +626,7 @@ def cursosListView(request):
     """
 
     # Obtém todos os cursos com o STATUS de PUPLICADO
-    cursos = Curso.objects.filter(publicado=True).order_by('titulo')
+    cursos = Curso.objects.filter(publicado=True).order_by('-data_atualizacao')
 
     if cursos:
 
@@ -782,6 +789,18 @@ def informacoesCursoView(request, id):
         # Obtém a lista de unidades associadas ao curso
         unidades = Unidade.objects.filter(curso=curso)
 
+        unidades_list_ids = []
+        for unidade in unidades:
+            # Obtém os conteúdos didáticos da Unidade(Videos, Arquivos e Questionários)
+            videos = Video.objects.filter(unidade=unidade).order_by('ordem')
+            arquivos = Arquivo.objects.filter(unidade=unidade).order_by('ordem')
+            questionarios = Questionario.objects.filter(unidade=unidade).order_by(
+                'ordem')
+            if videos.count() > 0 or arquivos.count() > 0 or questionarios.count() > 0:
+                unidades_list_ids.append(unidade.id)
+
+        unidades = Unidade.objects.filter(id__in=unidades_list_ids)
+
         # Obtém as avaliações associadas ao curso
         avaliacoes = Avaliacao.objects.filter(curso=curso)
 
@@ -820,7 +839,7 @@ def informacoesCursoView(request, id):
             nota_media_curso = curso.obtem_nota_media()
             nota_media_curso = "{:.1f}".format(nota_media_curso)
 
-        numero_unidades = curso.obtem_unidades().count()
+        numero_unidades = unidades.count()
         numero_videos = curso.obtem_videos().count()
         numero_arquivos = curso.obtem_arquivos().count()
         numero_questionarios = curso.obtem_questionarios().count()
@@ -1137,7 +1156,11 @@ def meusCursosView(request):
     if request.user.tem_perfil_aluno():
 
         # Obtém todas as inscrições do usuário
-        inscricoes_usuario = Inscricao.objects.filter(usuario=request.user)
+        inscricoes_usuario = Inscricao.objects.filter(
+            usuario=request.user
+        ).order_by(
+            '-data_atualizacao'
+        )
 
         lista_cursos = []
         for inscricao in inscricoes_usuario:
@@ -1326,72 +1349,83 @@ def conteudoCursoView(request, id):
 
     # Caso tenha obtido o curso com sucesso, obtém seus conteúdos
     if curso:
-        unidades = Unidade.objects.filter(curso=curso)
+        unidades = Unidade.objects.filter(curso=curso).order_by('ordem')
 
         for unidade in unidades:
-            dict_unidade = {}
-            lista_videos = []
-            lista_arquivos = []
-            lista_questionarios = []
-            dict_unidade['unidade'] = unidade
 
-            videos = Video.objects.filter(unidade=unidade)
+            # Obtém os conteúdos didáticos da Unidade(Videos, Arquivos e Questionários)
+            videos = Video.objects.filter(unidade=unidade).order_by('ordem')
+            arquivos = Arquivo.objects.filter(unidade=unidade).order_by('ordem')
+            questionarios = Questionario.objects.filter(unidade=unidade).order_by('ordem')
 
-            for video in videos:
-                dict_video = {}
-                dict_video['video'] = video
-                usuario_video = UsuarioVideo.objects.filter(
-                    usuario=request.user,
-                    video=video
-                )
+            # Caso a Unidade não tenha nenhum conteúdo, não retorna a mesma para
+            # que não seja apresentada na página de conteúdos do curso
+            if videos.count() > 0 or arquivos.count() != 0 or questionarios.count() != 0:
 
-                dict_video['assistido'] = False
-                if usuario_video.count() == 1:
-                    if usuario_video[0].assistido:
-                        dict_video['assistido'] = True
+                dict_unidade = {}
+                lista_videos = []
+                lista_arquivos = []
+                lista_questionarios = []
+                dict_unidade['unidade'] = unidade
 
-                lista_videos.append(dict_video)
-            dict_unidade['videos'] = lista_videos
+                dict_unidade['tem_videos'] = False
+                for video in videos:
+                    dict_video = {}
+                    dict_unidade['tem_videos'] = True
+                    dict_video['tem_video'] = False
+                    dict_video['video'] = video
+                    usuario_video = UsuarioVideo.objects.filter(
+                        usuario=request.user,
+                        video=video
+                    )
 
-            arquivos = Arquivo.objects.filter(unidade=unidade)
+                    dict_video['assistido'] = False
+                    if usuario_video.count() == 1:
+                        if usuario_video[0].assistido:
+                            dict_video['assistido'] = True
 
-            for arquivo in arquivos:
-                dict_arquivo = {}
-                dict_arquivo['arquivo'] = arquivo
+                    lista_videos.append(dict_video)
+                dict_unidade['videos'] = lista_videos
 
-                usuario_arquivo = UsuarioArquivo.objects.filter(
-                    usuario=request.user,
-                    arquivo=arquivo
-                )
+                dict_unidade['tem_arquivos'] = False
+                for arquivo in arquivos:
+                    dict_arquivo = {}
+                    dict_unidade['tem_arquivos'] = True
+                    dict_arquivo['arquivo'] = arquivo
 
-                dict_arquivo['acessado'] = False
-                if usuario_arquivo.count() == 1:
-                    if usuario_arquivo[0].acessado:
-                        dict_arquivo['acessado'] = True
+                    usuario_arquivo = UsuarioArquivo.objects.filter(
+                        usuario=request.user,
+                        arquivo=arquivo
+                    )
 
-                lista_arquivos.append(dict_arquivo)
-            dict_unidade['arquivos'] = lista_arquivos
+                    dict_arquivo['acessado'] = False
+                    if usuario_arquivo.count() == 1:
+                        if usuario_arquivo[0].acessado:
+                            dict_arquivo['acessado'] = True
 
-            questionarios = Questionario.objects.filter(unidade=unidade)
+                    lista_arquivos.append(dict_arquivo)
+                dict_unidade['arquivos'] = lista_arquivos
 
-            for questionario in questionarios:
-                dict_questionario = {}
-                dict_questionario['questionario'] = questionario
+                dict_unidade['tem_questionarios'] = False
+                for questionario in questionarios:
+                    dict_questionario = {}
+                    dict_unidade['tem_questionarios'] = True
+                    dict_questionario['questionario'] = questionario
 
-                usuario_questionario = UsuarioQuestionario.objects.filter(
-                    usuario=request.user,
-                    questionario=questionario
-                )
+                    usuario_questionario = UsuarioQuestionario.objects.filter(
+                        usuario=request.user,
+                        questionario=questionario
+                    )
 
-                dict_questionario['respondido'] = False
-                if usuario_questionario.count() == 1:
-                    if usuario_questionario[0].respondido:
-                        dict_questionario['respondido'] = True
+                    dict_questionario['respondido'] = False
+                    if usuario_questionario.count() == 1:
+                        if usuario_questionario[0].respondido:
+                            dict_questionario['respondido'] = True
 
-                lista_questionarios.append(dict_questionario)
-            dict_unidade['questionarios'] = lista_questionarios
+                    lista_questionarios.append(dict_questionario)
+                dict_unidade['questionarios'] = lista_questionarios
 
-            lista_unidades.append(dict_unidade)
+                lista_unidades.append(dict_unidade)
 
         # Verifica se o usuário da requisição é de perfil ALUNO e caso seja
         # obtém a inscrição do usuário curso
@@ -1950,8 +1984,12 @@ def visualizacaoArquivoView(request, id):
     arquivo_existe = True
 
     # Monta a URL para download do conteúdo
-    arquivo_storage_id = arquivo.arquivo_media_url.split('/')[5]
-    download_url = f"https://drive.google.com/uc?export=download&id={arquivo_storage_id}"
+    try:
+        arquivo_storage_id = arquivo.arquivo_media_url.split('/')[5]
+        download_url = f"https://drive.google.com/uc?export=download&id={arquivo_storage_id}"
+    except:
+        download_url = ""
+        arquivo_existe = False
 
     if not request.is_ajax():
         template_name = 'core/arquivo-visualizacao.html'
@@ -2161,33 +2199,6 @@ def visualizacaoQuestionarioView(request, id):
             'menu_dados_cadastrais': False,
         },
     )
-
-
-@login_required
-def downloadConteudo(request, id, tipo):
-    """
-      View responsável por permitir o download de algum conteúdo do curso
-    """
-    try:
-        # Obtém o tipo para então encontrar o objeto
-        if tipo == "video":
-            objeto = Video.objects.get(pk=id)
-        elif tipo == "arquivo":
-            objeto = Arquivo.objects.get(pk=id)
-        else:
-            return trata_erro_500()
-
-        arquivo_storage_id = objeto.arquivo_media_url.split('/')[5]
-
-        download_url = f"https://drive.google.com/uc?export=download&id={arquivo_storage_id}"
-
-        file_path = f"{MEDIA_ROOT}//{diretorio}//{file_path}"
-        wrapper = FileWrapper(open(file_path, 'rb'))
-        response = HttpResponse(wrapper, content_type='application/force-download')
-        response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
-        return response
-    except Exception as e:
-        return trata_erro_500()
 
 
 @login_required

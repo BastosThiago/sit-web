@@ -25,6 +25,9 @@ class Categoria(models.Model):
 
     titulo = models.CharField(max_length=40)
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name = "Categoria"
         verbose_name_plural = "Categorias"
@@ -51,6 +54,9 @@ class Curso(models.Model):
     descricao = models.TextField(max_length=250, null=True, blank=True)
     publicado = models.BooleanField(default=False)
     data_publicado = models.DateTimeField(null=True, blank=True)
+
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "Curso"
@@ -263,6 +269,9 @@ class Inscricao(models.Model):
     ultimo_conteudo_acessado = models.CharField(max_length=50, null=True, blank=True)
     data_ultimo_conteudo_acessado = models.DateTimeField(null=True, blank=True)
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     def __str__(self):
         return f"Inscrição do usuário {self.usuario}"
 
@@ -295,6 +304,9 @@ class Avaliacao(models.Model):
     comentario = models.TextField(max_length=300, null=True, blank=True)
     data_avaliacao = models.DateTimeField(auto_now_add=True)
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name = "Avaliação"
         verbose_name_plural = "Avaliações"
@@ -319,6 +331,9 @@ class Unidade(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     descricao = models.TextField(max_length=250, blank=True, null=True, default=None)
     ordem = OrderField(blank=True, for_fields=['curso'])
+
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "Unidade"
@@ -348,6 +363,9 @@ class Video(models.Model):
     arquivo_media_url = models.CharField(max_length=250, null=True, blank=True)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name = "Vídeo"
         verbose_name_plural = "Vídeos"
@@ -373,6 +391,9 @@ class Arquivo(models.Model):
     caminho = models.FileField(upload_to='arquivos', storage=gd_storage)
     arquivo_media_url = models.CharField(max_length=250, null=True, blank=True)
     ordem = OrderField(blank=True, for_fields=['unidade'])
+
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "Arquivo"
@@ -402,6 +423,9 @@ class UsuarioVideo(models.Model):
     assistido = models.BooleanField(default=False)
     data_assistido = models.DateTimeField(null=True, blank=True)
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "Registros Usuários - Vídeos"
         unique_together = (('video', 'usuario'),)
@@ -421,6 +445,9 @@ class UsuarioArquivo(models.Model):
     acessado = models.BooleanField(default=False)
     data_acesso = models.DateTimeField(auto_now=True)
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "Registros Usuários - Arquivos"
         unique_together = (('arquivo', 'usuario'),)
@@ -438,6 +465,9 @@ class Questionario(models.Model):
     titulo = models.CharField(max_length=70)
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['unidade'])
+
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "Questionário"
@@ -465,6 +495,9 @@ class UsuarioQuestionario(models.Model):
     respondido = models.BooleanField(default=False)
     data_execucao = models.DateTimeField(auto_now=True)
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "Registros Usuários - Questionarios"
         unique_together = (('usuario', 'questionario'),)
@@ -482,6 +515,9 @@ class Questao(models.Model):
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     enunciado = models.TextField(max_length=300)
     ordem = OrderField(blank=True, for_fields=['questionario'])
+
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "Questão"
@@ -508,6 +544,9 @@ class Alternativa(models.Model):
     ordem = OrderField(blank=True, for_fields=['questao'])
     correta = models.BooleanField()
 
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name = "Alternativa"
         verbose_name_plural = "Alternativas"
@@ -529,6 +568,9 @@ class UsuarioResposta(models.Model):
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
     alternativa = models.ForeignKey(Alternativa, null=True, blank=True, on_delete=models.CASCADE)
+
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.usuario} - {self.questao} - {self.alternativa}"

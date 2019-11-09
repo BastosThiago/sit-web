@@ -65,7 +65,7 @@ class UnidadeForm(forms.ModelForm):
 
     class Meta:
         model = Unidade
-        fields = ('titulo', 'descricao', 'curso', 'ordem',)
+        fields = ('titulo', 'descricao', 'curso', )
 
     def __init__(self, user, *args, **kwargs):
         super(UnidadeForm, self).__init__(*args, **kwargs)
@@ -77,7 +77,7 @@ class VideoForm(forms.ModelForm):
 
     class Meta:
         model = Video
-        fields = ('titulo', 'unidade', 'url', 'caminho', 'ordem',)
+        fields = ('titulo', 'unidade', 'url', 'caminho', )
 
     def __init__(self, user, *args, **kwargs):
         super(VideoForm, self).__init__(*args, **kwargs)
@@ -108,7 +108,7 @@ class ArquivoForm(forms.ModelForm):
 
     class Meta:
         model = Arquivo
-        fields = ('titulo', 'unidade', 'caminho', 'ordem',)
+        fields = ('titulo', 'unidade', 'caminho', )
 
     def __init__(self, user, *args, **kwargs):
         super(ArquivoForm, self).__init__(*args, **kwargs)
@@ -120,7 +120,7 @@ class QuestionarioForm(forms.ModelForm):
 
     class Meta:
         model = Questionario
-        fields = ('titulo', 'unidade', 'ordem')
+        fields = ('titulo', 'unidade', )
 
     def __init__(self, user, *args, **kwargs):
         super(QuestionarioForm, self).__init__(*args, **kwargs)
@@ -132,7 +132,7 @@ class QuestaoForm(forms.ModelForm):
 
     class Meta:
         model = Questao
-        fields = ('questionario', 'enunciado', 'ordem',)
+        fields = ('questionario', 'enunciado', )
 
     def __init__(self,  user, *args, **kwargs):
         super(QuestaoForm, self).__init__(*args, **kwargs)
@@ -146,7 +146,7 @@ class AlternativaForm(forms.ModelForm):
 
     class Meta:
         model = Alternativa
-        fields = ('questao', 'descricao', 'ordem', 'correta',)
+        fields = ('questao', 'descricao', 'correta',)
 
     def __init__(self,  user, *args, **kwargs):
         super(AlternativaForm, self).__init__(*args, **kwargs)
