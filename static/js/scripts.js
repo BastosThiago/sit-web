@@ -22,4 +22,25 @@ $( document ).ready(function() {
         searchForm.submit();
     });
 
+    $("input[name='search']").on('input' , function(e) {
+        console.log("teste")
+
+        var $formData = searchForm.serialize()
+
+        var $thisURL = window.location.href
+
+        $.ajax({
+            method: "GET",
+            url: $thisURL,
+            data: $formData,
+            success: function (data, textStatus, jqXHR) {
+                $(".container-pesquisa")[0].innerHTML = data;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+
+            }
+        })
+    })
+
 });

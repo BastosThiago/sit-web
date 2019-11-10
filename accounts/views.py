@@ -160,9 +160,13 @@ def listaUsuariosView(request):
         if len(objetos) == 0:
             nao_tem_objetos = True
 
+        nome_template = 'usuarios-lista.html'
+        if request.is_ajax():
+            nome_template = 'usuarios-lista-conteudo.html'
+
         return render(
             request,
-            'usuarios-lista.html',
+            nome_template,
             {
                 'objetos': objetos,
                 'tituloPagina': tituloPagina,

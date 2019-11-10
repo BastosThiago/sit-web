@@ -18,12 +18,6 @@
 }
 
 /* Search */
-.fas.fa-search {
-    position: absolute;
-    top: 12px;
-    right: 26px;
-    cursor: pointer;
-}
 
 .search-div {
     padding: 0px;

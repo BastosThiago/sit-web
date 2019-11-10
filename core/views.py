@@ -224,9 +224,13 @@ def registrosListView(request, modelo):
     if len(objetos) == 0:
         nao_tem_objetos = True
 
+    nome_template = 'core/registros-lista.html'
+    if request.is_ajax():
+        nome_template = 'core/registros-lista-conteudo.html'
+
     return render(
         request,
-        'core/registros-lista.html',
+        nome_template,
         {
             'objetos': objetos,
             'tituloPagina': tituloPagina,
@@ -708,9 +712,13 @@ def cursosListView(request):
 
         lista_cursos.append(dict_curso)
 
+    nome_template = 'core/cursos-lista.html'
+    if request.is_ajax():
+        nome_template = 'core/cursos-lista-conteudo.html'
+
     return render(
         request,
-        'core/cursos-lista.html',
+        nome_template,
         {
             'objetos': cursos,
             'lista_cursos': lista_cursos,
@@ -1199,9 +1207,14 @@ def meusCursosView(request):
         nao_tem_cursos = False
         if len(lista_cursos) == 0:
             nao_tem_cursos = True
+
+        nome_template = 'core/meus-cursos.html'
+        if request.is_ajax():
+            nome_template = 'core/meus-cursos-conteudo.html'
+
         return render(
             request,
-            'core/meus-cursos.html',
+            nome_template,
             {
                 'lista_cursos': lista_cursos,
                 'nao_tem_cursos': nao_tem_cursos,
@@ -1239,9 +1252,13 @@ def meusCursosView(request):
             if len(cursos) == 0:
                 nao_tem_cursos = True
 
+            nome_template = 'core/meus-cursos-instrutor.html'
+            if request.is_ajax():
+                nome_template = 'core/meus-cursos-instrutor-conteudo.html'
+
             return render(
                 request,
-                'core/meus-cursos-instrutor.html',
+                nome_template,
                 {
                     'cursos': cursos,
                     'nao_tem_cursos': nao_tem_cursos,

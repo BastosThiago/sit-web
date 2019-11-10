@@ -144,12 +144,16 @@
     </div>
 
     <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
-        <p class="text-center" style="margin-top: 10px;">Cadastrar abaixo o conteúdo didático do curso agrupando-os em Unidades contendo Vídeos, Arquivos e Questionários com questões de multiplas escolhas.</p>
+        <p class="text-center" style="margin-top: 10px;">Cadastrar abaixo o conteúdo didático do curso agrupando-os em Unidades que podem conter
+            Vídeos, Arquivos e Questionários com questões de multipla escolha. Utilize o botão
+            <i class="fa fa-save fa-1x" style="font-size: 1.2rem;"><b style="margin-left: 5px;">Salvar</b></i> de qualquer conteúdo para persistir
+        as alterações.
+        </p>
     </div>
 
 
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-        <div class="col text-center" style="margin-top: 10px; margin-bottom: 10px; padding: 0;">
+        <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
              <button class="btn btn-primary btn-add-panel" title="Cria uma nova unidade"><i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar Unidade</button>
         </div>
     </div>
@@ -706,6 +710,8 @@
     var tipo_conteudo_video        = 0
     var tipo_conteudo_arquivo      = 1
     var tipo_conteudo_questionario = 2
+    var enviou_formularios_sucesso = false
+    var enviou_formularios_falha = false
 
     $(".btn-add-panel").on("click", function () {
 
@@ -1403,7 +1409,7 @@
                       }
                   }
 
-                  /*if($(form).find('.resultado-' + resposta['conteudo_tipo'])[0]) {
+                  if($(form).find('.resultado-' + resposta['conteudo_tipo'])[0]) {
                       $(form).find('.resultado-' + resposta['conteudo_tipo'])[0].innerHTML =
                       `
                           <div class="alert alert-success alert-dismissable" style="padding: 0.3rem;">
@@ -1411,8 +1417,8 @@
                             <strong>${resposta['resultado']}</strong>
                           </div>
                       `
-                  }*/
-                  $('.modal-sucesso-alteracoes').modal('show');
+                  }
+                  //$('.modal-sucesso-alteracoes').modal('show');
               }
               organizaUnidadesConteudos()
               enviaForms()

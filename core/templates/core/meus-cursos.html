@@ -12,63 +12,37 @@
 
 {% block content_page %}
 
-        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0; margin-left: 20px; margin-right: 20px;">
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0; margin-left: 0px; margin-right: 0px;">
             <h2 class="text-center" style="margin-top: 5px;">Meus cursos</h2>
         </div>
 
-        <div style="margin-left: 20px; margin-right: 20px;">
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0; margin-bottom: 0;">
+            <p class="text-center" style="margin-top: 10px;">
+                A seguir são listados os cursos nos quais você está inscrito. Caso não seja listado nenhum curso ou caso queira se inscrever em
+                novos cursos, <a href="/cursos"> clique aqui</a>.
+            </p>
+        </div>
+
+        <div style="margin-left: 0px; margin-right: 0px;">
 
             <div class="col-12 search-div">
                 <form method="GET" id="search-form">
-                    <input class="form-control" type="text" id="search" name="search"
-                           placeholder="Digite algo para buscar"
-                           value="{{ request.GET.search }}"
-                           style="font-size: 0.9rem"
-                           title="Informe qualquer caracteristica de um curso para filtrar" >
-                    <i class="fas fa-search" id="search-btn"></i>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-search" id="teste"></i></span>
+                        </div>
+                        <input class="form-control" type="text" id="search" name="search"
+                               placeholder="Digite algo para buscar"
+                               value="{{ request.GET.search }}"
+                               style="font-size: 0.9rem"
+                               title="Informe qualquer caracteristica de um curso para filtrar">
+                    </div>
                 </form>
             </div>
 
-            {% if nao_tem_cursos == False %}
-            <div class="row">
-            {% for elemento in lista_cursos %}
-                <div class="col-sm-3">
-                    <div class="card card-curso h-100 ">
-
-                        <div class="card-header">
-                            <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
-                        </div>
-
-                        <div class="card-body">
-
-                            <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
-
-                            <hr/>
-
-                            <p class="card-text text-center">Andamento</i></p>
-                            <p>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ elemento.percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        <span class="perc-nota"><b style="font-size: 1rem; color: black">{{ elemento.percentual_andamento }}%</b></span>
-                                    </div>
-                                </div>
-                            </p>
-                            <p>
-                                <div class="col text-center">
-                                    <a href="/conteudo-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button" title="Acessa página de conteúdos do curso">
-                                        <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Acessar
-                                    </a>
-                                </div>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+            <div class="container-pesquisa">
+                {% include  'core/meus-cursos-conteudo.html' %}
             </div>
-            {% else %}
-            <h5 class="text-center" style="margin-top: 20px;">Sem cursos a serem exibidos</h5>
-            {% endif %}
         </div>
 
 {% endblock %}

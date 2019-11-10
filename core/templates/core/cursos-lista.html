@@ -61,21 +61,6 @@
                 padding: 15px;
             }
 
-            /* Search */
-            .fas.fa-search {
-                position: absolute;
-                top: 12px;
-                right: 26px;
-                cursor: pointer;
-            }
-
-            .search-div {
-                padding: 0px;
-                margin-top: 15px;
-                margin-bottom: 15px;
-                display: inline-block;
-            }
-
             .classe-menu-lista-cursos {
                 float: left;
             }
@@ -114,90 +99,25 @@
             </div>
 
             <div style="margin: 20px">
-                <div class="col-12 search-div">
+                <div class="col-12 search-div" style="padding: 0;">
                     <form method="GET" id="search-form">
-                        <input class="form-control" type="text" id="search" name="search"
-                               placeholder="Digite algo para buscar"
-                               value="{{ request.GET.search }}"
-                               style="font-size: 0.9rem"
-                               title="Informe qualquer caracteristica de um curso para filtrar">
-                        <i class="fas fa-search" id="search-btn"></i>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1"><i class="fas fa-search" id="teste"></i></span>
+                            </div>
+                            <input class="form-control" type="text" id="search" name="search"
+                                   placeholder="Digite algo para buscar"
+                                   value="{{ request.GET.search }}"
+                                   style="font-size: 0.9rem"
+                                   title="Informe qualquer caracteristica de um curso para filtrar">
+                        </div>
                     </form>
                 </div>
 
-                <!--
-                <ul class="itens-lista">
-                    {% for objeto in objetos %}
-                        <li class="item-lista">
-                            <span><a href="/informacoes-curso/{{objeto.id}}">{{ objeto }}</a></span>
-                            <a href="informacoes-curso/{{ objeto.id }}"><span><i class="fas fa-arrow-right"></i></span></a>
-                        </li>
-                    {% endfor %}
-                </ul>
-                -->
-                <div class="row">
-                {% for elemento in lista_cursos %}
-                    <div class="col-sm-3 py-2">
-                        <div class="card card-curso h-100">
-
-                            <div class="card-header">
-                                <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
-                            </div>
-
-                            <div class="card-body">
-
-                                <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
-
-                                <hr/>
-
-                                <p class="card-text text-center">{{elemento.curso.descricao}}</p>
-                                <p>
-                                    <div class="stars text-center">
-                                        <span class="star {{ elemento.nota_1 }}"></span>
-                                        <span class="star {{ elemento.nota_2 }}"></span>
-                                        <span class="star {{ elemento.nota_3 }}"></span>
-                                        <span class="star {{ elemento.nota_4 }}"></span>
-                                        <span class="star {{ elemento.nota_5 }}"></span>
-                                        <span><b>({{elemento.nota_media}})</b></span>
-                                        <span>({{elemento.numero_avaliacoes}})</span>
-                                    </div>
-                                </p>
-                                <p>
-
-                                <div class="col text-center">
-                                    <a href="/informacoes-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button" title="Acessa página de informações detalhadas do curso">
-                                        <i class="fas fa-info-circle class-icone-button"></i>
-                                            Mais informações
-                                    </a>
-                                </div>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+                <div class="container-pesquisa">
+                    {% include  'core/cursos-lista-conteudo.html' %}
                 </div>
 
-                <!--
-                <div class="pagination">
-                    <span class="step-links">
-                        <span>
-                            {% if objetos.has_previous %}
-                                <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-arrow-left"></i></a>
-                            {% endif %}
-
-                            {% if objetos.paginator.num_pages %}
-                            <span class="current">
-                                {{ objetos.number }} de {{ objetos.paginator.num_pages }}
-                            </span>
-                            {% endif %}
-
-                            {% if objetos.has_next %}
-                                <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-arrow-right"></i></a>
-                            {% endif %}
-                        </span>
-                    </span>
-                </div>
-                -->
             </div>
          </section>
     </div>

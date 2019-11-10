@@ -19,104 +19,47 @@
 
     <div class="col-12 search-div">
         <form method="GET" id="search-form">
-            <input class="form-control" type="text" id="search" name="search"
-                   placeholder="Digite algo para buscar"
-                   value="{{ request.GET.search }}"
-                   style="font-size: 0.9rem"
-                   title="Informe qualquer caracteristica do registro para filtrar">
-            <i class="fas fa-search" id="search-btn"></i>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-search" id="teste"></i></span>
+                    </div>
+                    <input class="form-control" type="text" id="search" name="search"
+                           placeholder="Digite algo para buscar"
+                           value="{{ request.GET.search }}"
+                           style="font-size: 0.9rem"
+                           title="Informe qualquer caracteristica de um curso para filtrar">
+                </div>
         </form>
     </div>
 
+
     {% if nao_tem_objetos == False %}
 
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li
-                        {% if message.tags %}
-                            class="alert alert-{{message.tags }}"
-                        {% endif %}
-                    >
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+    <div class="container-pesquisa">
+        {% include  'core/registros-lista-conteudo.html' %}
+    </div>
 
-        <ul class="list-group">
-            {% for objeto in objetos %}
-                <li class="list-group-item" style="padding: .4rem 1rem;">
+    <div class="pagination" style="margin-top: 10px;">
+        <span class="step-links">
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <span>
+                    {% if objetos.has_previous %}
+                        <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-angle-left" style="font-size: 1.2rem;"></i></a>
+                    {% endif %}
 
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-
-                                <div class="col-sm-10" id="botao-anterior-container" style="margin-top: 5px; margin-bottom: 5px;">
-                                    <span>
-                                        <a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto }}</a>
-                                    </span>
-                                </div>
-
-                                <div class="col-sm-2" id="botao-conteudo-curso" style="margin-bottom: 5px; padding: 0;">
-
-                                    <div class="btn-toolbar justify-content-between" style="flex-wrap: unset;" role="toolbar" aria-label="Toolbar with button groups">
-
-                                        {% if lista_cursos == True %}
-                                         <div class="text-center">
-                                            <a href="/cadastro-conteudo-curso/{{ objeto.id }}" title="Acessa página de cadastro de conteúdos do curso">
-                                                <span>
-                                                    <i class="fab fa-contao" style="cursor: pointer; margin: 5px; margin-right: 10px; font-size: 20px; color: #007bff;"></i>
-                                                </span>
-                                            </a>
-                                         </div>
-                                        {% endif %}
-
-                                        <div class="text-center">
-                                            <a href="/edita-{{nomeLink}}/{{ objeto.id }}">
-                                                <span>
-                                                    <i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 10px; font-size: 20px; color: green;" title="Abre edição do registro selecionado"></i>
-                                                </span>
-                                            </a>
-                                        </div>
-
-                                        <div class="text-center">
-                                            <span href="" class="delete-btn2" onclick="removeItem({{ objeto.id }}, '/remove-{{nomeLink}}/{{ objeto.id }}')">
-                                                <i class="fas fa-trash" title="Remove registro selecionado"></i>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </li>
-            {% endfor %}
-        </ul>
-
-        <div class="pagination" style="margin-top: 10px;">
-            <span class="step-links">
-                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                    <span>
-                        {% if objetos.has_previous %}
-                            <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-angle-left" style="font-size: 1.2rem;"></i></a>
-                        {% endif %}
-
-                        {% if objetos.paginator.num_pages %}
-                        <span class="current" style="font-size: 1.2rem;">
-                            {{ objetos.number }} de {{ objetos.paginator.num_pages }}
-                        </span>
-                        {% endif %}
-
-                        {% if objetos.has_next %}
-                            <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-angle-right" style="font-size: 1.2rem;"></i></a>
-                        {% endif %}
+                    {% if objetos.paginator.num_pages %}
+                    <span class="current" style="font-size: 1.2rem;">
+                        {{ objetos.number }} de {{ objetos.paginator.num_pages }}
                     </span>
-                </div>
-            </span>
-        </div>
+                    {% endif %}
+
+                    {% if objetos.has_next %}
+                        <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-angle-right" style="font-size: 1.2rem;"></i></a>
+                    {% endif %}
+                </span>
+            </div>
+        </span>
+    </div>
     {% else %}
         <h5 class="text-center" style="margin-top: 20px;">Sem cadastros a serem exibidos</h5>
     {% endif %}
