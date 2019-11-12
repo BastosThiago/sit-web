@@ -1,8 +1,17 @@
 # users/forms.py
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from .models import CustomUser
 
+class CustomAuthenticationForm(AuthenticationForm):
+    email = forms.CharField(label='Endereço de E-mail', max_length=50,
+                            required=True)
+
+    class Meta(AuthenticationForm):
+        model = CustomUser
+        #fields = ('username', 'password', 'email')
+        fields = ('email', 'password', )
+        exclude = ('username')
 
 class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(label="Nome", max_length=30, required=True)
@@ -11,7 +20,8 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm):
         model = CustomUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'perfil')
+        #fields = ('username', 'first_name', 'last_name', 'email', 'perfil')
+        fields = ('email', 'first_name', 'last_name', 'perfil')
 
 
 class CustomUserChangeForm(UserChangeForm):

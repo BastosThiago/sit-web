@@ -10,9 +10,34 @@ from operator import or_
 from django.db.models import Q
 from django.contrib import messages
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomAuthenticationForm
 from .models import CustomUser
 from core.views import paginaInicialView, trata_usuario_sem_permissao
+from django.http import JsonResponse
+
+
+def LoginView(request):
+    # Caso o método HTTP associado a requisição seja POST
+    # Exibe o formulário com os dados já existentes, senão, um em branco
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request.POST or None)
+
+        if form.is_valid():
+            objeto = form.save(commit=False)
+            objeto.save()
+            return redirect(
+                "/accounts/login"
+            )
+    else:
+        form = CustomAuthenticationForm()
+
+    return render(
+        request,
+        'registration/login.html',
+        {
+            'form': form,
+        }
+    )
 
 
 class SignUpView(CreateView):
@@ -25,7 +50,8 @@ class SignUpView(CreateView):
 
     def form_valid(self, form):
         form.save()
-        username = self.request.POST['username']
+        #username = self.request.POST['username']
+        username = self.request.POST['email']
         password = self.request.POST['password1']
         user = authenticate(username=username, password=password)
         login(self.request, user)
@@ -236,7 +262,7 @@ def removeUsuarioView(request, id):
     perfil_administrador = False
 
     # Avalia o perfil do usuário da requsição
-    if request.user.tem_perfil_administrador():
+    if (not request.is_ajax() and request.user.tem_perfil_administrador()) or request.is_ajax():
         perfil_administrador = True
 
         # Obtém o objeto a ser removido e em caso de sucesso, o remove
@@ -248,9 +274,15 @@ def removeUsuarioView(request, id):
                 request,
                 'Falha ao remover o registro'
             )
-            return HttpResponseRedirect(
-                "/accounts/lista-usuarios"
-            )
+            if request.is_ajax():
+                resposta = JsonResponse()
+                resposta.status_code = 404
+                return resposta
+
+            else:
+                return HttpResponseRedirect(
+                    "/accounts/lista-usuarios"
+                )
 
         try:
             objeto.delete()
@@ -266,10 +298,24 @@ def removeUsuarioView(request, id):
                 'Falha ao remover o registro'
             )
 
-        # Redireciona o usuário para a página da lista de registros
-        return redirect(
-            "/accounts/lista-usuarios"
-        )
+            if request.is_ajax():
+                resposta = JsonResponse()
+                resposta.status_code = 404
+                return resposta
+
+        if request.is_ajax():
+            resposta = JsonResponse(
+                {
+                    'redirect': f"/",
+                }
+            )
+            resposta.status_code = 200
+            return resposta
+        else:
+            # Redireciona o usuário para a página da lista de registros
+            return redirect(
+                "/accounts/lista-usuarios"
+            )
     else:
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)

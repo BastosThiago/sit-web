@@ -1,10 +1,11 @@
 # users/urls.py
 from django.urls import path
 from .views import SignUpView, EditUserView, listaUsuariosView, \
-    removeUsuarioView, novoUsuarioView
+    removeUsuarioView, novoUsuarioView, LoginView
 
 urlpatterns = [
     path('register/', SignUpView.as_view(), name='register'),
+    #path('login/', LoginView, name='login'),
     path('edit/<int:id>', EditUserView, name='edituser'),
     path('lista-usuarios/', listaUsuariosView, name='lista-usuarios'),
     path('novo-usuario/', novoUsuarioView, name='novo-usuario'),

@@ -9,11 +9,17 @@ class CustomUser(AbstractUser):
         (ALUNO, 'Aluno'),
         (INSTRUTOR, 'Instrutor')
     )
+
+    email = models.EmailField(unique=True)
+
     perfil = models.PositiveSmallIntegerField(
         choices=PERFIS,
         null=True,
         blank=True
     )
+
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'email'
 
     def __str__(self):
         return f"Usuario: {self.username} - Nome: {self.get_full_name()}"

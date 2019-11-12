@@ -162,6 +162,8 @@ def registrosListView(request, modelo):
     perfil_aluno = False
     perfil_instrutor = False
     perfil_administrador = False
+    lista_avaliacoes = False
+    lista_inscricoes = False
 
     # Avalia o perfil do usuário da requsição
     if request.user.tem_perfil_aluno():
@@ -178,6 +180,12 @@ def registrosListView(request, modelo):
         lista_cursos = True
     else:
         lista_cursos = False
+
+    if modelo == Avaliacao:
+        lista_avaliacoes = True
+
+    if modelo == Inscricao:
+        lista_inscricoes = True
 
     # Obtém o título a ser apresentado na página com base no nome do modelo
     tituloPagina = modelo._meta.verbose_name_plural
@@ -246,6 +254,9 @@ def registrosListView(request, modelo):
             'menu_relatorios': False,
             'menu_usuarios': False,
             'menu_dados_cadastrais': False,
+            'lista_avaliacoes': lista_avaliacoes,
+            'lista_inscricoes': lista_inscricoes,
+
         }
     )
 
@@ -933,6 +944,40 @@ def inscricaoCursoView(request, id):
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
 
+
+@login_required
+def removeInscricaoCursoView(request, id):
+    """
+    View responsável pelo tratamento de remover a inscrição de um usuário no
+    curso selecionado
+    """
+
+    # Permite inscrição no curso apenas para usuários de perfil ALUNO
+    if request.user.tem_perfil_aluno():
+        if request.method == 'GET':
+            try:
+                curso = get_object_or_404(Curso, pk=id)
+
+                inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+
+                inscricao[0].delete()
+
+                resposta = JsonResponse(
+                    {
+                        'redirect': f"/meus-cursos/",
+                    }
+                )
+                resposta.status_code = 200
+
+                return resposta
+
+            except:
+                return trata_erro_404(request, None)
+        else:
+            return trata_usuario_sem_permissao(request)
+    else:
+        # Chama tratamento padrão para usuário sem permissão
+        return trata_usuario_sem_permissao(request)
 
 @login_required
 def avaliacaoCursoView(request, id):
@@ -2297,7 +2342,7 @@ def relatorioAcompanhamentoView(request):
 
         if perfil_administrador == True:
             # Obtém todos os usuários de pefil ALUNO
-            usuarios = CustomUser.objects.filter(perfil=1).order_by('username')
+            usuarios = CustomUser.objects.filter(perfil=1).order_by('first_name')
 
         else:
             # Obtém o ID dos usuários que estão incritos nos cursos criados

@@ -256,6 +256,17 @@
                             <hr/>
                             <h5 class="text-center"><i class="fas fa-play class-icone-content"></i>Iniciado em: <b>{{ data_inicio|date:"d/m/Y h:m:s" }}</b></h5>
                             <hr/>
+                                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+
+                                    <div class="col text-center" id="cancela inscricao" style="margin-bottom: 5px;">
+                                      <span class="btn btn-danger" style="cursor: pointer;" id="botao-anterior" role="button" onclick="cancelaInscricao()" title="Remove sua inscrição do curso">
+                                          <i class="fas fa-ban" ></i>
+                                           Cancelar inscrição
+                                      </span>
+                                    </div>
+
+                                </div>
+                            <hr/>
                         {% endif %}
                     </div>
                   </div>
@@ -426,11 +437,11 @@
                       <h5 class="text-center">Avalie o curso preenchendo as informações abaixo</h5>
                       <hr/>
                       <div class="alert alert-danger alert-dismissable" id="avaliacao-falha" hidden="true">
-                          <a href="#" class="close" onclick="escodeAlerta(this)"  aria-label="close">&times</a>
+                          <a href="" class="close" onclick="escodeAlerta(this)"  aria-label="close">&times</a>
                           <strong>Falha ao executar ação.</strong>
                       </div>
                       <div class="alert alert-success alert-dismissable" id="avaliacao-sucesso" hidden="true">
-                          <a href="#" class="close" onclick="escodeAlerta(this)" aria-label="close">&times</a>
+                          <a href="" class="close" onclick="escodeAlerta(this)" aria-label="close">&times</a>
                           <strong>Sucesso ao executar ação.</strong>
                       </div>
                       <form action="" id="avaliacao-form" method="POST">
@@ -563,8 +574,6 @@
 
               </div>
 
-
-
             <div class="modal fade modal-delete-item" id="confirmDeleteModal" id_elemento="" id_conteudo="" tipo_conteudo="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -579,6 +588,33 @@
               </div>
             </div>
 
+            <div class="modal fade modal-delete-avaliacao" id="confirmDeleteAvaliacao" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteAvaliacao" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-body confirm-conteudo">
+                    Deseja realmente eliminar sua avalição do curso?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirmDeleteButtonAvaliacao">Confirma</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade modal-delete-inscricao" id="confirmDeleteInscricao" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteInscricao" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-body confirm-conteudo">
+                    Deseja realmente cancelar sua inscrição no curso? Todo andamento no curso será perdido.
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirmDeleteButtonInscricao">Confirma</button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div class="modal modal-sem-alteracoes" tabindex="-1" role="dialog">
               <div class="modal-dialog" role="document">
@@ -759,8 +795,13 @@
                 $(elemento).closest('.alert')[0].hidden = true
             }
 
-            function eliminaAvaliacao(id_avaliacao) {
+            function eliminaAvaliacao() {
                 event.preventDefault();
+                $('.modal-delete-avaliacao').modal('show');
+            }
+
+            $(document).on('click', '#confirmDeleteButtonAvaliacao', function () {
+
                 $.ajax({
                   url         : '/elimina-avaliacao/{{ curso.id }}',
                   type        : 'GET',
@@ -778,8 +819,27 @@
                       $('#avaliacao-falha').find('strong')[0].innerText = data.responseText;
                   }
                 });
+            })
 
+            function cancelaInscricao() {
+                event.preventDefault();
+                $('.modal-delete-inscricao').modal('show');
             }
+
+            $(document).on('click', '#confirmDeleteButtonInscricao', function () {
+                $.ajax({
+                  url         : '/cancela-inscricao-curso/{{ curso.id }}',
+                  type        : 'GET',
+                  processData : false,
+                  contentType : false,
+                  success     : function(data, textStatus, jqXHR){
+                      window.location.href = data.redirect;
+                  },
+                  error: function(data){
+
+                  }
+                });
+            })
 
             $('.nav-tabs a').on('shown.bs.tab', function (e) {
                 e.preventDefault();

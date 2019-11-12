@@ -24,6 +24,7 @@ urlpatterns = [
     path('cursos',                              cursosListView,                                 name='cursos'),
     path('informacoes-curso/<int:id>',          informacoesCursoView,                           name='informacoes-curso'),
     path('inscricao-curso/<int:id>',            inscricaoCursoView,                             name='inscricao-curso'),
+    path('cancela-inscricao-curso/<int:id>',    removeInscricaoCursoView,                       name='cancela-inscricao-curso'),
     path('area-usuario/',                       areaUsuarioView,                                name='area-usuario'),
     path('meus-cursos/',                        meusCursosView,                                 name='meus-cursos'),
     path('conteudo-curso/<int:id>',             conteudoCursoView,                              name='conteudo-curso'),
