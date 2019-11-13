@@ -30,17 +30,36 @@
                 background-color: #B4FE8A;
             }
             td {
-                font-size: 1.2em;
+                font-size: 1.1em;
             }
 
             .titulo-relatorio {
-                font-size: 1.5em;
+                font-size: 1.3em;
                 background-color: #C8D1FF;
             }
 
+            .titulo-relatorio-2 {
+                font-size: 1.2em;
+                background-color: #a2dffd;
+            }
+
+            .linha-em-branco {
+                font-size: 1.0em;
+            }
+
             .titulo-colunas {
-                font-size: 1.3em;
+                font-size: 1.1em;
                 background-color: #FCDEC2;
+            }
+
+            .titulo-colunas-2 {
+                font-size: 1.0rem;
+                background-color: #FCDEC2;
+            }
+
+            .titulo-colunas-3 {
+                font-size: 1.1em;
+                background-color: #a2dffd;
             }
 
             .coluna-conteudo-1 {
@@ -66,51 +85,69 @@
                 <table>
 
                     <tr>
-                        <th class="titulo-relatorio" colspan="7">Relatório acompanhamento - {{ usuario.get_full_name }}</th>
+                        <th class="titulo-relatorio" colspan="6">Relatório acompanhamento - {{ usuario.get_full_name }}</th>
                     </tr>
 
-                    <tr>
-                        <th class="titulo-colunas">Curso</th>
-                        <th class="titulo-colunas">Data Inscrição</th>
-                        <th class="titulo-colunas">Andamento</th>
-                        <th class="titulo-colunas">Acertos</th>
-                        <th class="titulo-colunas">Situação</th>
-                        <th class="titulo-colunas">Data Conclusão</th>
-                        <th class="titulo-colunas">Obteve Certificado</th>
-                    </tr>
-
-                    {% for inscricao in inscricoes %}
+                    {% for elemento in lista_inscricoes %}
+                        <th class="titulo-relatorio-2" colspan="6">{{ elemento.inscricao.curso.titulo }}</th>
+                        <tr>
+                            <th class="titulo-colunas">Data Inscrição</th>
+                            <th class="titulo-colunas">Andamento</th>
+                            <th class="titulo-colunas">Acertos</th>
+                            <th class="titulo-colunas">Situação</th>
+                            <th class="titulo-colunas">Data Conclusão</th>
+                            <th class="titulo-colunas">Obteve Certificado</th>
+                        </tr>
 
                         <tr class="linha-conteudo">
 
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.curso.titulo }}</td>
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_inscricao | date:"d/m/Y" }}</td>
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_andamento }} %</td>
-                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.percentual_acertos }}  %</td>
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ elemento.inscricao.data_inscricao | date:"d/m/Y" }}</td>
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ elemento.inscricao.percentual_andamento }} %</td>
+                            <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ elemento.inscricao.percentual_acertos }}  %</td>
 
 
-                            {% if inscricao.situacao == 'REPROVADO' %}
-                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} reprovado">{{ inscricao.situacao }}</td>
+                            {% if elemento.inscricao.situacao == 'REPROVADO' %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} reprovado">{{ elemento.inscricao.situacao }}</td>
                             {% else %}
-                                {% if inscricao.situacao == 'APROVADO' %}
-                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} aprovado">{{ inscricao.situacao }}</td>
+                                {% if elemento.inscricao.situacao == 'APROVADO' %}
+                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %} aprovado">{{ elemento.inscricao.situacao }}</td>
                                 {% else %}
-                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.situacao }}</td>
+                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ elemento.inscricao.situacao }}</td>
                                 {% endif %}
                             {% endif %}
 
-                            {% if inscricao.data_conclusao != None %}
-                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ inscricao.data_conclusao | date:"d/m/Y" }}</td>
+                            {% if elemento.inscricao.data_conclusao != None %}
+                                <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ elemento.inscricao.data_conclusao | date:"d/m/Y" }}</td>
                             {% else %}
                                 <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}"> --- </td>
                             {% endif %}
 
-                            {% if inscricao.obteve_certificado == True %}
+                            {% if elemento.inscricao.obteve_certificado == True %}
                                 <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Sim</td>
                             {% else %}
                                 <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">Não</td>
                             {% endif %}
 
+                        </tr>
+
+                        {% if elemento.usuario_questionarios != None %}
+                            <tr>
+                                <th class="titulo-colunas-3" colspan="6">Atividades realizadas</th>
+                            </tr>
+                            <th class="titulo-colunas" colspan="2">Unidade</th>
+                            <th class="titulo-colunas" colspan="3">Questionário</th>
+                            <th class="titulo-colunas">Nota</th>
+                            {% for usuario_questionario in elemento.usuario_questionarios %}
+
+                                <tr class="linha-conteudo">
+                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}" colspan="2">{{ usuario_questionario.questionario.unidade.titulo }}</td>
+                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}" colspan="3">{{ usuario_questionario.questionario.titulo }}</td>
+                                    <td class="{% cycle 'coluna-conteudo-1' 'coluna-conteudo-2' %}">{{ usuario_questionario.percentual_acertos }}  %</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        <tr>
+                            <th class="linha-em-branco" colspan="6">&nbsp</th>
                         </tr>
 
                     {% endfor %}

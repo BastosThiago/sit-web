@@ -85,9 +85,9 @@ def EditUserView(request, id):
         perfil_instrutor = True
         menu_dados_cadastrais = True
 
-    if perfil_administrador:
-        form.fields['first_name'].widget.attrs['readonly'] = False
-        form.fields['last_name'].widget.attrs['readonly'] = False
+    #if perfil_administrador:
+    form.fields['first_name'].widget.attrs['readonly'] = False
+    form.fields['last_name'].widget.attrs['readonly'] = False
 
     form.fields['perfil'].widget.attrs['disabled'] = True
 

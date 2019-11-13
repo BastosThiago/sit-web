@@ -2369,6 +2369,8 @@ def relatorioAcompanhamentoView(request):
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
 
+    lista_inscricoes = []
+
     # Caso o usuário tenha perfil de administrador
     if perfil_administrador or perfil_instrutor:
 
@@ -2417,6 +2419,21 @@ def relatorioAcompanhamentoView(request):
             elif len(inscricoes) == 0:
                 nao_tem_inscricoes = True
 
+        if inscricoes is not None:
+            for inscricao in inscricoes:
+                dict_inscricao = {}
+                dict_inscricao['inscricao'] = inscricao
+                usuario_questionarios = UsuarioQuestionario.objects.filter(
+                    usuario=inscricao.usuario,
+                    questionario__unidade__curso=inscricao.curso
+                )
+                if usuario_questionarios.count() > 0:
+                    dict_inscricao['usuario_questionarios'] = usuario_questionarios
+                else:
+                    dict_inscricao['usuario_questionarios'] = None
+
+                lista_inscricoes.append(dict_inscricao)
+
         if request.is_ajax():
             return render(
                 request,
@@ -2446,6 +2463,7 @@ def relatorioAcompanhamentoView(request):
                     'usuarios': usuarios,
                     'usuario': usuario,
                     'inscricoes': inscricoes,
+                    'lista_inscricoes': lista_inscricoes,
                     'arquivo': False,
                     'nao_tem_usuarios': nao_tem_usuarios,
                     'nao_tem_inscricoes': nao_tem_inscricoes,
@@ -2520,12 +2538,29 @@ def relatorioUsuarioView(request):
             except:
                 return JsonResponse({})
 
+        lista_inscricoes = []
+        if inscricoes is not None:
+            for inscricao in inscricoes:
+                dict_inscricao = {}
+                dict_inscricao['inscricao'] = inscricao
+                usuario_questionarios = UsuarioQuestionario.objects.filter(
+                    usuario=inscricao.usuario,
+                    questionario__unidade__curso=inscricao.curso
+                )
+                if usuario_questionarios.count() > 0:
+                    dict_inscricao['usuario_questionarios'] = usuario_questionarios
+                else:
+                    dict_inscricao['usuario_questionarios'] = None
+
+                lista_inscricoes.append(dict_inscricao)
+
         return render(
             request,
             'core/relatorio-conteudo.html',
             {
                 'usuario': usuario,
                 'inscricoes': inscricoes,
+                'lista_inscricoes': lista_inscricoes,
                 'nao_tem_usuarios': nao_tem_usuarios,
                 'nao_tem_inscricoes': nao_tem_inscricoes,
                 'arquivo': False,
@@ -2546,9 +2581,26 @@ def obtemRelatorio(request, usuario_id):
         usuario = CustomUser.objects.get(pk=usuario_id)
         inscricoes = Inscricao.objects.filter(usuario=usuario)
 
+        lista_inscricoes = []
+        if inscricoes is not None:
+            for inscricao in inscricoes:
+                dict_inscricao = {}
+                dict_inscricao['inscricao'] = inscricao
+                usuario_questionarios = UsuarioQuestionario.objects.filter(
+                    usuario=inscricao.usuario,
+                    questionario__unidade__curso=inscricao.curso
+                )
+                if usuario_questionarios.count() > 0:
+                    dict_inscricao['usuario_questionarios'] = usuario_questionarios
+                else:
+                    dict_inscricao['usuario_questionarios'] = None
+
+                lista_inscricoes.append(dict_inscricao)
+
         contexto = {
             'usuario': usuario,
             'inscricoes': inscricoes,
+            'lista_inscricoes': lista_inscricoes,
             'arquivo': True,
             'request': request,
             'nao_tem_usuarios': False,
