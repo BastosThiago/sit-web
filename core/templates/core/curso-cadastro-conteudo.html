@@ -197,13 +197,13 @@
                 <input type="hidden" name="unidade_ordem" value="{{ unidade.ordem }}">
 
                 <div class="form-group">
-                    <label for="titulo-unidade" id="label-unidade">Titulo:</label>
+                    <label for="titulo-unidade" id="label-unidade">Título*</label>
                     <input type="text" class="form-control" id="titulo-unidade" value="{{ unidade.titulo }}" aria-describedby="" placeholder="Digite um título" name="titulo-unidade">
                     <span id="titulo-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="descricao-unidade" id="label-descricao">Descrição:</label>
+                    <label for="descricao-unidade" id="label-descricao">Descrição</label>
                     <input type="text" class="form-control" id="descricao-unidade" value="{{ unidade.descricao }}" aria-describedby="" placeholder="Digite uma descrição" name="descricao-unidade">
                 </div>
 
@@ -236,7 +236,7 @@
                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
                             <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "video")' title="Cria um novo vídeo">
-                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo vídeo
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar vídeo
                             </button>
                         </div>
                     </div>
@@ -283,7 +283,7 @@
                                         <input type="hidden" name="path_arquivo" value="{{ video.caminho }}">
 
                                         <div class="form-group">
-                                            <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
+                                            <label for="titulo-conteudo" id="label-titulo">Titulo*</label>
                                             <input type="text" class="form-control" id="titulo-conteudo" value="{{ video.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
                                             <span id="titulo-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                         </div>
@@ -310,7 +310,7 @@
                                         {% if video.video_interno == False %}
 
                                             <div class="form-group grupo-url">
-                                                <label for="conteudo-url" id="label-url">URL:</label>
+                                                <label for="conteudo-url" id="label-url">URL*</label>
                                                 {% if video.url != None %}
                                                 <input type="url" class="form-control" id="conteudo-url" value="{{ video.url  }}" placeholder="Digite uma URL" name="url">
                                                 {% else %}
@@ -320,7 +320,7 @@
                                             </div>
 
                                             <div class="form-group grupo-arquivo" hidden="true">
-                                                <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                                <label for="conteudo-path" id="label-path">Arquivo*</label>
                                                 <span><a class="caminho-arquivo-span" href="{{ video.arquivo_media_url }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
                                                 <input type="file" class="form-control" id="conteudo-path" name="caminho">
                                                 <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
@@ -329,13 +329,13 @@
                                         {% else %}
 
                                             <div class="form-group grupo-url" hidden="true">
-                                                <label for="conteudo-url" id="label-url">URL:</label>
+                                                <label for="conteudo-url" id="label-url">URL*</label>
                                                 <input type="url" class="form-control" id="conteudo-url" value="{{ video.url  }}" placeholder="Digite uma URL" name="url">
                                                 <span id="url-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                             </div>
 
                                             <div class="form-group grupo-arquivo">
-                                                <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                                <label for="conteudo-path" id="label-path">Arquivo*</label>
                                                 <span><a class="caminho-arquivo-span" href="{{ video.arquivo_media_url }}" target="_blank" id="link-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}"> {{ video.caminho }}</a></span>
                                                 <input type="file" class="form-control" id="conteudo-path" name="caminho">
                                                 <span id="path-video-{{ video.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
@@ -358,7 +358,7 @@
                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
                             <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "arquivo")' title="Cria um novo arquivo">
-                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo arquivo
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar arquivo
                             </button>
                         </div>
                     </div>
@@ -404,13 +404,13 @@
                                         <input type="hidden" name="path_arquivo" value="{{ arquivo.caminho }}">
 
                                         <div class="form-group">
-                                            <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
+                                            <label for="titulo-conteudo" id="label-titulo">Titulo*</label>
                                             <input type="text" class="form-control" id="titulo-conteudo" value="{{ arquivo.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
                                             <span id="titulo-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                            <label for="conteudo-path" id="label-path">Arquivo*</label>
                                             <span><a class="caminho-arquivo-span" href="{{ arquivo.arquivo_media_url }}" target="_blank" id="link-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}"> {{ arquivo.caminho }}</a></span>
                                             <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho">
                                             <span id="path-arquivo-{{ arquivo.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
@@ -431,7 +431,7 @@
                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
                             <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-{{ unidade.ordem }}" onclick='adicionaConteudo(this, "questionario")' title="Cria um novo questionário">
-                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo questionário
+                                <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar questionário
                             </button>
                         </div>
                     </div>
@@ -476,7 +476,7 @@
                                         <input type="hidden" name="path_arquivo" value="">
 
                                         <div class="form-group">
-                                            <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
+                                            <label for="titulo-conteudo" id="label-titulo">Titulo*</label>
                                             <input type="text" class="form-control" id="titulo-conteudo" value="{{ questionario.titulo  }}" aria-describedby="" placeholder="Digite um título" name="titulo">
                                             <span id="titulo-questionario-{{ questionario.ordem }}-unidade-{{ unidade.ordem }}" style="color: red;"></span>
                                         </div>
@@ -534,7 +534,7 @@
                                                             <input type="hidden" name="questao_ordem" value="0">
 
                                                             <div class="form-group">
-                                                                <label for="titulo-questao" id="label-questao">Enunciado:</label>
+                                                                <label for="titulo-questao" id="label-questao">Enunciado*</label>
                                                                 <input type="text" class="form-control" id="titulo-questao" value="{{ questao.enunciado }}" aria-describedby="" placeholder="Digite um enunciado" name="questao">
                                                                 <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
                                                             </div>
@@ -590,7 +590,7 @@
                                                                                 <input type="hidden" name="questao_ordem" value="{{ questao.ordem }}">
                                                                                 <input type="hidden" name="alternativa_ordem" value="{{ alternativa.ordem }}">
 
-                                                                                <label for="titulo-alternativa" id="label-alternativa">Descrição:</label>
+                                                                                <label for="titulo-alternativa" id="label-alternativa">Descrição*</label>
                                                                                 <div class="input-group mb-3">
                                                                                   <div class="input-group-prepend">
                                                                                     <div class="input-group-text">
@@ -754,13 +754,13 @@
                     <input type="hidden" name="unidade_ordem" value="${numero_unidade}">
 
                     <div class="form-group">
-                        <label for="titulo-unidade" id="label-unidade">Titulo:</label>
+                        <label for="titulo-unidade" id="label-unidade">Titulo*</label>
                         <input type="text" class="form-control" id="titulo-unidade" aria-describedby="" placeholder="Digite um título" name="titulo-unidade">
                         <span id="titulo-unidade-${numero_unidade}" style="color: red;"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="descricao-unidade" id="label-descricao">Descrição:</label>
+                        <label for="descricao-unidade" id="label-descricao">Descrição</label>
                         <input type="text" class="form-control" id="descricao-unidade" aria-describedby="" placeholder="Digite uma descrição" name="descricao-unidade">
                     </div>
 
@@ -792,7 +792,7 @@
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
                                 <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-videos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "video")' title="Cria um novo vídeo">
-                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo vídeo
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar vídeo
                                 </button>
                             </div>
                         </div>
@@ -806,7 +806,7 @@
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
                                 <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-arquivos-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "arquivo")' title="Cria um novo arquivo">
-                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo arquivo
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar arquivo
                                 </button>
                             </div>
                         </div>
@@ -819,7 +819,7 @@
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="col text-center" style="margin-top: 0px; margin-bottom: 10px; padding: 0;">
                                 <button class="btn btn-primary btn-add-panel-conteudo" id="accordion-questionarios-unidade-${numero_unidade}" onclick='adicionaConteudo(this, "questionario")' title="Cria um novo questionário">
-                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Novo questionário
+                                    <i class="fa fa-plus" style="vertical-align: middle;"></i> Adicionar questionário
                                 </button>
                             </div>
                         </div>
@@ -904,7 +904,7 @@
                             <input type="hidden" name="path_arquivo" value="">
 
                             <div class="form-group">
-                                <label for="titulo-conteudo" id="label-titulo">Titulo:</label>
+                                <label for="titulo-conteudo" id="label-titulo">Titulo*</label>
                                 <input type="text" class="form-control" id="titulo-conteudo" aria-describedby="" placeholder="Digite um título" name="titulo">
                                 <span id="titulo-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
@@ -921,13 +921,13 @@
                             </div>
 
                             <div class="form-group grupo-url">
-                                <label for="conteudo-url" id="label-url">URL: </label>
+                                <label for="conteudo-url" id="label-url">URL* </label>
                                 <input type="url" class="form-control" id="conteudo-url" placeholder="Digite uma URL" name="url">
                                 <span id="url-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
                             </div>
 
                             <div class="form-group grupo-arquivo" hidden="true">
-                                <label for="conteudo-path" id="label-path">Arquivo:</label>
+                                <label for="conteudo-path" id="label-path">Arquivo*</label>
                                 <span><a class="caminho-arquivo-span" href="" target="_blank" id="link-conteudo-0-unidade-0"></a></span>
                                 <input type="file" class="form-control" id="conteudo-path" placeholder="Selecione um caminho" name="caminho">
                                 <span id="path-${tipo_conteudo}-0-unidade-${unidade}" style="color: red;"></span>
@@ -1045,7 +1045,7 @@
                             <input type="hidden" name="questao_ordem" value="0">
 
                             <div class="form-group">
-                                <label for="titulo-questao" id="label-questao">Enunciado:</label>
+                                <label for="titulo-questao" id="label-questao">Enunciado*</label>
                                 <input type="text" class="form-control" id="titulo-questao" aria-describedby="" placeholder="Digite um enunciado" name="questao">
                                 <span id="titulo-questao-0-questionario-0-unidade-0" style="color: red;"></span>
                             </div>
@@ -1118,7 +1118,7 @@
                             <input type="hidden" name="questao_ordem" value="0">
                             <input type="hidden" name="alternativa_ordem" value="0">
 
-                            <label for="titulo-alternativa" id="label-alternativa">Descrição:</label>
+                            <label for="titulo-alternativa" id="label-alternativa">Descrição*</label>
                             <div class="input-group mb-3">
                               <div class="input-group-prepend">
                                 <div class="input-group-text">

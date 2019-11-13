@@ -12,63 +12,148 @@
             </ul>
         {% endif %}
 
-        <ul class="list-group">
-            {% for objeto in objetos %}
-                <li class="list-group-item" style="padding: .4rem 1rem;">
 
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+       <div style="overflow-x:auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        {% if lista_categorias == True%}
+                        <th scope="col">Título</th>
+                        {% endif %}
+                        {% if lista_cursos == True%}
+                        <th scope="col">Título</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Nome Instrutor</th>
+                        <th scope="col"><div class="text-center">Conteúdos</div></th>
+                        {% endif %}
+                        {% if lista_unidades == True%}
+                        <th scope="col">Título</th>
+                        <th scope="col">Curso</th>
+                        <th scope="col">Ordem</th>
+                        {% endif %}
+                        {% if lista_videos == True%}
+                        <th scope="col">Título</th>
+                        <th scope="col">Unidade</th>
+                        <th scope="col">Ordem</th>
+                        {% endif %}
+                        {% if lista_arquivos == True%}
+                        <th scope="col">Título</th>
+                        <th scope="col">Unidade</th>
+                        <th scope="col">Ordem</th>
+                        {% endif %}
+                        {% if lista_questionarios == True%}
+                        <th scope="col">Título</th>
+                        <th scope="col">Unidade</th>
+                        <th scope="col">Ordem</th>
+                        {% endif %}
+                        {% if lista_questoes == True%}
+                        <th scope="col">Enunciado</th>
+                        <th scope="col">Questionário</th>
+                        <th scope="col">Ordem</th>
+                        {% endif %}
+                        {% if lista_alternativas == True%}
+                        <th scope="col">Descricao</th>
+                        <th scope="col">Questão</th>
+                        <th scope="col">Ordem</th>
+                        {% endif %}
+                        {% if lista_avaliacoes == True%}
+                        <th scope="col">Usuário</th>
+                        <th scope="col">Curso</th>
+                        {% endif %}
+                        {% if lista_inscricoes == True%}
+                        <th scope="col">Usuário</th>
+                        <th scope="col">Curso</th>
+                        <th scope="col">Situação</th>
+                        {% endif %}
+                        {% if lista_avaliacoes == False and lista_inscricoes == False%}
+                        <th scope="col"><div class="text-center">Editar</div></th>
+                        {% endif %}
+                        <th scope="col"><div class="text-center">Excluir</div></th>
+                    </tr>
+                </thead>
+                <tbody>
 
-                                <div class="col-sm-10" id="botao-anterior-container" style="margin-top: 5px; margin-bottom: 5px;">
-                                    {% if lista_avaliacoes == False and lista_inscricoes == False %}
-                                    <span>
-                                        <a href="/edita-{{nomeLink}}/{{objeto.id}}">{{ objeto }}</a>
-                                    </span>
-                                    {% else %}
-                                    <span>
-                                        <p>{{ objeto }}</p>
-                                    </span>
-                                    {% endif %}
+                {% for objeto in objetos %}
+                    <tr>
+                        {% if lista_categorias == True%}
+                        <td>{{ objeto.titulo }}</td>
+                        {% endif %}
+                        {% if lista_cursos == True%}
+                        <td>{{ objeto.titulo }}</td>
+                        <td>{{ objeto.categoria.titulo }}</td>
+
+                            {% if objeto.nome_instrutor == None or objeto.nome_instrutor == "" %}
+                            <td>{{ objeto.usuario.get_full_name }}</td>
+                            {% else %}
+                            <td>{{ objeto.nome_instrutor }}</td>
+                            {% endif %}
+
+                            <td>
+                                <div class="text-center">
+                                    <a href="/cadastro-conteudo-curso/{{ objeto.id }}" title="Acessa página de cadastro de conteúdos do curso">
+                                        <i class="fab fa-contao" style="cursor: pointer; font-size: 20px; color: #007bff;"></i>
+                                    </a>
                                 </div>
+                            </td>
+                        {% endif %}
+                        {% if lista_unidades == True%}
+                        <td>{{ objeto.titulo }}</td>
+                        <td>{{ objeto.curso.titulo }}</td>
+                        <td>{{ objeto.ordem }}</td>
+                        {% endif %}
+                        {% if lista_videos == True%}
+                        <td>{{ objeto.titulo }}</td>
+                        <td>{{ objeto.unidade.titulo }}</td>
+                        <td>{{ objeto.ordem }}</td>
+                        {% endif %}
+                        {% if lista_arquivos == True%}
+                        <td>{{ objeto.titulo }}</td>
+                        <td>{{ objeto.unidade.titulo }}</td>
+                        <td>{{ objeto.ordem }}</td>
+                        {% endif %}
+                        {% if lista_questionarios == True%}
+                        <td>{{ objeto.titulo }}</td>
+                        <td>{{ objeto.unidade.titulo }}</td>
+                        <td>{{ objeto.ordem }}</td>
+                        {% endif %}
+                        {% if lista_questoes == True%}
+                        <td>{{ objeto.enunciado }}</td>
+                        <td>{{ objeto.questionario.titulo }}</td>
+                        <td>{{ objeto.ordem }}</td>
+                        {% endif %}
+                        {% if lista_alternativas == True%}
+                        <td>{{ objeto.descricao }}</td>
+                        <td>{{ objeto.questao.enunciado }}</td>
+                        <td>{{ objeto.ordem }}</td>
+                        {% endif %}
+                        {% if lista_avaliacoes == True%}
+                        <td>{{ objeto.usuario.get_full_name }}</td>
+                        <td>{{ objeto.curso.titulo }}</td>
+                        {% endif %}
+                        {% if lista_inscricoes == True%}
+                        <td>{{ objeto.usuario.get_full_name }}</td>
+                        <td>{{ objeto.curso.titulo }}</td>
+                        <td>{{ objeto.situacao }}</td>
+                        {% endif %}
+                        {% if lista_avaliacoes == False and lista_inscricoes == False%}
+                        <td>
+                            <div class="text-center">
 
-                                <div class="col-sm-2" id="botao-conteudo-curso" style="margin-bottom: 5px; padding: 0;">
+                                <a href="/edita-{{nomeLink}}/{{ objeto.id }}" title="Abre edição do registro selecionado">
+                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px; color: green;"></i>
+                                </a>
 
-                                    <div class="btn-toolbar justify-content-between" style="flex-wrap: unset;" role="toolbar" aria-label="Toolbar with button groups">
-
-                                        {% if lista_cursos == True %}
-                                         <div class="text-center">
-                                            <a href="/cadastro-conteudo-curso/{{ objeto.id }}" title="Acessa página de cadastro de conteúdos do curso">
-                                                <span>
-                                                    <i class="fab fa-contao" style="cursor: pointer; margin: 5px; margin-right: 10px; font-size: 20px; color: #007bff;"></i>
-                                                </span>
-                                            </a>
-                                         </div>
-                                        {% endif %}
-
-
-                                        <div class="text-center">
-                                            {% if lista_avaliacoes == False and lista_inscricoes == False %}
-                                            <a href="/edita-{{nomeLink}}/{{ objeto.id }}">
-                                                <span>
-                                                    <i class="fas fa-edit" style="cursor: pointer; margin: 5px; margin-right: 10px; font-size: 20px; color: green;" title="Abre edição do registro selecionado"></i>
-                                                </span>
-                                            </a>
-                                            {% endif %}
-                                        </div>
-
-                                        <div class="text-center">
-                                            <span href="" class="delete-btn2" onclick="removeItem({{ objeto.id }}, '/remove-{{nomeLink}}/{{ objeto.id }}')">
-                                                <i class="fas fa-trash" title="Remove registro selecionado"></i>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </td>
+                        {% endif %}
+                        <td>
+                            <div class="text-center">
+                                <i class="fas fa-trash-alt" style="cursor: pointer; font-size: 20px; color: red;" onclick="removeItem({{ objeto.id }}, '/remove-{{nomeLink}}/{{ objeto.id }}')" title="Remove registro selecionado"></i>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+       </div>
 
-                </li>
-            {% endfor %}
-        </ul>

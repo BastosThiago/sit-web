@@ -162,6 +162,14 @@ def registrosListView(request, modelo):
     perfil_aluno = False
     perfil_instrutor = False
     perfil_administrador = False
+    lista_categorias = False
+    lista_cursos = False
+    lista_unidades = False
+    lista_videos = False
+    lista_arquivos = False
+    lista_questionarios = False
+    lista_questoes = False
+    lista_alternativas = False
     lista_avaliacoes = False
     lista_inscricoes = False
 
@@ -176,10 +184,29 @@ def registrosListView(request, modelo):
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
 
+    if modelo == Categoria:
+        lista_categorias = True
+
     if modelo == Curso:
         lista_cursos = True
-    else:
-        lista_cursos = False
+
+    if modelo == Unidade:
+        lista_unidades = True
+
+    if modelo == Video:
+        lista_videos = True
+
+    if modelo == Arquivo:
+        lista_arquivos = True
+
+    if modelo == Questionario:
+        lista_questionarios = True
+
+    if modelo == Questao:
+        lista_questoes = True
+
+    if modelo == Alternativa:
+        lista_alternativas = True
 
     if modelo == Avaliacao:
         lista_avaliacoes = True
@@ -246,7 +273,16 @@ def registrosListView(request, modelo):
             'perfil_aluno': perfil_aluno,
             'perfil_administrador': perfil_administrador,
             'perfil_instrutor': perfil_instrutor,
+            'lista_categorias': lista_categorias,
             'lista_cursos': lista_cursos,
+            'lista_unidades': lista_unidades,
+            'lista_videos': lista_videos,
+            'lista_arquivos': lista_arquivos,
+            'lista_questionarios': lista_questionarios,
+            'lista_questoes': lista_questoes,
+            'lista_alternativas': lista_alternativas,
+            'lista_avaliacoes': lista_avaliacoes,
+            'lista_inscricoes': lista_inscricoes,
             'nao_tem_objetos': nao_tem_objetos,
             'menu_inicio': False,
             'menu_meus_cursos': False,
@@ -254,12 +290,8 @@ def registrosListView(request, modelo):
             'menu_relatorios': False,
             'menu_usuarios': False,
             'menu_dados_cadastrais': False,
-            'lista_avaliacoes': lista_avaliacoes,
-            'lista_inscricoes': lista_inscricoes,
-
         }
     )
-
 
 
 @login_required
