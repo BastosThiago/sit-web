@@ -19,7 +19,7 @@ $( document ).ready(function() {
 
     $(searchBtn).on('click', function(e) {
 
-        searchForm.submit();
+        //searchForm.submit();
     });
 
     $("input[name='search']").on('input' , function(e) {

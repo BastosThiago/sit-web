@@ -64,6 +64,11 @@
       border: 1px solid gray;
     }
 
+    .label-input-class-disabled-2 input ~ .checkmark {
+      background-color: #eee;
+      border: 1px solid #dee2e6;
+    }
+
     /* Create the checkmark/indicator (hidden when not checked) */
     .checkmark:after {
       content: "";
@@ -142,6 +147,10 @@
     .bd-example-modal-lg .modal-dialog .modal-content{
       background-color: transparent;
       border: none;
+    }
+
+    .texto-alternativa-disable {
+        color: darkgray;
     }
 
 
@@ -241,7 +250,7 @@
 
     {% endif %}
 
-    {% if perfil_aluno == True and questionario_sem_questoes == False%}
+    {% if perfil_aluno == True and questionario_sem_questoes == False and questionario_sem_alternativas == False %}
     <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0px; margin-top: 10px;">
 
         <div class="text-center">
@@ -270,61 +279,69 @@
         </div>
     {% endif %}
 
-    <form action="/teste" method="POST" id="form-questionario">
-        {% csrf_token %}
+    {% if questionario_sem_alternativas == True %}
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); margin-top: 20px; padding: 0px;">
+            <p class="text-center" style="margin-top: 10px;">Questionário sem alternativas cadastradas para suas questões.</p>
+        </div>
 
-        {% for questao in questoes %}
-            <div class="panel-group" id="accordion-questao-{{ questao.id }}">
+    {% else %}
 
-                <div class="card card-questao" style="margin-top: 10px;">
-                    <div class="card-header" id="heading-questao-{{ questao.id }}" style="padding: .2rem 1rem; text-align-last: justify;">
-                      <h5 class="mb-0">
-                        <button class="btn btn-link link-unidade"  style="margin-top: 5px; font-size: 1.1rem;" onclick="expandeArea(this)"  data-toggle="collapse" data-target="#collapse-questao-{{ questao.id }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.id }}" title="Clique aqui para exibir ou omitir detalhes da questão">
-                          <i class="fas fa-angle-double-down"></i>
-                          Questão - {{ questao.ordem }}
-                        </button>
 
-                      </h5>
-                    </div>
-                    <div id="collapse-questao-{{ questao.id }}" class="collapse show" style="padding: 10px;" aria-labelledby="heading-questao-{{ questao.id }}" data-parent="#accordion-questao-{{ questao.id }}">
+        <form action="/teste" method="POST" id="form-questionario">
+            {% csrf_token %}
 
-                        <span class="text-center"><b style="margin-left: 2px; font-size: 1.1rem;">{{ questao.enunciado }}</b></span>
+            {% for questao in questoes %}
+                <div class="panel-group" id="accordion-questao-{{ questao.id }}">
 
-                        {% for alternativa in alternativas %}
+                    <div class="card card-questao" style="margin-top: 10px;">
+                        <div class="card-header" id="heading-questao-{{ questao.id }}" style="padding: .2rem 1rem; text-align-last: justify;">
+                          <h5 class="mb-0">
+                            <button class="btn btn-link link-unidade"  style="margin-top: 5px; font-size: 1.1rem;" onclick="expandeArea(this)"  data-toggle="collapse" data-target="#collapse-questao-{{ questao.id }}" aria-expanded="true" aria-controls="collapse-questao-{{ questao.id }}" title="Clique aqui para exibir ou omitir detalhes da questão">
+                              <i class="fas fa-angle-double-down"></i>
+                              Questão - {{ questao.ordem }}
+                            </button>
 
-                            {% if alternativa.questao.id == questao.id %}
-                                <div class="alert alternativa-padrao" role="alert">
-                                    <label class="container-check label-input-class" title="Cliquei aqui para selecionar a resposta da questão">
-                                    {% if perfil_aluno == True %}
-                                        {% for chave, valor in alternativas_dict.items %}
-                                            {% if chave == alternativa.id %}
-                                                {% if valor == True %}
-                                                    <input class="input-radio" type="checkbox" checked="checked" id="input-questao-{{ questao.id }}-alternativa-{{ alternativa.ordem }}" questao_id="{{ questao.id }}" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" correta="{{ alternativa.correta }}">
-                                                {% else %}
-                                                    <input class="input-radio" type="checkbox" id="input-questao-{{ questao.id }}-alternativa-{{ alternativa.ordem }}" questao_id="{{ questao.id }}" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" correta="">
+                          </h5>
+                        </div>
+                        <div id="collapse-questao-{{ questao.id }}" class="collapse show" style="padding: 10px;" aria-labelledby="heading-questao-{{ questao.id }}" data-parent="#accordion-questao-{{ questao.id }}">
+
+                            <span class="text-center"><b style="margin-left: 2px; font-size: 1.1rem;">{{ questao.enunciado }}</b></span>
+
+                            {% for alternativa in alternativas %}
+
+                                {% if alternativa.questao.id == questao.id %}
+                                    <div class="alert alternativa-padrao" role="alert">
+                                        <label class="container-check label-input-class" title="Cliquei aqui para selecionar a resposta da questão">
+                                        {% if perfil_aluno == True %}
+                                            {% for chave, valor in alternativas_dict.items %}
+                                                {% if chave == alternativa.id %}
+                                                    {% if valor == True %}
+                                                        <input class="input-radio" type="checkbox" checked="checked" id="input-questao-{{ questao.id }}-alternativa-{{ alternativa.ordem }}" questao_id="{{ questao.id }}" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" correta="{{ alternativa.correta }}">
+                                                    {% else %}
+                                                        <input class="input-radio" type="checkbox" id="input-questao-{{ questao.id }}-alternativa-{{ alternativa.ordem }}" questao_id="{{ questao.id }}" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" correta="">
+                                                    {% endif %}
                                                 {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                       <input class="input-radio" type="checkbox" id="input-questao-{{ questao.id }}-alternativa-{{ alternativa.ordem }}" questao_id="{{ questao.id }}" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" correta="">
-                                    {% endif %}
-                                        <span style="float: left; margin-top: 3px;"class="checkmark"></span>
-                                    </label>
-                                    <div style="margin-left: 25px;">
-                                        {{ alternativa.descricao }}<i class="icone-alternativa"></i>
-                                    </div>
+                                            {% endfor %}
+                                        {% else %}
+                                           <input class="input-radio" type="checkbox" id="input-questao-{{ questao.id }}-alternativa-{{ alternativa.ordem }}" questao_id="{{ questao.id }}" name="questao-{{ questao.id }}" value="{{ alternativa.id }}" correta="">
+                                        {% endif %}
+                                            <span style="float: left; margin-top: 3px;"class="checkmark"></span>
+                                        </label>
+                                        <div style="margin-left: 25px;" id="texto-alternativa">
+                                            {{ alternativa.descricao }}<i class="icone-alternativa"></i>
+                                        </div>
 
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
 
 
-    </form>
-
+        </form>
+    {% endif %}
 </div>
 
 <script>
@@ -332,7 +349,7 @@
     //__ Obtém o tempo corrente do video que será exibido
     $(document).ready(function(){
         var inputs = document.getElementsByClassName("input-radio");
-        {% if usuario_questionario is not none%}
+        {% if usuario_questionario is not none %}
 
             {% if questionario_sem_questoes == False %}
                 {% if perfil_aluno == True %}
@@ -355,6 +372,8 @@
                             }
                             else {
                                 $(inputs[i]).closest('.alert').addClass('alternativa-padrao')
+                                $(inputs[i]).closest('div').find('#texto-alternativa').addClass('texto-alternativa-disable')
+                                $(inputs[i]).closest('label').addClass('label-input-class-disabled-2')
                             }
                         }
                     }
@@ -364,6 +383,8 @@
                     for(let i = 0; i < inputs.length; i++){
                         inputs[i].disabled = true;
                         $(inputs[i]).closest('label').addClass('label-input-class-disabled')
+                        $(inputs[i]).closest('label').addClass('label-input-class-disabled-2')
+                        $(inputs[i]).closest('div').find('#texto-alternativa').addClass('texto-alternativa-disable')
                     }
                 {% endif %}
             {% endif %}
@@ -382,6 +403,8 @@
                     for(let i = 0; i < inputs.length; i++){
                         inputs[i].disabled = true;
                         $(inputs[i]).closest('label').addClass('label-input-class-disabled')
+                        $(inputs[i]).closest('label').addClass('label-input-class-disabled-2')
+                        $(inputs[i]).closest('div').find('#texto-alternativa').addClass('texto-alternativa-disable')
                     }
                 {% endif %}
             {% endif %}
@@ -410,10 +433,12 @@
             inputs[i].disabled = false;
             inputs[i].checked = false;
             $(inputs[i]).closest('label').removeClass('label-input-class-disabled')
+            $(inputs[i]).closest('label').removeClass('label-input-class-disabled-2')
             $(inputs[i]).closest('.alert').removeClass('alternativa-incorreta')
             $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-times-circle icone-incorreto')
             $(inputs[i]).closest('.alert').removeClass('alternativa-correta')
             $(inputs[i]).closest('.alert').find('.icone-alternativa').removeClass('fas fa-check-circle icone-correto')
+            $(inputs[i]).closest('div').find('#texto-alternativa').removeClass('texto-alternativa-disable')
         }
         $("#refazer")[0].hidden = true
         $("#enviar")[0].hidden = false

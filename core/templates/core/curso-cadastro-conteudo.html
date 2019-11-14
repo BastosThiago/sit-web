@@ -1370,6 +1370,38 @@
 
       if(form){
 
+          if($(form).find('input[type="checkbox"]')){
+              inputs = $(form).closest('.questao').find('form').find('input[type="checkbox"]')
+
+              if(inputs.length > 0) {
+                  var tem_alternativa_correta = false
+                  for(let i = 0; i < inputs.length; i++){
+                     if(inputs[i] !== this) {
+                         if($(inputs[i]).prop('checked') == true) {
+                            tem_alternativa_correta = true
+                            break
+                         }
+                     }
+                  }
+
+                  if(tem_alternativa_correta == false) {
+                      resultado = $(form).closest('.questao').find('.resultado-questao')[0]
+                      resultado.innerHTML = `
+                          <div class="alert alert-danger alert-dismissable" style="padding: 0.3rem;">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times</a>
+                            <strong>Ao menos uma alternativa da questão deve ser marcada como correta.</strong>
+                          </div>
+                      `
+                      $('.modal-aguarde').modal('hide');
+                      return
+                  }
+                  else {
+                      resultado = $(form).closest('.questao').find('.resultado-questao')[0]
+                      resultado.innerHTML = ""
+                  }
+              }
+          }
+
           if($(form).find('input:file')[0]){
 
             if($(form).find('input:file').hasClass("trocou-arquivo") == false) {

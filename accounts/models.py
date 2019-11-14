@@ -22,7 +22,7 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'email'
 
     def __str__(self):
-        return f"Usuario: {self.username} - Nome: {self.get_full_name()}"
+        return self.email
 
     def tem_perfil_aluno(self):
         if self.perfil == self.ALUNO:

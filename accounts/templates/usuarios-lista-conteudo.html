@@ -27,7 +27,7 @@
                 <tbody>
                 {% for objeto in objetos %}
                     <tr>
-                        <td>{{ objeto.first_name }}</td>
+                        <td><a href="/accounts/edit/{{ objeto.id }}">{{ objeto.first_name }}</a></td>
                         <td>{{ objeto.last_name }}</td>
                         <td>{{ objeto.email }}</td>
                         {% if objeto.perfil == 1 %}

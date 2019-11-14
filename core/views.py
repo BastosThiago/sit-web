@@ -40,7 +40,10 @@ def trata_erro_404(request, exception):
     """
     Função para padronizar o tratamento do erro 404(não encontrado)
     """
-    response = render(request, '404.html')
+    if request.user.is_anonymous:
+        response = render(request, '404.html')
+    else:
+        response = render(request, '404_auth.html')
     response.status_code = 404
     return response
 
@@ -49,7 +52,10 @@ def trata_erro_500(request):
     """
     Função para padronizar o tratamento do erro 500(erro interno no servidor)
     """
-    response = render(request, '500.html')
+    if request.user.is_anonymous:
+        response = render(request, '500.html')
+    else:
+        response = render(request, '500_auth.html')
     response.status_code = 500
     return response
 
@@ -58,7 +64,10 @@ def trata_usuario_sem_permissao(request):
     """
     Função para padronizar o tratamento do erro 203(não autorizado)
     """
-    response = render(request, '203.html')
+    if request.user.is_anonymous:
+        response = render(request, '203.html')
+    else:
+        response = render(request, '203_auth.html')
     response.status_code = 203
     return response
 
@@ -309,6 +318,12 @@ def novoRegistroView(request, modelo):
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
 
+    if modelo == Avaliacao:
+        return trata_usuario_sem_permissao(request)
+
+    if modelo == Inscricao:
+        return trata_usuario_sem_permissao(request)
+
     if request.user.tem_perfil_administrador():
         perfil_administrador = True
 
@@ -426,6 +441,12 @@ def editaRegistroView(request, id, modelo):
 
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
+
+    if modelo == Avaliacao:
+        return trata_usuario_sem_permissao(request)
+
+    if modelo == Inscricao:
+        return trata_usuario_sem_permissao(request)
 
     # Obtém os nomes associado ao modelo da requisição
     nomeModelo = modelo._meta.verbose_name
@@ -2181,6 +2202,11 @@ def visualizacaoQuestionarioView(request, id):
     if questoes.count() == 0:
         questionario_sem_questoes = True
 
+    # Verifica se não existem alternativas nas questões do questionário
+    questionario_sem_alternativas = False
+    if alternativas.count() == 0:
+        questionario_sem_alternativas = True
+
     # Caso o usuário da requisição seja do perfil ALUNO, realiza tratamentos
     # para registrar respostas
     perfil_aluno = False
@@ -2292,6 +2318,7 @@ def visualizacaoQuestionarioView(request, id):
             'conteudo_anterior_url': conteudo_anterior_url,
             'proximo_conteudo_url': proximo_conteudo_url,
             'questionario_sem_questoes': questionario_sem_questoes,
+            'questionario_sem_alternativas': questionario_sem_alternativas,
             'post_ajax': post_ajax,
             'perfil_aluno': perfil_aluno,
             'perfil_administrador': perfil_administrador,
@@ -2482,6 +2509,22 @@ def relatorioAcompanhamentoView(request):
         if perfil_aluno:
             inscricoes = Inscricao.objects.filter(usuario=request.user)
 
+            if inscricoes is not None:
+                for inscricao in inscricoes:
+                    dict_inscricao = {}
+                    dict_inscricao['inscricao'] = inscricao
+                    usuario_questionarios = UsuarioQuestionario.objects.filter(
+                        usuario=inscricao.usuario,
+                        questionario__unidade__curso=inscricao.curso
+                    )
+                    if usuario_questionarios.count() > 0:
+                        dict_inscricao[
+                            'usuario_questionarios'] = usuario_questionarios
+                    else:
+                        dict_inscricao['usuario_questionarios'] = None
+
+                    lista_inscricoes.append(dict_inscricao)
+
             nao_tem_usuarios = False
             nao_tem_inscricoes = False
             if len(inscricoes) == 0:
@@ -2494,6 +2537,7 @@ def relatorioAcompanhamentoView(request):
                     'usuarios': None,
                     'usuario': request.user,
                     'inscricoes': inscricoes,
+                    'lista_inscricoes': lista_inscricoes,
                     'arquivo': False,
                     'nao_tem_usuarios': nao_tem_usuarios,
                     'nao_tem_inscricoes': nao_tem_inscricoes,
@@ -2530,7 +2574,14 @@ def relatorioUsuarioView(request):
                 usuario_id = request.GET['usuario_id']
 
                 usuario = CustomUser.objects.get(pk=usuario_id)
-                inscricoes = Inscricao.objects.filter(usuario=usuario)
+
+                if request.user.tem_perfil_instrutor():
+                    inscricoes = Inscricao.objects.filter(
+                        usuario=usuario,
+                        curso__usuario=request.user
+                    )
+                else:
+                    inscricoes = Inscricao.objects.filter(usuario=usuario)
 
                 if len(inscricoes) == 0:
                     nao_tem_inscricoes = True
@@ -2579,7 +2630,14 @@ def obtemRelatorio(request, usuario_id):
 
     try:
         usuario = CustomUser.objects.get(pk=usuario_id)
-        inscricoes = Inscricao.objects.filter(usuario=usuario)
+
+        if request.user.tem_perfil_instrutor():
+            inscricoes = Inscricao.objects.filter(
+                usuario=usuario,
+                curso__usuario=request.user
+            )
+        else:
+            inscricoes = Inscricao.objects.filter(usuario=usuario)
 
         lista_inscricoes = []
         if inscricoes is not None:
@@ -2622,6 +2680,7 @@ def obtemRelatorio(request, usuario_id):
         return trata_erro_500(request)
 
 
+@login_required
 @never_cache
 def cadastroConteudoCursoView(request, id):
     """

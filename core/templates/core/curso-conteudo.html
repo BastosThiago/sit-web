@@ -155,7 +155,7 @@
           border: none;
         }
 
-        .alert {
+        .alert-pagina {
             padding: .4rem 1rem;
             margin-bottom: 10px;
             background-color: rgba(0,0,0,.03);
@@ -169,7 +169,7 @@
 
     <div id="page-content">
 
-              <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
+              <div class="alert alert-secondary alert-pagina" role="alert" style="background-color: rgba(0,0,0,.03);">
                   <h4 class="text-center" style="margin-top: 10px;">{{ curso.titulo }}</h4>
               </div>
 
@@ -213,7 +213,7 @@
                             <h5 class="text-center">Conteúdo: <b>{{ curso_objeto_ultimo_conteudo.unidade.titulo }} - {{ curso_objeto_ultimo_conteudo.titulo }}</b></h5>
 
                             <div class="col text-center">
-                                <a href="/{{ usuario_inscricao.ultimo_conteudo_acessado }}" class="btn btn-primary" role="button" title="Clique aqui para continuar no último conteúdo que parou">
+                                <a href="/{{ usuario_inscricao.ultimo_conteudo_acessado }}" class="btn btn-primary" role="button" title="Clique aqui para continuar no último conteúdo em que parou">
                                     <i class="fas fa-angle-double-right class-icone-button"></i>
                                         Continuar
                                 </a>
@@ -288,8 +288,12 @@
                                 <div id="collapse-unidade-{{elemento.unidade.ordem}}" class="collapse" aria-labelledby="heading-unidade-{{elemento.unidade.ordem}}" data-parent="#accordion-conteudos-unidade-{{elemento.unidade.ordem}}">
 
                                     <div class="tab-content-body">
-                                        {% if elemento.unidade.descricao != None  %}
-                                        <p class="text-center">{{elemento.unidade.descricao}}</p>
+                                        {% if elemento.unidade.descricao != None and elemento.unidade.descricao != "" %}
+
+                                        <div class="alert alert-secondary alert-pagina" role="alert" style="background-color: rgba(0,0,0,.03);">
+                                           <p class="text-center">{{elemento.unidade.descricao}}</p>
+                                        </div>
+
                                         {% endif %}
 
                                         {% if elemento.tem_videos == True %}
@@ -437,11 +441,11 @@
                       <h5 class="text-center">Avalie o curso preenchendo as informações abaixo</h5>
                       <hr/>
                       <div class="alert alert-danger alert-dismissable" id="avaliacao-falha" hidden="true">
-                          <a href="" class="close" onclick="escodeAlerta(this)"  aria-label="close">&times</a>
+                          <a class="close" onclick="escodeAlerta(this)" aria-label="close" style="cursor: pointer">&times</a>
                           <strong>Falha ao executar ação.</strong>
                       </div>
                       <div class="alert alert-success alert-dismissable" id="avaliacao-sucesso" hidden="true">
-                          <a href="" class="close" onclick="escodeAlerta(this)" aria-label="close">&times</a>
+                          <a class="close" onclick="escodeAlerta(this)" aria-label="close" style="cursor: pointer">&times</a>
                           <strong>Sucesso ao executar ação.</strong>
                       </div>
                       <form action="" id="avaliacao-form" method="POST">
@@ -540,7 +544,7 @@
 
                     <div class="tab-content-body">
                       <hr/>
-                      <p> Para obter o certificado do curso, é necessário ter assistido a todos os vídeos disponibilizados nas unidades
+                      <p> Para obter o certificado de participação do curso, é necessário ter assistido a todos os vídeos disponibilizados nas unidades
                       e também ter um percentual de acerto de do mínimo 70% nos questionários propostos.</p>
                       <hr/>
 

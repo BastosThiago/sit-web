@@ -64,7 +64,7 @@ class Curso(models.Model):
 
     class CustomMeta:
         ordering_field = 'titulo'
-        search_fields = ['titulo', 'categoria__titulo', 'usuario__username', 'palavras_chaves', 'descricao']
+        search_fields = ['titulo', 'categoria__titulo', 'usuario__first_name', 'nome_instrutor', 'palavras_chaves', 'descricao']
 
     def __str__(self):
         return self.titulo
@@ -282,7 +282,7 @@ class Inscricao(models.Model):
 
     class CustomMeta:
         ordering_field = 'data_inscricao'
-        search_fields = ['curso__titulo', 'usuario__username', 'data_inscricao']
+        search_fields = ['curso__titulo', 'usuario__email', 'usuario__first_name', 'data_inscricao', 'situacao']
 
 
 class Avaliacao(models.Model):
@@ -318,7 +318,7 @@ class Avaliacao(models.Model):
 
     class CustomMeta:
         ordering_field = 'data_avaliacao'
-        search_fields = ['curso__titulo', 'usuario__username', 'nota', 'comentario', 'data_avaliacao']
+        search_fields = ['curso__titulo', 'usuario__email', 'usuario__first_name', 'nota', 'comentario', 'data_avaliacao']
 
 
 class Unidade(models.Model):
@@ -530,7 +530,7 @@ class Questao(models.Model):
 
     class CustomMeta:
         ordering_field = 'ordem'
-        search_fields = ['questionario_titulo', 'enunciado']
+        search_fields = ['questionario__titulo', 'enunciado']
 
 
 class Alternativa(models.Model):
