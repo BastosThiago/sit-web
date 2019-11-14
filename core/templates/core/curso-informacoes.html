@@ -268,13 +268,14 @@
                         <hr/>
                         <h5 class="text-center"><i class="fas fa-pen class-icone-content"></i>Descrição das Unidades</h5>
                         <hr/>
-                        <div class="panel-group" id="accordion-conteudos">
 
-                            {% if unidades == None %}
-                                <p class="text-center">Sem unidades cadastradas</p>
-                            {% endif %}
+                        {% if unidades == None %}
+                            <p class="text-center">Sem unidades cadastradas</p>
+                        {% endif %}
 
-                            {% for unidade in unidades %}
+
+                        {% for unidade in unidades %}
+                        <div class="panel-group" id="accordion-unidade-{{ unidade.ordem }}">
                             <div class="card" style="margin-top: 10px;">
                                 <div class="card-header" id="heading-unidade-{{ unidade.ordem }}" style="padding: 0.05rem .5rem; text-align-last: justify;">
                                   <h5 class="mb-0">
@@ -285,7 +286,7 @@
 
                                   </h5>
                                 </div>
-                                <div id="collapse-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-unidade-{{ unidade.ordem }}" data-parent="#accordion-conteudos">
+                                <div id="collapse-unidade-{{ unidade.ordem }}" class="collapse" aria-labelledby="heading-unidade-{{ unidade.ordem }}" data-parent="#accordion-unidade-{{ unidade.ordem }}">
                                   <div class="tab-content-body">
                                       {% if unidade.descricao == None %}
                                           <p></p>
@@ -295,8 +296,9 @@
                                   </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
+                        {% endfor %}
+
 
                     </div>
 
@@ -409,13 +411,12 @@
                         <h5 class="text-center"><i class="fa fa-comments class-icone-content" style="font-size: 1.6rem;"></i>Comentários</h5>
                         <hr/>
 
-                        <div class="panel-group" id="accordion-avaliacoes">
+                        {% if avaliacoes == None %}
+                            <p class="text-center">Sem avaliações cadastradas</p>
+                        {% endif %}
 
-                            {% if avaliacoes == None %}
-                                <p class="text-center">Sem avaliações cadastradas</p>
-                            {% endif %}
-
-                            {% for avaliacao in avaliacoes %}
+                        {% for avaliacao in avaliacoes %}
+                        <div class="panel-group" id="accordion-avaliacao-{{ avaliacao.id }}">
                             <div class="card" style="margin-top: 10px;">
                                 <div class="card-header" id="heading-avaliacao-{{ avaliacao.id }}" style="padding: .2rem 1rem">
                                   <h5>
@@ -473,14 +474,15 @@
                                     </button>
                                   </h5>
                                 </div>
-                                <div id="collapse-avaliacao-{{ avaliacao.id }}" class="collapse" aria-labelledby="heading-avaliacao-{{ avaliacao.id }}" data-parent="#accordion-avaliacoes">
+                                <div id="collapse-avaliacao-{{ avaliacao.id }}" class="collapse" aria-labelledby="heading-avaliacao-{{ avaliacao.id }}" data-parent="#accordion-avaliacao-{{ avaliacao.id }}">
                                   <div class="tab-content-body">
-                                  <p>{{ avaliacao.comentario }}</p>
+                                    <p>{{ avaliacao.comentario }}</p>
                                   </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
+                        {% endfor %}
+
                     </div>
                   </div>
               </div>

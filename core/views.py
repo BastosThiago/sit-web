@@ -1236,7 +1236,7 @@ def areaUsuarioView(request):
                 }
             )
         # Caso o perfil do usuário da requisição seja de ADMINISTRADOR
-        if perfil_administrador:
+        else:
             return render(
                 request,
                 'core/area-administrador.html',
@@ -1249,7 +1249,7 @@ def areaUsuarioView(request):
                     'menu_usuarios': False,
                     'menu_dados_cadastrais': False,
                 }
-        )
+            )
 
 
 @login_required
@@ -1814,16 +1814,17 @@ def visualizacaoVideoView(request, id):
             usuario_video_proximo = None
             usuario_video_proximo_id = 0
 
-    if usuario_video.assistido != True:
-        usuario_video.assistido = True
-        usuario_video.data_assistido = datetime.now()
-        usuario_video.save()
+    if request.user.tem_perfil_aluno():
+        if usuario_video.assistido != True:
+            usuario_video.assistido = True
+            usuario_video.data_assistido = datetime.now()
+            usuario_video.save()
 
-    # Atualiza percentual de andamento no curso para o usuário
-    atualizaAndamentoCurso(
-        usuario_video.video.unidade.curso,
-        request.user
-    )
+        # Atualiza percentual de andamento no curso para o usuário
+        atualizaAndamentoCurso(
+            usuario_video.video.unidade.curso,
+            request.user
+        )
 
     # Caso tenha obtido as informações de associação entre usuário e video
     data_acesso = None

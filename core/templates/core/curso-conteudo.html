@@ -290,8 +290,8 @@
                                     <div class="tab-content-body">
                                         {% if elemento.unidade.descricao != None and elemento.unidade.descricao != "" %}
 
-                                        <div class="alert alert-secondary alert-pagina" role="alert" style="background-color: rgba(0,0,0,.03);">
-                                           <p class="text-center">{{elemento.unidade.descricao}}</p>
+                                        <div class="alert alert-secondary alert-pagina" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+                                           <p class="text-center" style="margin-top: 15px;">{{elemento.unidade.descricao}}</p>
                                         </div>
 
                                         {% endif %}
@@ -313,7 +313,7 @@
                                                   <div class="tab-content-body">
 
                                                     {% for video in elemento.videos %}
-                                                        <div class="alert alert-secondary" role="alert">
+                                                        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
 
                                                             {% if perfil_aluno == True %}
                                                             <label class="container-check" title="Clique aqui para marcar ou desmarcar que você interagiu com o vídeo">
@@ -355,7 +355,7 @@
                                                   <div class="tab-content-body">
 
                                                         {% for arquivo in elemento.arquivos %}
-                                                            <div class="alert alert-secondary" role="alert">
+                                                            <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
 
                                                                 {% if perfil_aluno == True %}
                                                                 <label class="container-check" title="Clique aqui para marcar ou desmarcar que você interagiu com o arquivo">
@@ -399,7 +399,7 @@
                                                   <div class="tab-content-body">
 
                                                         {% for questionario in elemento.questionarios %}
-                                                            <div class="alert alert-secondary" role="alert">
+                                                            <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
 
                                                                 {% if perfil_aluno == True %}
                                                                 <label class="container-check" title="Clique aqui para marcar ou desmarcar que você interagiu com o questionário">
