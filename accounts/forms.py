@@ -23,6 +23,11 @@ class CustomUserCreationForm(UserCreationForm):
         #fields = ('username', 'first_name', 'last_name', 'email', 'perfil')
         fields = ('email', 'first_name', 'last_name', 'perfil')
 
+    def __init__(self, *args, **kwargs):
+        perfil = kwargs.pop('perfil', False)
+        super(CustomUserCreationForm, self).__init__(*args, **kwargs)
+        if perfil:
+            self.fields['perfil'].choices = perfil
 
 class CustomUserChangeForm(UserChangeForm):
     def __init__(self, *args, **kwargs):

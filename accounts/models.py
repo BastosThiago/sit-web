@@ -5,9 +5,11 @@ from django.contrib.auth.models import AbstractUser
 class CustomUser(AbstractUser):
     ALUNO = 1
     INSTRUTOR = 2
+    ADMINISTRADOR = 3
     PERFIS = (
         (ALUNO, 'Aluno'),
-        (INSTRUTOR, 'Instrutor')
+        (INSTRUTOR, 'Instrutor'),
+        (ADMINISTRADOR, 'Administrador'),
     )
 
     email = models.EmailField(unique=True)
@@ -35,4 +37,6 @@ class CustomUser(AbstractUser):
         return False
 
     def tem_perfil_administrador(self):
-        return self.is_staff
+        if self.perfil == self.ADMINISTRADOR or self.is_staff:
+            return True
+        return False

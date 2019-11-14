@@ -48,6 +48,11 @@ class SignUpView(CreateView):
     success_url = reverse_lazy(paginaInicialView)
     template_name = 'signup.html'
 
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs['perfil'] = CustomUser.PERFIS[:-1]
+        return form_kwargs
+
     def form_valid(self, form):
         form.save()
         #username = self.request.POST['username']
@@ -169,12 +174,12 @@ def listaUsuariosView(request):
             filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
             objetos = CustomUser.objects.filter(filtro)
 
-            objetos = objetos.filter(Q(perfil=1) | (Q(perfil=2))).order_by('username')
+            objetos = objetos.filter(Q(perfil=1) | (Q(perfil=2) | (Q(perfil=2)))).order_by('username')
 
         # Caso não, obtém a lista de todos os objetos
         else:
             lista_objetos = CustomUser.objects.all().order_by('username')
-            lista_objetos = lista_objetos.filter(Q(perfil=1) | (Q(perfil=2)))
+            lista_objetos = lista_objetos.filter(Q(perfil=1) | (Q(perfil=2) | (Q(perfil=3))))
 
             paginator = Paginator(lista_objetos, 10)
 
