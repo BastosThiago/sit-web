@@ -15,10 +15,10 @@
 
             {{ form|crispy }}
 
-
+                {% if perfil_administrador == False or perfil_administrador == True and user == usuario%}
                 <label>Senha de acesso</label>
                 <p><a href="/accounts/password_change">Clique aqui para acessar o formuário de troca de senha</a></p>
-
+                {% endif %}
 
 
             <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">

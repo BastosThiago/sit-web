@@ -23,7 +23,7 @@ class Categoria(models.Model):
     """
     objects = CategoriaManager()
 
-    titulo = models.CharField(max_length=40)
+    titulo = models.CharField(max_length=40, verbose_name=u"título")
 
     data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
@@ -46,12 +46,12 @@ class Curso(models.Model):
     """
     objects = CursoManager()
 
-    titulo = models.CharField(unique=True, max_length=70)
+    titulo = models.CharField(unique=True, max_length=70, verbose_name=u"título")
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    nome_instrutor = models.CharField(null=True, blank=True, max_length=50)
+    nome_instrutor = models.CharField(null=True, verbose_name=u"Nome do instrutor", blank=True, max_length=50)
     palavras_chaves = models.CharField(max_length=150, null=True, blank=True)
-    descricao = models.TextField(max_length=250, null=True, blank=True)
+    descricao = models.TextField(max_length=250, verbose_name=u"descrição", null=True, blank=True)
     publicado = models.BooleanField(default=False)
     data_publicado = models.DateTimeField(null=True, blank=True)
 
@@ -299,9 +299,9 @@ class Avaliacao(models.Model):
         (5, '5'),
     ]
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(AUTH_USER_MODEL, verbose_name=u"usuário", on_delete=models.CASCADE)
     nota = models.IntegerField(choices=NOTAS)
-    comentario = models.TextField(max_length=300, null=True, blank=True)
+    comentario = models.TextField(max_length=300, verbose_name=u"comentário", null=True, blank=True)
     data_avaliacao = models.DateTimeField(auto_now_add=True)
 
     data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -327,9 +327,9 @@ class Unidade(models.Model):
     """
     objects = UnidadeManager()
 
-    titulo = models.CharField(max_length=70)
+    titulo = models.CharField(max_length=70, verbose_name=u"título")
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    descricao = models.TextField(max_length=250, blank=True, null=True, default=None)
+    descricao = models.TextField(max_length=250, verbose_name=u"descrição", blank=True, null=True, default=None)
     ordem = OrderField(blank=True, for_fields=['curso'])
 
     data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -355,7 +355,7 @@ class Video(models.Model):
     """
     objects = VideoManager()
 
-    titulo = models.CharField(max_length=70)
+    titulo = models.CharField(max_length=70, verbose_name=u"título")
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     video_interno = models.BooleanField(default=False)
     url = models.URLField(max_length=200, null=True, blank=True)
@@ -386,7 +386,7 @@ class Arquivo(models.Model):
     """
     objects = ArquivoManager()
 
-    titulo = models.CharField(max_length=70)
+    titulo = models.CharField(max_length=70, verbose_name=u"título")
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     caminho = models.FileField(upload_to='arquivos', storage=gd_storage)
     arquivo_media_url = models.CharField(max_length=250, null=True, blank=True)
@@ -462,7 +462,7 @@ class Questionario(models.Model):
     """
     objects = QuestionarioManager()
 
-    titulo = models.CharField(max_length=70)
+    titulo = models.CharField(max_length=70, verbose_name=u"título")
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     ordem = OrderField(blank=True, for_fields=['unidade'])
 
@@ -512,7 +512,7 @@ class Questao(models.Model):
     """
     objects = QuestaoManager()
 
-    questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
+    questionario = models.ForeignKey(Questionario, verbose_name=u"questionário", on_delete=models.CASCADE)
     enunciado = models.TextField(max_length=300)
     ordem = OrderField(blank=True, for_fields=['questionario'])
 
@@ -539,8 +539,8 @@ class Alternativa(models.Model):
     """
     objects = AlternativaManager()
 
-    questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
-    descricao = models.TextField(max_length=350)
+    questao = models.ForeignKey(Questao, verbose_name=u"questão", on_delete=models.CASCADE)
+    descricao = models.TextField(max_length=350, verbose_name=u"descrição")
     ordem = OrderField(blank=True, for_fields=['questao'])
     correta = models.BooleanField()
 

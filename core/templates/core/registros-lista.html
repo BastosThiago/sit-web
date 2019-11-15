@@ -8,6 +8,7 @@
         <h2 class="text-center" style="margin-top: 5px;">Lista de {{tituloPagina}}</h2>
     </div>
 
+    {% if lista_inscricoes == False and lista_avaliacoes == False %}
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
         <div class="col text-center" style="margin-top: 20px; margin-bottom: 10px;">
           <a href="/adiciona-{{nomeLink}}/" class="btn btn-primary " role="button" title="Adiciona um novo registro">
@@ -16,6 +17,7 @@
           </a>
         </div>
     </div>
+    {% endif %}
 
     <div class="col-12 search-div">
         <form method="GET" id="search-form">
