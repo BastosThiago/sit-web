@@ -504,7 +504,8 @@ def editaRegistroView(request, id, modelo):
             # Caso seja a criação de um curso, atualiza o usuário
             # responsável por criar o curso
             if modelo == Curso:
-                objeto.usuario = request.user
+                if objeto.usuario is None:
+                    objeto.usuario = request.user
 
                 if publicado is not None and publicado == False and objeto.publicado == True:
                     objeto.data_publicado = datetime.now()

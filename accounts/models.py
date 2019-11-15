@@ -14,6 +14,12 @@ class CustomUser(AbstractUser):
 
     email = models.EmailField(unique=True)
 
+    username = models.CharField(
+        max_length=150,
+        null=True,
+        blank=True,
+    )
+
     perfil = models.PositiveSmallIntegerField(
         choices=PERFIS,
         null=True,

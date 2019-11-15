@@ -64,7 +64,7 @@
 
             <br><br><br><br>
 
-            <span class="nome-aluno"><b>{{ usuario.username }}</b></span>
+            <span class="nome-aluno"><b>{{ usuario.get_full_name }}</b></span>
 
             <br/><br/><br><br>
 
@@ -74,7 +74,7 @@
             <span class="nome-curso"><b>{{ inscricao.curso.titulo }}</b></span>
             <br/><br/><br><br>
 
-            <span class="texto-nota">com um aproveitamento de <b>{{ inscricao.percentual_acertos }}%</b></span>
+            <span class="texto-nota">com um aproveitamento de <b>{{ inscricao.percentual_acertos }}%</b> nas atividades objetivas</span>
 
             <br/><br/><br/><br/>
 
