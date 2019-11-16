@@ -174,7 +174,7 @@ def listaUsuariosView(request):
             filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
             objetos = CustomUser.objects.filter(filtro)
 
-            objetos = objetos.filter(Q(perfil=1) | (Q(perfil=2) | (Q(perfil=2)))).order_by('username')
+            objetos = objetos.filter(Q(perfil=1) | (Q(perfil=2) | (Q(perfil=3)))).order_by('username')
 
         # Caso não, obtém a lista de todos os objetos
         else:

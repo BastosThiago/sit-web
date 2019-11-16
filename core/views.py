@@ -1547,10 +1547,8 @@ def conteudoCursoView(request, id):
         # obtém a inscrição do usuário curso
         if perfil_aluno:
             try:
-                inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
-
                 atualizaAndamentoCurso(curso, request.user)
-
+                inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
                 situacao_aluno_curso = inscricao.situacao
                 percentual_andamento = "{:.1f}".format(inscricao.percentual_andamento)
                 percentual_acertos = "{:.1f}".format(inscricao.percentual_acertos)
