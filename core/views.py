@@ -14,6 +14,7 @@ from wsgiref.util import FileWrapper
 from datetime import datetime
 import json
 from django.contrib.staticfiles import finders
+from django.db import IntegrityError, transaction
 
 from sistema_treinamentos.settings import MEDIA_ROOT
 from .forms import *
@@ -1053,8 +1054,41 @@ def removeInscricaoCursoView(request, id):
                     usuario=request.user
                 )
 
-                # Remove a inscrição do usuário no curso
-                inscricao[0].delete()
+                with transaction.atomic():
+                    usuario_videos_curso = UsuarioVideo.objects.filter(
+                        usuario=request.user,
+                        video__unidade__curso=curso
+                    )
+
+                    for usuario_video_curso in usuario_videos_curso:
+                        usuario_video_curso.delete()
+
+                    usuario_arquivos_curso = UsuarioArquivo.objects.filter(
+                        usuario=request.user,
+                        arquivo__unidade__curso=curso
+                    )
+
+                    for usuario_arquivo_curso in usuario_arquivos_curso:
+                        usuario_arquivo_curso.delete()
+
+                    usuario_questionarios_curso = UsuarioQuestionario.objects.filter(
+                        usuario=request.user,
+                        questionario__unidade__curso=curso
+                    )
+
+                    for usuario_questionario_curso in usuario_questionarios_curso:
+                        usuario_questionario_curso.delete()
+
+                    usuarios_respostas_curso = UsuarioResposta.objects.filter(
+                        usuario=request.user,
+                        questao__questionario__unidade__curso=curso
+                    )
+
+                    for usuarios_resposta_curso in usuarios_respostas_curso:
+                        usuarios_resposta_curso.delete()
+
+                    # Remove a inscrição do usuário no curso
+                    inscricao[0].delete()
 
                 resposta = JsonResponse(
                     {
