@@ -1,40 +1,40 @@
-                {% if nao_tem_cursos == False %}
-                <div class="row">
-                {% for elemento in lista_cursos %}
-                    <div class="col-sm-3" style="margin-bottom: 20px;">
-                        <div class="card card-curso h-100 ">
+{% if nao_tem_cursos == False %}
+<div class="row">
+{% for elemento in lista_cursos %}
+    <div class="col-sm-3" style="margin-bottom: 20px;">
+        <div class="card card-curso h-100 ">
 
-                            <div class="card-header">
-                                <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
-                            </div>
+            <div class="card-header">
+                <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
+            </div>
 
-                            <div class="card-body">
+            <div class="card-body">
 
-                                <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
 
-                                <hr/>
+                <hr/>
 
-                                <p class="card-text text-center">Andamento</i></p>
-                                <p>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ elemento.percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                            <span class="perc-nota"><b style="font-size: 1rem; color: black">{{ elemento.percentual_andamento }}%</b></span>
-                                        </div>
-                                    </div>
-                                </p>
-                                <p>
-                                    <div class="col text-center">
-                                        <a href="/conteudo-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button" title="Acessa página de conteúdos do curso">
-                                            <i class="fas fa-angle-double-right class-icone-button"></i>
-                                                Acessar
-                                        </a>
-                                    </div>
-                                </p>
-                            </div>
+                <p class="card-text text-center">Andamento</i></p>
+                <p>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ elemento.percentual_andamento }}%"aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <span class="perc-nota"><b style="font-size: 1rem; color: black">{{ elemento.percentual_andamento }}%</b></span>
                         </div>
                     </div>
-                {% endfor %}
-                </div>
-                {% else %}
-                <h5 class="text-center" style="margin-top: 20px;">Sem cursos a serem exibidos</h5>
-                {% endif %}
+                </p>
+                <p>
+                    <div class="col text-center">
+                        <a href="/conteudo-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button" title="Acessa página de conteúdos do curso">
+                            <i class="fas fa-angle-double-right class-icone-button"></i>
+                                Acessar
+                        </a>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% else %}
+<h5 class="text-center" style="margin-top: 20px;">Sem cursos a serem exibidos</h5>
+{% endif %}

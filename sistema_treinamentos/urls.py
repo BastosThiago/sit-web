@@ -27,6 +27,8 @@ urlpatterns = [
 
 ]
 
+# Tratadores padrão para os erros 404(Não encontrado) e
+# 500(erro interno do servidor)
 handler404 = trata_erro_404
 handler500 = trata_erro_500
 

@@ -7,10 +7,13 @@ from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
+    """
+    Classe de customização da interface de admim de um usuário
+    """
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ['username', 'email', 'perfil']
+    list_display = ['email', 'first_name', 'last_name', 'perfil']
     fieldsets = UserAdmin.fieldsets + (
                 (None, {'fields': ('perfil',)}),
     )

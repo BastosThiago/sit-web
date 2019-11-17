@@ -4,7 +4,9 @@ from .models import *
 
 
 class CategoriaForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Cateogira
+    """
     class Meta:
         model = Categoria
         fields = ('titulo',)
@@ -14,7 +16,9 @@ class CategoriaForm(forms.ModelForm):
 
 
 class CursoForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Curso
+    """
     class Meta:
         model = Curso
         fields = ('titulo', 'categoria',
@@ -26,7 +30,9 @@ class CursoForm(forms.ModelForm):
 
 
 class CursoAdminForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Curso
+    """
     class Meta:
         model = Curso
         fields = ('titulo', 'categoria', 'nome_instrutor',
@@ -38,7 +44,9 @@ class CursoAdminForm(forms.ModelForm):
 
 
 class InscricaoForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Inscrição
+    """
     class Meta:
         model = Inscricao
         fields = ('curso', 'usuario', 'percentual_andamento',
@@ -50,7 +58,9 @@ class InscricaoForm(forms.ModelForm):
 
 
 class AvaliacaoForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Avaliação
+    """
     class Meta:
         model = Avaliacao
         fields = ('curso', 'usuario', 'nota',
@@ -62,27 +72,35 @@ class AvaliacaoForm(forms.ModelForm):
 
 
 class UnidadeForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Unidade
+    """
     class Meta:
         model = Unidade
         fields = ('titulo', 'descricao', 'curso', 'ordem')
 
     def __init__(self, user, *args, **kwargs):
         super(UnidadeForm, self).__init__(*args, **kwargs)
+        # Obtém os objetos de acordo com o perfil do usuário
         if user != None and user.tem_perfil_instrutor():
             self.fields['curso'].queryset = Curso.objects.filter(usuario=user)
 
 
 class VideoForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Vídeo
+    """
     class Meta:
         model = Video
         fields = ('titulo', 'unidade', 'url', 'caminho', 'ordem')
 
     def __init__(self, user, *args, **kwargs):
         super(VideoForm, self).__init__(*args, **kwargs)
+        # Obtém os objetos de acordo com o perfil do usuário
         if user != None and user.tem_perfil_instrutor():
-            self.fields['unidade'].queryset = Unidade.objects.filter(curso__usuario=user)
+            self.fields['unidade'].queryset = Unidade.objects.filter(
+                curso__usuario=user
+            )
 
 
     def clean(self):
@@ -96,46 +114,59 @@ class VideoForm(forms.ModelForm):
 
         # conditions to be met for the username length
         if (url == None or len(url) == 0) and path == None:
-            #self._errors['url'] = self.error_class([
-            #    'URL inválida'])
-            raise forms.ValidationError('Configure uma URL ou selecione um arquivo de vídeo')
+            raise forms.ValidationError(
+                'Configure uma URL ou selecione um arquivo de vídeo'
+            )
 
             # return any errors if found
         return self.cleaned_data
 
 
 class ArquivoForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Arquivo
+    """
     class Meta:
         model = Arquivo
         fields = ('titulo', 'unidade', 'caminho', 'ordem')
 
     def __init__(self, user, *args, **kwargs):
         super(ArquivoForm, self).__init__(*args, **kwargs)
+        # Obtém os objetos de acordo com o perfil do usuário
         if user != None and user.tem_perfil_instrutor():
-            self.fields['unidade'].queryset = Unidade.objects.filter(curso__usuario=user)
+            self.fields['unidade'].queryset = Unidade.objects.filter(
+                curso__usuario=user
+            )
 
 
 class QuestionarioForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Questionário
+    """
     class Meta:
         model = Questionario
         fields = ('titulo', 'unidade', 'ordem')
 
     def __init__(self, user, *args, **kwargs):
         super(QuestionarioForm, self).__init__(*args, **kwargs)
+        # Obtém os objetos de acordo com o perfil do usuário
         if user != None and user.tem_perfil_instrutor():
-            self.fields['unidade'].queryset = Unidade.objects.filter(curso__usuario=user)
+            self.fields['unidade'].queryset = Unidade.objects.filter(
+                curso__usuario=user
+            )
 
 
 class QuestaoForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Questão
+    """
     class Meta:
         model = Questao
         fields = ('questionario', 'enunciado', 'ordem')
 
     def __init__(self,  user, *args, **kwargs):
         super(QuestaoForm, self).__init__(*args, **kwargs)
+        # Obtém os objetos de acordo com o perfil do usuário
         if user != None and user.tem_perfil_instrutor():
             self.fields['questionario'].queryset = Questionario.objects.filter(
                 unidade__curso__usuario=user
@@ -143,13 +174,16 @@ class QuestaoForm(forms.ModelForm):
 
 
 class AlternativaForm(forms.ModelForm):
-
+    """
+        Formulário para cadastro/edição de Alternativa
+    """
     class Meta:
         model = Alternativa
         fields = ('questao', 'descricao', 'correta', 'ordem')
 
     def __init__(self,  user, *args, **kwargs):
         super(AlternativaForm, self).__init__(*args, **kwargs)
+        # Obtém os objetos de acordo com o perfil do usuário
         if user != None and user.tem_perfil_instrutor():
             self.fields['questao'].queryset = Questao.objects.filter(
                 questionario__unidade__curso__usuario=user

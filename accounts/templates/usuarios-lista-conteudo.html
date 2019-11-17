@@ -1,62 +1,63 @@
-       {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li
-                        {% if message.tags %}
-                            class="alert alert-{{message.tags }}"
-                        {% endif %}
-                    >
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
 
-       <div style="overflow-x:auto;">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Nome</th>
-                        <th scope="col">Sobrenome</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Perfil</th>
-                        <th scope="col"><div class="text-center">Editar</div></th>
-                        <th scope="col"><div class="text-center">Excluir</div></th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for objeto in objetos %}
-                    <tr>
-                        <td><a href="/accounts/edit/{{ objeto.id }}">{{ objeto.first_name }}</a></td>
-                        <td>{{ objeto.last_name }}</td>
-                        <td>{{ objeto.email }}</td>
-                        {% if objeto.perfil == 1 %}
-                            <td>Aluno</td>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li
+                {% if message.tags %}
+                    class="alert alert-{{message.tags }}"
+                {% endif %}
+            >
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div style="overflow-x:auto;">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Sobrenome</th>
+                <th scope="col">Email</th>
+                <th scope="col">Perfil</th>
+                <th scope="col"><div class="text-center">Editar</div></th>
+                <th scope="col"><div class="text-center">Excluir</div></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for objeto in objetos %}
+            <tr>
+                <td><a href="/accounts/edit/{{ objeto.id }}">{{ objeto.first_name }}</a></td>
+                <td>{{ objeto.last_name }}</td>
+                <td>{{ objeto.email }}</td>
+                {% if objeto.perfil == 1 %}
+                    <td>Aluno</td>
+                {% else %}
+                    {% if objeto.perfil == 2 %}
+                        <td>Instrutor</td>
+                    {% else %}
+                        {% if objeto.perfil == 3 %}
+                            <td>Administrador</td>
                         {% else %}
-                            {% if objeto.perfil == 2 %}
-                                <td>Instrutor</td>
-                            {% else %}
-                                {% if objeto.perfil == 3 %}
-                                    <td>Administrador</td>
-                                {% else %}
-                                    <td>-</td>
-                                {% endif %}
-                            {% endif %}
+                            <td>-</td>
                         {% endif %}
-                        <td>
-                            <div class="text-center">
-                                <a href="/accounts/edit/{{ objeto.id }}" title="Abre edição do usuário selecionado">
-                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px; color: green;"></i>
-                                </a>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-center">
-                                <i class="fas fa-trash-alt" style="cursor: pointer; font-size: 20px; color: red;" onclick="removeItem({{ objeto.id }}, '/accounts/remove-usuario/{{ objeto.id }}')" title="Remove o usuário selecionado"></i>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-       </div>
+                    {% endif %}
+                {% endif %}
+                <td>
+                    <div class="text-center">
+                        <a href="/accounts/edit/{{ objeto.id }}" title="Abre edição do usuário selecionado">
+                            <i class="fas fa-edit" style="cursor: pointer; font-size: 20px; color: green;"></i>
+                        </a>
+                    </div>
+                </td>
+                <td>
+                    <div class="text-center">
+                        <i class="fas fa-trash-alt" style="cursor: pointer; font-size: 20px; color: red;" onclick="removeItem({{ objeto.id }}, '/accounts/remove-usuario/{{ objeto.id }}')" title="Remove o usuário selecionado"></i>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

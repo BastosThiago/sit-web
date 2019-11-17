@@ -5,52 +5,52 @@
 
 {% block content_page %}
 
-        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
-            <h2 class="text-center" style="margin-top: 5px;">Informações de cadastro</h2>
-        </div>
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+        <h2 class="text-center" style="margin-top: 5px;">Informações de cadastro</h2>
+    </div>
 
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ next }}">
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
 
-            {{ form|crispy }}
+        {{ form|crispy }}
 
-                {% if perfil_administrador == False or perfil_administrador == True and user == usuario%}
-                <label>Senha de acesso</label>
-                <p><a href="/accounts/password_change">Clique aqui para acessar o formuário de troca de senha</a></p>
-                {% endif %}
+            {% if perfil_administrador == False or perfil_administrador == True and user == usuario%}
+            <label>Senha de acesso</label>
+            <p><a href="/accounts/password_change">Clique aqui para acessar o formuário de troca de senha</a></p>
+            {% endif %}
 
 
-            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="col text-center">
-                    <button type="submit" class="btn btn-primary" title="Salva as alterações realizadas">Confirmar alterações</button>
-                </div>
-
-                {% if perfil_administrador == False or perfil_administrador == True and user == usuario%}
-                <div class="col text-center" id="cancela inscricao" style="margin-bottom: 5px;">
-                  <span class="btn btn-danger"  style="cursor: pointer;" id="botao-anterior" role="button" onclick="removeUsuario()" title="Exclui sua conta de usuário do sistema">
-                      <i class="fas fa-trash-alt" ></i>
-                       Excluir minha conta
-                  </span>
-                </div>
-                {% endif %}
-
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-primary" title="Salva as alterações realizadas">Confirmar alterações</button>
             </div>
-        </form>
 
-        <div class="modal fade modal-delete-inscricao" id="confirmDeleteInscricao" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteInscricao" aria-hidden="true">
-          <div class="modal-dialog" role="document">
+            {% if perfil_administrador == False or perfil_administrador == True and user == usuario%}
+            <div class="col text-center" id="cancela inscricao" style="margin-bottom: 5px;">
+              <span class="btn btn-danger"  style="cursor: pointer;" id="botao-anterior" role="button" onclick="removeUsuario()" title="Exclui sua conta de usuário do sistema">
+                  <i class="fas fa-trash-alt" ></i>
+                   Excluir minha conta
+              </span>
+            </div>
+            {% endif %}
+
+        </div>
+    </form>
+
+    <div class="modal fade modal-delete-inscricao" id="confirmDeleteInscricao" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteInscricao" aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
-              <div class="modal-body confirm-conteudo">
-                Deseja realmente excluir sua conta do sistema? Todos os dados associados ao seu usuário serão perdidos.
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirmDeleteButtonInscricao">Confirma</button>
-              </div>
+                <div class="modal-body confirm-conteudo">
+                    Deseja realmente excluir sua conta do sistema? Todos os dados associados ao seu usuário serão perdidos.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirmDeleteButtonInscricao">Confirma</button>
+                </div>
             </div>
-          </div>
         </div>
+    </div>
 
     <script>
 

@@ -86,7 +86,8 @@ def obtemListaConteudoCurso(course_id):
         # Obtém as unidades associadas aos cursos
         unidades = Unidade.objects.filter(curso=curso)
 
-        # Para cada unidade do curso, obtém os conteúdos(videos, arquivos ou questionários)
+        # Para cada unidade do curso, obtém os conteúdos(videos, arquivos
+        # ou questionários)
         # e os insere na lista
         for unidade in unidades:
 
@@ -98,7 +99,10 @@ def obtemListaConteudoCurso(course_id):
             for arquivo in arquivos:
                 lista.append(dict({arquivo.id: 'arquivo'}))
 
-            questionarios = Questionario.objects.filter(unidade=unidade).order_by('ordem')
+            questionarios = Questionario.objects.filter(
+                unidade=unidade
+            ).order_by('ordem')
+
             for questionario in questionarios:
                 lista.append(dict({questionario.id: 'questionario'}))
     except:
@@ -113,28 +117,35 @@ def obtemLinksConteudosCurso(curso_id, conteudo_nome, conteudo_id):
     """
 
     try:
-        # Obtém a lista completa de conteúdos do curso de acordo com o ID fornecido
+        # Obtém a lista completa de conteúdos do curso de acordo com o
+        # ID fornecido
         lista_conteudo_curso = obtemListaConteudoCurso(curso_id)
 
         # Obtém o indice atual da lista de acordo com o conteúdo fornecido
         indice = lista_conteudo_curso.index(dict({conteudo_id: conteudo_nome}))
 
-        # Caso tenha encontrado o item na lista, obtém o link para o conteúdo anterior
-        # e para o próximo conteúdo
+        # Caso tenha encontrado o item na lista, obtém o link para o conteúdo
+        # anterior e para o próximo conteúdo
         if indice >= 0:
-            [[conteudo_id, conteudo_nome]] = lista_conteudo_curso[indice].items()
+            [[conteudo_id, conteudo_nome]] = \
+                lista_conteudo_curso[indice].items()
 
             if indice - 1 >= 0:
                 conteudo_anterior = lista_conteudo_curso[indice - 1]
-                [[conteudo_anterior_id, conteudo_anterior_nome]] = lista_conteudo_curso[indice - 1].items()
-                conteudo_anterior_url = f"/visualizacao-{conteudo_anterior_nome}/{conteudo_anterior_id}"
+                [[conteudo_anterior_id, conteudo_anterior_nome]] = \
+                    lista_conteudo_curso[indice - 1].items()
+                conteudo_anterior_url = \
+                    f"/visualizacao-{conteudo_anterior_nome}/" \
+                    f"{conteudo_anterior_id}"
             else:
                 conteudo_anterior_url = ''
 
             if indice + 1 < len(lista_conteudo_curso):
                 proximo_conteudo = lista_conteudo_curso[indice + 1]
-                [[prox_conteudo_id, prox_conteudo_nome]] = lista_conteudo_curso[indice + 1].items()
-                prox_conteudo_url = f"/visualizacao-{prox_conteudo_nome}/{prox_conteudo_id}"
+                [[prox_conteudo_id, prox_conteudo_nome]] = \
+                    lista_conteudo_curso[indice + 1].items()
+                prox_conteudo_url = f"/visualizacao-{prox_conteudo_nome}/" \
+                                    f"{prox_conteudo_id}"
             else:
                 prox_conteudo_url = ''
     except:
@@ -165,8 +176,8 @@ def paginaInicialView(request):
 @login_required
 def registrosListView(request, modelo):
     """
-    View responsável pelo tratamento de obtenção da lista de registros associados
-    ao modelo fornecido
+    View responsável pelo tratamento de obtenção da lista de registros
+    associados ao modelo fornecido
     """
     perfil_aluno = False
     perfil_instrutor = False
@@ -183,6 +194,7 @@ def registrosListView(request, modelo):
     lista_inscricoes = False
 
     # Avalia o perfil do usuário da requsição
+    # Usuários de perfil ALUNO não tem acesso a visualizar os cadastros
     if request.user.tem_perfil_aluno():
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
@@ -193,6 +205,7 @@ def registrosListView(request, modelo):
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
 
+    # Identifica qual o modelo do cadastro que deve ser listado
     if modelo == Categoria:
         lista_categorias = True
 
@@ -239,7 +252,8 @@ def registrosListView(request, modelo):
     # Caso sim, verifica o texto pesquisado nas informações do modelo
     if search:
         search_fields = modelo.CustomMeta.search_fields
-        filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
+        filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search})
+                              for f in search_fields], Q())
 
         objetos = modelo.objects.obtem_objetos_por_perfil_usuario(
             request.user
@@ -257,7 +271,7 @@ def registrosListView(request, modelo):
             '-data_atualizacao'
         )
 
-        paginator = Paginator(lista_objetos, 10)
+        paginator = Paginator(lista_objetos, 20)
 
         page = request.GET.get('page')
 
@@ -306,7 +320,8 @@ def registrosListView(request, modelo):
 @login_required
 def novoRegistroView(request, modelo):
     """
-    View responsável pelo tratamento de adição de um novo registro associado ao modelo fornecido
+    View responsável pelo tratamento de adição de um novo registro associado ao
+    modelo fornecido
     """
 
     perfil_aluno = False
@@ -314,10 +329,12 @@ def novoRegistroView(request, modelo):
     perfil_administrador = False
 
     # Avalia o perfil do usuário da requsição
+    # Usuário de perfil ALUNO não tem acesso a criar registros
     if request.user.tem_perfil_aluno():
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
 
+    # Avalia qual o tipo de modelo do novo registro
     if modelo == Avaliacao:
         return trata_usuario_sem_permissao(request)
 
@@ -362,7 +379,11 @@ def novoRegistroView(request, modelo):
     # Caso o método HTTP associado a requisição seja POST
     # Exibe o formulário com os dados já existentes, senão, um em branco
     if request.method == 'POST':
-        form = formModelo(data=request.POST, files=request.FILES or None, user=request.user)
+        form = formModelo(
+            data=request.POST,
+            files=request.FILES or None,
+            user=request.user
+        )
 
         if form.is_valid():
             objeto = form.save(commit=False)
@@ -391,7 +412,6 @@ def novoRegistroView(request, modelo):
                 arquivo_media_url = gd_storage.url(objeto.caminho.file.name)
                 arquivo_media_url = arquivo_media_url.replace('view', 'preview')
                 objeto.arquivo_media_url = arquivo_media_url
-
 
             objeto.save()
             return redirect(
@@ -432,6 +452,7 @@ def editaRegistroView(request, id, modelo):
     perfil_administrador = False
 
     # Avalia o perfil do usuário da requsição
+    # Usuários de perfil ALUNO não tem permissão para editar registros
     if request.user.tem_perfil_aluno():
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
@@ -466,7 +487,8 @@ def editaRegistroView(request, id, modelo):
 
     # Obtém o objeto de acordo com seu ID
     try:
-        objeto = modelo.objects.obtem_objetos_por_perfil_usuario(request.user).filter(pk=id)[0]
+        objeto = modelo.objects.obtem_objetos_por_perfil_usuario(
+            request.user).filter(pk=id)[0]
 
         publicado = None
         if modelo == Curso:
@@ -491,7 +513,8 @@ def editaRegistroView(request, id, modelo):
     #Obtém o form associado ao objeto
     form = formModelo(instance=objeto, user=request.user)
 
-    # Caso o método HTTP da requsição seja de POST, cria o form com os dados recebidos
+    # Caso o método HTTP da requsição seja de POST, cria o form com os dados
+    # recebidos
     if request.method == 'POST':
         form = formModelo(data=request.POST, instance=objeto, user=request.user)
 
@@ -507,7 +530,8 @@ def editaRegistroView(request, id, modelo):
                 if objeto.usuario is None:
                     objeto.usuario = request.user
 
-                if publicado is not None and publicado == False and objeto.publicado == True:
+                if publicado is not None and publicado == False and \
+                        objeto.publicado == True:
                     objeto.data_publicado = datetime.now()
 
             if modelo == Video:
@@ -583,27 +607,20 @@ def removeRegistroView(request, id, modelo):
     modelo fornecido
     """
 
-    perfil_aluno = False
-    perfil_instrutor = False
-    perfil_administrador = False
-
     # Avalia o perfil do usuário da requsição
+    # Um usuário de perfil ALUNO não tem permissão para remoção de registros
     if request.user.tem_perfil_aluno():
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
-
-    if request.user.tem_perfil_administrador():
-        perfil_administrador = True
-
-    if request.user.tem_perfil_instrutor():
-        perfil_instrutor = True
 
     nomeModeloPlural = modelo._meta.verbose_name_plural.lower()
     nomeLinkRedirecionamento = f"cadastros-{nomeModeloPlural}"
 
     # Obtém o objeto a ser removido e em caso de sucesso, o remove
     try:
-        objeto = modelo.objects.obtem_objetos_por_perfil_usuario(request.user).filter(pk=id)[0]
+        objeto = modelo.objects.obtem_objetos_por_perfil_usuario(
+            request.user
+        ).filter(pk=id)[0]
     except:
         return trata_erro_404(request, None)
 
@@ -644,6 +661,7 @@ def obtem_classe_notas(nota_media):
     dict_classe_nota['nota_4_5'] = ''
     dict_classe_nota['nota_5'] = ''
 
+    # De acordo com o valor da nota, marca a classe no dicionário
     if nota_media >= 0.25 and nota_media <= 0.75:
         dict_classe_nota['nota_1'] = 'half'
     if nota_media > 0.75 and nota_media <= 1.25:
@@ -706,12 +724,13 @@ def cursosListView(request):
 
         if search:
             search_fields = Curso.CustomMeta.search_fields
-            filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
+            filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search})
+                                  for f in search_fields], Q())
             cursos = cursos.filter(filtro)
 
         else:
 
-            paginator = Paginator(cursos, 5)
+            paginator = Paginator(cursos, 20)
 
             page = request.GET.get('page')
 
@@ -719,7 +738,8 @@ def cursosListView(request):
 
     lista_cursos = []
 
-    # Para cada curso obtido, monta um dicionário com algumas informações adicionais
+    # Para cada curso obtido, monta um dicionário com algumas
+    # informações adicionais
     for curso in cursos:
         dict_curso = {}
         dict_curso['curso'] = curso
@@ -734,6 +754,7 @@ def cursosListView(request):
         dict_curso['nota_4'] = ''
         dict_curso['nota_5'] = ''
 
+        # De acordo com a nota média do curso, defina a classe de apreentação
         if nota_media >= 0.25 and nota_media <= 0.75:
             dict_curso['nota_1'] = 'half'
         if nota_media > 0.75 and nota_media <= 1.25:
@@ -831,6 +852,7 @@ def informacoesCursoView(request, id):
     # Obtém o curso de acordo com o ID fornecido na requsição
     curso = get_object_or_404(Curso, pk=id, publicado=True)
 
+    # Obtém o título da categoria associada ao curso
     categoria = curso.categoria.titulo
 
     # Caso o usuário que criou o curso tenha o perfil de INSTRUTOR, o nome do
@@ -841,6 +863,7 @@ def informacoesCursoView(request, id):
     else:
         instrutor = curso.nome_instrutor
 
+    # Obtém o número de inscritos no curso
     numero_inscritos = curso.obtem_numero_inscritos()
 
     # Verifica se o usuário da requisição é de perfil ALUNO e se está inscrito
@@ -856,7 +879,7 @@ def informacoesCursoView(request, id):
     else:
         usuario_anonimo = True
 
-    # Verifica se o curso tem algum conteúdo
+    # Verifica se o curso tem algum conteúdo didático
     if curso.tem_conteudo():
 
         # Obtém a lista de unidades associadas ao curso
@@ -864,12 +887,15 @@ def informacoesCursoView(request, id):
 
         unidades_list_ids = []
         for unidade in unidades:
-            # Obtém os conteúdos didáticos da Unidade(Videos, Arquivos e Questionários)
+            # Obtém os conteúdos didáticos da Unidade(Videos, Arquivos e
+            # Questionários)
             videos = Video.objects.filter(unidade=unidade).order_by('ordem')
             arquivos = Arquivo.objects.filter(unidade=unidade).order_by('ordem')
-            questionarios = Questionario.objects.filter(unidade=unidade).order_by(
+            questionarios = Questionario.objects.filter(
+                unidade=unidade).order_by(
                 'ordem')
-            if videos.count() > 0 or arquivos.count() > 0 or questionarios.count() > 0:
+            if videos.count() > 0 or arquivos.count() > 0 or \
+                    questionarios.count() > 0:
                 unidades_list_ids.append(unidade.id)
 
         unidades = Unidade.objects.filter(id__in=unidades_list_ids)
@@ -893,6 +919,7 @@ def informacoesCursoView(request, id):
             if avaliacao.nota == 5:
                 numero_avaliacoes_nota_5 = numero_avaliacoes_nota_5 + 1
 
+        # Calcula o percentual de cada nota
         if numero_avaliacoes > 0:
             percentual_nota_1 = (numero_avaliacoes_nota_1 * 100) / numero_avaliacoes
             percentual_nota_2 = (numero_avaliacoes_nota_2 * 100) / numero_avaliacoes
@@ -906,7 +933,8 @@ def informacoesCursoView(request, id):
         percentual_nota_4 = "{:.2f}".format(percentual_nota_4)
         percentual_nota_5 = "{:.2f}".format(percentual_nota_5)
 
-        # Obtém a nota média das avaliações associadas a curso(caso exista alguma)
+        # Obtém a nota média das avaliações associadas a curso
+        # (caso exista alguma)
         nota_media_curso = "SEM NOTA"
         if avaliacoes.count() > 0:
             nota_media_curso = curso.obtem_nota_media()
@@ -917,6 +945,7 @@ def informacoesCursoView(request, id):
         numero_arquivos = curso.obtem_arquivos().count()
         numero_questionarios = curso.obtem_questionarios().count()
 
+        # Define a classe de apresentação da nota do curso
         if nota_media_curso is not None and nota_media_curso != "SEM NOTA":
             dict_classe_nota = obtem_classe_notas(float(nota_media_curso))
 
@@ -979,10 +1008,16 @@ def inscricaoCursoView(request, id):
     if request.user.tem_perfil_aluno():
         if request.method == 'GET':
             try:
+                # Obtém o curso a ser realizada a inscrição
                 curso = get_object_or_404(Curso, pk=id)
 
-                inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+                # Verifica se o usuário já está inscrito no curso
+                inscricao = Inscricao.objects.filter(
+                    curso=curso,
+                    usuario=request.user
+                )
 
+                # Caso não esteja, realiza a inscrição
                 if inscricao.count() == 0:
                     Inscricao.objects.create(curso=curso, usuario=request.user)
 
@@ -1012,8 +1047,13 @@ def removeInscricaoCursoView(request, id):
             try:
                 curso = get_object_or_404(Curso, pk=id)
 
-                inscricao = Inscricao.objects.filter(curso=curso, usuario=request.user)
+                # Obtém a inscrição do usuário no curso
+                inscricao = Inscricao.objects.filter(
+                    curso=curso,
+                    usuario=request.user
+                )
 
+                # Remove a inscrição do usuário no curso
                 inscricao[0].delete()
 
                 resposta = JsonResponse(
@@ -1033,6 +1073,7 @@ def removeInscricaoCursoView(request, id):
         # Chama tratamento padrão para usuário sem permissão
         return trata_usuario_sem_permissao(request)
 
+
 @login_required
 def avaliacaoCursoView(request, id):
     """
@@ -1045,9 +1086,12 @@ def avaliacaoCursoView(request, id):
         try:
             curso = Curso.objects.get(pk=id)
 
-            # Verifica se o usuário está inscrito no curso associado ao recurso acessado
-            # Caso não esteja inscrito, retorna uma mensagem associada
-            usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, curso)
+            # Verifica se o usuário está inscrito no curso associado ao recurso
+            # acessado. Caso não esteja inscrito, retorna uma mensagem associada
+            usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(
+                request.user,
+                curso
+            )
             if usuario_inscrito == False:
                 # Chama tratamento padrão para usuário sem permissão
                 return trata_usuario_sem_permissao(request)
@@ -1101,7 +1145,8 @@ def eliminaAvaliacaoView(request, id):
     """
     View responsável pelo tratamento de eliminação de uma avalição de um curso
     """
-    # Permite que a avaliação de um curso seja removida apenas para usuário de perfil ALUNO
+    # Permite que a avaliação de um curso seja removida apenas para usuário de
+    # perfil ALUNO
     if request.user.tem_perfil_aluno():
 
         try:
@@ -1111,7 +1156,9 @@ def eliminaAvaliacaoView(request, id):
             avaliacao.delete()
         except:
             # Chama tratamento padrão para usuário sem permissão
-            resposta = HttpResponse('Usuário sem permissão para executar a ação.')
+            resposta = HttpResponse(
+                'Usuário sem permissão para executar a ação.'
+            )
             resposta.status_code = 404
             return resposta
 
@@ -1138,7 +1185,8 @@ def obtem_objeto_conteudo_pela_url(conteudo_url):
         tipo_conteudo = str[0]
         id_conteudo = str[1]
 
-        # De acordo com o tipo de conteúdo, obtém a instância de modelo associada
+        # De acordo com o tipo de conteúdo, obtém a instância de
+        # modelo associada
         objeto_conteudo = None
         if tipo_conteudo == 'video':
             objeto_conteudo = Video.objects.filter(id=id_conteudo)
@@ -1202,7 +1250,8 @@ def areaUsuarioView(request):
             if objeto_ultimo_conteudo is not None:
                 dict_ultimo_conteudo['curso_titulo'] = \
                     inscricao_ultimo_conteudo_acessado[0].curso.titulo
-                dict_ultimo_conteudo['unidade'] = objeto_ultimo_conteudo.unidade.titulo
+                dict_ultimo_conteudo['unidade'] = \
+                    objeto_ultimo_conteudo.unidade.titulo
 
         return render(
             request,
@@ -1269,6 +1318,7 @@ def meusCursosView(request):
             '-data_atualizacao'
         )
 
+        # Para cada inscrição, verifica se o custo está publicado
         lista_cursos = []
         for inscricao in inscricoes_usuario:
             dict_curso = {}
@@ -1303,6 +1353,7 @@ def meusCursosView(request):
 
                 lista_cursos.append(dict_curso)
 
+        # Verifica se foi obtido algum curso a ser apresentado
         nao_tem_cursos = False
         if len(lista_cursos) == 0:
             nao_tem_cursos = True
@@ -1332,7 +1383,9 @@ def meusCursosView(request):
         if request.user.tem_perfil_instrutor():
 
             # Obtém os cursos criados pelo instrutor
-            cursos = Curso.objects.obtem_objetos_por_perfil_usuario(request.user)
+            cursos = Curso.objects.obtem_objetos_por_perfil_usuario(
+                request.user
+            )
 
             # Verifica se algum filtro foi passado para obtenção dos registros
             try:
@@ -1347,6 +1400,7 @@ def meusCursosView(request):
                                  in search_fields], Q())
                 cursos = cursos.filter(filtro)
 
+            # Verifica se existe algum curso a ser apresentado
             nao_tem_cursos = False
             if len(cursos) == 0:
                 nao_tem_cursos = True
@@ -1418,12 +1472,14 @@ def conteudoCursoView(request, id):
         # Obtém os cursos com o status de PUBLICADO
         curso = get_object_or_404(Curso, pk=id, publicado=True)
 
-        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
-        # Caso não esteja inscrito, retorna uma mensagem associada
+        # Verifica se o usuário está inscrito no curso associado ao recurso
+        # acessado. Caso não esteja inscrito, retorna uma mensagem associada
         usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(
             request.user,
             curso
         )
+
+        # Valida se o usuário está inscrito no curso ou não
         if usuario_inscrito == False:
             # Chama tratamento padrão para usuário sem permissão
             return trata_usuario_sem_permissao(request)
@@ -1439,20 +1495,23 @@ def conteudoCursoView(request, id):
         else:
             usuario_inscricao = usuario_inscricao[0]
 
+        # Obtém a avaliação do usuário para o curso acessado
         avaliacao = Avaliacao.objects.filter(curso=curso, usuario=request.user)
         if avaliacao.count() == 1:
             avaliacao = avaliacao[0]
         else:
             avaliacao = None
 
+        # Obtém a URL do último conteúdo acessado
         curso_objeto_ultimo_conteudo = \
             obtem_objeto_conteudo_pela_url(
                 usuario_inscricao.ultimo_conteudo_acessado
             )
 
     else:
-        # Caso o perfil do usuário seja de INSTRUTOR, permite apenas a visualização
-        # do conteúdo do curso caso o usuário seja o criador do curso
+        # Caso o perfil do usuário seja de INSTRUTOR, permite apenas a
+        # visualização do conteúdo do curso caso o usuário seja o criador
+        # do curso
         if perfil_instrutor:
             try:
                 curso = Curso.objects.get(pk=id, usuario=request.user)
@@ -1469,14 +1528,17 @@ def conteudoCursoView(request, id):
 
         for unidade in unidades:
 
-            # Obtém os conteúdos didáticos da Unidade(Videos, Arquivos e Questionários)
+            # Obtém os conteúdos didáticos da Unidade(Videos, Arquivos e
+            # Questionários)
             videos = Video.objects.filter(unidade=unidade).order_by('ordem')
             arquivos = Arquivo.objects.filter(unidade=unidade).order_by('ordem')
-            questionarios = Questionario.objects.filter(unidade=unidade).order_by('ordem')
+            questionarios = Questionario.objects.filter(
+                unidade=unidade).order_by('ordem')
 
             # Caso a Unidade não tenha nenhum conteúdo, não retorna a mesma para
             # que não seja apresentada na página de conteúdos do curso
-            if videos.count() > 0 or arquivos.count() != 0 or questionarios.count() != 0:
+            if videos.count() > 0 or arquivos.count() != 0 or \
+                    questionarios.count() != 0:
 
                 dict_unidade = {}
                 lista_videos = []
@@ -1484,6 +1546,7 @@ def conteudoCursoView(request, id):
                 lista_questionarios = []
                 dict_unidade['unidade'] = unidade
 
+                # Monta dicionário de cada vídeo da unidade
                 dict_unidade['tem_videos'] = False
                 for video in videos:
                     dict_video = {}
@@ -1503,6 +1566,7 @@ def conteudoCursoView(request, id):
                     lista_videos.append(dict_video)
                 dict_unidade['videos'] = lista_videos
 
+                # Monta dicionário de cada arquivo da unidade
                 dict_unidade['tem_arquivos'] = False
                 for arquivo in arquivos:
                     dict_arquivo = {}
@@ -1522,6 +1586,7 @@ def conteudoCursoView(request, id):
                     lista_arquivos.append(dict_arquivo)
                 dict_unidade['arquivos'] = lista_arquivos
 
+                # Monta dicionário de cada questionário da unidade
                 dict_unidade['tem_questionarios'] = False
                 for questionario in questionarios:
                     dict_questionario = {}
@@ -1547,17 +1612,27 @@ def conteudoCursoView(request, id):
         # obtém a inscrição do usuário curso
         if perfil_aluno:
             try:
+                # Atualiza as informações de andamento do usuário no curso
                 atualizaAndamentoCurso(curso, request.user)
-                inscricao = Inscricao.objects.get(curso=curso, usuario=request.user)
+
+                # Ontém a inscrição do usuário no curso
+                inscricao = Inscricao.objects.get(
+                    curso=curso,
+                    usuario=request.user
+                )
+
                 situacao_aluno_curso = inscricao.situacao
-                percentual_andamento = "{:.1f}".format(inscricao.percentual_andamento)
-                percentual_acertos = "{:.1f}".format(inscricao.percentual_acertos)
+                percentual_andamento = \
+                    "{:.1f}".format(inscricao.percentual_andamento)
+                percentual_acertos = \
+                    "{:.1f}".format(inscricao.percentual_acertos)
                 data_inicio = inscricao.data_inscricao
                 data_conclusao = inscricao.data_conclusao
                 data_ultimo_acesso = inscricao.data_ultimo_conteudo_acessado
             except:
                 inscricao = None
 
+            # Obtém o último conteúdo acessado para o curso no sistema
             if data_ultimo_acesso is None:
                 data_ultimo_acesso = datetime.now()
                 if inscricao is not None:
@@ -1618,6 +1693,7 @@ def atualizaAcessoConteudoView(request):
                     conteudo_status = True
 
                 curso = None
+                # Caso o conteúdo a ser tratado seja um vídeo
                 if tipo_conteudo == "video":
                     usuario_video = UsuarioVideo.objects.get_or_create(
                         usuario=request.user,
@@ -1629,6 +1705,7 @@ def atualizaAcessoConteudoView(request):
 
                     curso = usuario_video[0].video.unidade.curso
 
+                # Caso o conteúdo a ser tratado seja um arquivo
                 if tipo_conteudo == "arquivo":
                     usuario_arquivo = UsuarioArquivo.objects.get_or_create(
                         usuario=request.user,
@@ -1640,11 +1717,13 @@ def atualizaAcessoConteudoView(request):
 
                     curso = usuario_arquivo[0].arquivo.unidade.curso
 
+                # Caso o conteúdo a ser tratado seja um questionário
                 if tipo_conteudo == "questionario":
-                    usuario_questionario = UsuarioQuestionario.objects.get_or_create(
-                        usuario=request.user,
-                        questionario_id=id_conteudo,
-                    )
+                    usuario_questionario = UsuarioQuestionario.objects.\
+                        get_or_create(
+                            usuario=request.user,
+                            questionario_id=id_conteudo,
+                        )
 
                     usuario_questionario[0].respondido = conteudo_status
                     usuario_questionario[0].save()
@@ -1719,13 +1798,18 @@ def visualizacaoVideoView(request, id):
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
 
-    # Registra que o usuário acessou a página do vídeo(apenas para usuários de perfil ALUNO)
+    # Registra que o usuário acessou a página do vídeo
+    # (apenas para usuários de perfil ALUNO)
     if request.user.tem_perfil_aluno():
         perfil_aluno = True
 
-        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
-        # Caso não esteja inscrito, retorna uma mensagem associada
-        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, video.unidade.curso)
+        # Verifica se o usuário está inscrito no curso associado ao recurso
+        # acessado. Caso não esteja inscrito, retorna uma mensagem associada
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(
+            request.user,
+            video.unidade.curso
+        )
+
         if usuario_inscrito == False:
             # Chama tratamento padrão para usuário sem permissão
             return trata_usuario_sem_permissao(request)
@@ -1744,7 +1828,8 @@ def visualizacaoVideoView(request, id):
         if usuario_video:
             tempo_corrente = usuario_video.tempo_corrente
 
-    # Verifica o tipo de video para que o frontend possa realizar o tratamento adequado
+    # Verifica o tipo de video para que o frontend possa realizar o tratamento
+    # adequado
     if video.video_interno:
         caminho_video = video.caminho.name
         arquivo_media_url = video.arquivo_media_url
@@ -1757,7 +1842,8 @@ def visualizacaoVideoView(request, id):
             if 'https://player.vimeo.com/' in caminho_video:
                 tipo_video = 'vimeo'
 
-    # Obtém as URLs associadas aos conteúdos anterior e próximo do video acessado
+    # Obtém as URLs associadas aos conteúdos anterior e próximo do video
+    # acessado
     conteudo_anterior_url, proximo_conteudo_url = obtemLinksConteudosCurso(
         video.unidade.curso.id,
         'video',
@@ -1774,7 +1860,8 @@ def visualizacaoVideoView(request, id):
     conteudo_anterior_id = 0
     conteudo_anterior_nome = ""
     if indice - 1 >= 0:
-        [[conteudo_anterior_id, conteudo_anterior_nome]] = lista_conteudo_curso[indice - 1].items()
+        [[conteudo_anterior_id, conteudo_anterior_nome]] = \
+            lista_conteudo_curso[indice - 1].items()
         if conteudo_anterior_nome != 'video':
             conteudo_anterior_id = 0
 
@@ -1796,7 +1883,8 @@ def visualizacaoVideoView(request, id):
     proximo_conteudo_id = 0
     prox_conteudo_nome = ""
     if indice + 1 < len(lista_conteudo_curso):
-        [[proximo_conteudo_id, prox_conteudo_nome]] = lista_conteudo_curso[indice + 1].items()
+        [[proximo_conteudo_id, prox_conteudo_nome]] = \
+            lista_conteudo_curso[indice + 1].items()
         if prox_conteudo_nome != 'video':
             proximo_conteudo_id = 0
 
@@ -1813,6 +1901,7 @@ def visualizacaoVideoView(request, id):
             usuario_video_proximo = None
             usuario_video_proximo_id = 0
 
+    # Para usuários de perfil aluno, marca que o mesmo assistiu o vídeo
     if request.user.tem_perfil_aluno():
         if usuario_video.assistido != True:
             usuario_video.assistido = True
@@ -1952,7 +2041,8 @@ def atualizaAndamentoCurso(curso, usuario):
             # Atualiza a situação do usuário no curso
             if percentual_andamento >= 100:
                 inscricao_usuario.data_conclusao = datetime.now()
-                if percentual_acertos >= PERCENTUAL_ACERTOS_QUESTIONARIOS_APROVACAO:
+                if percentual_acertos >= \
+                        PERCENTUAL_ACERTOS_QUESTIONARIOS_APROVACAO:
                     inscricao_usuario.situacao = 'APROVADO'
                 else:
                     inscricao_usuario.situacao = 'REPROVADO'
@@ -1968,7 +2058,8 @@ def atualizaUltimoConteudoAcessado(usuario, curso, url):
     """
         View responsável por atualizar o último conteúdo acessado pelo aluno
     """
-    # Obtém a inscrição do usuário no curso para atualizar o último conteudo acessado por ele
+    # Obtém a inscrição do usuário no curso para atualizar o último conteudo
+    # acessado por ele
     try:
         inscricao = Inscricao.objects.get(usuario=usuario, curso=curso)
         inscricao.ultimo_conteudo_acessado = url
@@ -2065,9 +2156,12 @@ def visualizacaoArquivoView(request, id):
     # Verifica o perfil do usuário
     if request.user.tem_perfil_aluno():
 
-        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
-        # Caso não esteja inscrito, retorna uma mensagem associada
-        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, arquivo.unidade.curso)
+        # Verifica se o usuário está inscrito no curso associado ao recurso
+        # acessado. Caso não esteja inscrito, retorna uma mensagem associada
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(
+            request.user,
+            arquivo.unidade.curso
+        )
 
         if usuario_inscrito == False:
             # Chama tratamento padrão para usuário sem permissão
@@ -2086,7 +2180,8 @@ def visualizacaoArquivoView(request, id):
             f"visualizacao-arquivo/{arquivo.id}"
         )
 
-        # Marca na instância de modelo do Usuario x Arquivo que o mesmo foi acessado
+        # Marca na instância de modelo do Usuario x Arquivo que o mesmo foi
+        # acessado
         try:
             usuario_arquivo = UsuarioArquivo.objects.get_or_create(
                 usuario=request.user,
@@ -2112,7 +2207,8 @@ def visualizacaoArquivoView(request, id):
     # Monta a URL para download do conteúdo
     try:
         arquivo_storage_id = arquivo.arquivo_media_url.split('/')[5]
-        download_url = f"https://drive.google.com/uc?export=download&id={arquivo_storage_id}"
+        download_url = f"https://drive.google.com/uc?export=download&id=" \
+                       f"{arquivo_storage_id}"
     except:
         download_url = ""
         arquivo_existe = False
@@ -2170,9 +2266,13 @@ def visualizacaoQuestionarioView(request, id):
     # Verifica o perfil do usuário
     if perfil_aluno:
 
-        # Verifica se o usuário está inscrito no curso associado ao recurso acessado
-        # Caso não esteja inscrito, retorna uma mensagem associada
-        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(request.user, questionario.unidade.curso)
+        # Verifica se o usuário está inscrito no curso associado ao recurso
+        # acessado. Caso não esteja inscrito, retorna uma mensagem associada
+        usuario_inscrito = Inscricao.objects.usuario_inscrito_curso(
+            request.user,
+            questionario.unidade.curso
+        )
+
         if usuario_inscrito == False:
             # Chama tratamento padrão para usuário sem permissão
             return trata_usuario_sem_permissao(request)
@@ -2192,10 +2292,14 @@ def visualizacaoQuestionarioView(request, id):
 
 
     # Obtém a questões associadas ao questionário
-    questoes = Questao.objects.filter(questionario=questionario).order_by('ordem')
+    questoes = Questao.objects.filter(
+        questionario=questionario
+    ).order_by('ordem')
 
     # Obtém as alternativas associadas as questões do questionário
-    alternativas = Alternativa.objects.filter(questao__in=questoes).order_by('ordem')
+    alternativas = Alternativa.objects.filter(
+        questao__in=questoes
+    ).order_by('ordem')
 
     # Verifica se não existem questões no questionário
     questionario_sem_questoes = False
@@ -2232,17 +2336,19 @@ def visualizacaoQuestionarioView(request, id):
                     # Obtém a alternativa respondida
                     alternativa = Alternativa.objects.get(pk=alternativa_id)
 
-                    # Verifica se a alternativa respondida é a correta, para então
-                    # contabilizar o percentual de acertos no questionário
+                    # Verifica se a alternativa respondida é a correta, para
+                    # então contabilizar o percentual de acertos no questionário
                     if(alternativa.correta == True):
-                        numero_respostas_corretas = numero_respostas_corretas + 1
+                        numero_respostas_corretas = \
+                            numero_respostas_corretas + 1
 
                     # Registra a resposta do usuário
                     try:
-                        usuario_resposta = UsuarioResposta.objects.get_or_create(
-                            usuario=request.user,
-                            questao=alternativa.questao,
-                        )
+                        usuario_resposta = UsuarioResposta.objects.\
+                            get_or_create(
+                                usuario=request.user,
+                                questao=alternativa.questao,
+                            )
                         usuario_resposta = usuario_resposta[0]
                         usuario_resposta.alternativa = alternativa
                         usuario_resposta.save()
@@ -2253,14 +2359,16 @@ def visualizacaoQuestionarioView(request, id):
                     return trata_erro_500(request)
 
             # Cálcula o percentual de acertos no questionário
-            percentual_acertos = (numero_respostas_corretas / questoes.count()) * 100
+            percentual_acertos = \
+                (numero_respostas_corretas / questoes.count()) * 100
 
             # Armazena o resultado total do questionário
             try:
-                usuario_questionario = UsuarioQuestionario.objects.get_or_create(
-                    usuario=request.user,
-                    questionario=questionario,
-                )
+                usuario_questionario = UsuarioQuestionario.objects.\
+                    get_or_create(
+                        usuario=request.user,
+                        questionario=questionario,
+                    )
                 usuario_questionario = usuario_questionario[0]
                 usuario_questionario.percentual_acertos = percentual_acertos
                 usuario_questionario.data_execucao = datetime.now()
@@ -2269,8 +2377,8 @@ def visualizacaoQuestionarioView(request, id):
             except:
                 return trata_erro_500(request)
 
-        # Verifica se o usuário da requisição já respondeu ao questionário anteriormente.
-        # Se sim, obtém as respostas para cada questão
+        # Verifica se o usuário da requisição já respondeu ao questionário
+        # anteriormente. Se sim, obtém as respostas para cada questão
         for alternativa in alternativas:
             usuario_respostas = UsuarioResposta.objects.filter(
                 alternativa=alternativa,
@@ -2345,7 +2453,10 @@ def obtemCertificado(request, curso_id):
         if usuario.tem_perfil_aluno():
 
             # Obtém a inscrição do usuário no curso
-            inscricao = Inscricao.objects.get(usuario=request.user, curso_id=curso_id)
+            inscricao = Inscricao.objects.get(
+                usuario=request.user,
+                curso_id=curso_id
+            )
 
             contexto = {
                 'usuario': usuario,
@@ -2353,6 +2464,7 @@ def obtemCertificado(request, curso_id):
                 'request': request
             }
 
+            # Cria o arquivo PDF com base no template HTML fornecido
             pdf = render_to_pdf('core/certificado-conclusao.html', contexto)
 
             if pdf:
@@ -2398,12 +2510,14 @@ def relatorioAcompanhamentoView(request):
 
     lista_inscricoes = []
 
-    # Caso o usuário tenha perfil de administrador
+    # Caso o usuário tenha perfil de ADMINISTRADOR ou INSTRUTOR
     if perfil_administrador or perfil_instrutor:
 
         if perfil_administrador == True:
             # Obtém todos os usuários de pefil ALUNO
-            usuarios = CustomUser.objects.filter(perfil=1).order_by('first_name')
+            usuarios = CustomUser.objects.filter(
+                perfil=1
+            ).order_by('first_name')
 
         else:
             # Obtém o ID dos usuários que estão incritos nos cursos criados
@@ -2434,6 +2548,7 @@ def relatorioAcompanhamentoView(request):
             except:
                 usuario = None
 
+        # Verifica se algum usuário foi obtido
         nao_tem_usuarios = False
         if len(usuarios) == 0:
             nao_tem_usuarios = True
@@ -2446,6 +2561,7 @@ def relatorioAcompanhamentoView(request):
             elif len(inscricoes) == 0:
                 nao_tem_inscricoes = True
 
+        # Verifica se alguma inscrição de usuário foi obtida
         if inscricoes is not None:
             for inscricao in inscricoes:
                 dict_inscricao = {}
@@ -2455,7 +2571,8 @@ def relatorioAcompanhamentoView(request):
                     questionario__unidade__curso=inscricao.curso
                 )
                 if usuario_questionarios.count() > 0:
-                    dict_inscricao['usuario_questionarios'] = usuario_questionarios
+                    dict_inscricao['usuario_questionarios'] = \
+                        usuario_questionarios
                 else:
                     dict_inscricao['usuario_questionarios'] = None
 
@@ -2506,7 +2623,10 @@ def relatorioAcompanhamentoView(request):
                 }
             )
     else:
+        # Caso o perfil do usuário seja ALUNO
         if perfil_aluno:
+
+            # Obtém as inscrições do usuário no curso
             inscricoes = Inscricao.objects.filter(usuario=request.user)
 
             if inscricoes is not None:
@@ -2517,6 +2637,8 @@ def relatorioAcompanhamentoView(request):
                         usuario=inscricao.usuario,
                         questionario__unidade__curso=inscricao.curso
                     )
+
+                    # Obtém o resultados do usuário nos questionários realizados
                     if usuario_questionarios.count() > 0:
                         dict_inscricao[
                             'usuario_questionarios'] = usuario_questionarios
@@ -2564,7 +2686,8 @@ def relatorioUsuarioView(request):
     """
 
     # Caso o usuário tenha perfil de administrador
-    if request.user.tem_perfil_administrador() or request.user.tem_perfil_instrutor():
+    if request.user.tem_perfil_administrador() or \
+            request.user.tem_perfil_instrutor():
         nao_tem_usuarios = False
         nao_tem_inscricoes = False
         usuario = None
@@ -2599,7 +2722,8 @@ def relatorioUsuarioView(request):
                     questionario__unidade__curso=inscricao.curso
                 )
                 if usuario_questionarios.count() > 0:
-                    dict_inscricao['usuario_questionarios'] = usuario_questionarios
+                    dict_inscricao['usuario_questionarios'] = \
+                        usuario_questionarios
                 else:
                     dict_inscricao['usuario_questionarios'] = None
 
@@ -2629,8 +2753,11 @@ def obtemRelatorio(request, usuario_id):
     """
 
     try:
+        # Obtém o usuário associado ao relatórip
         usuario = CustomUser.objects.get(pk=usuario_id)
 
+        # Caso o perfil do usuario da requsição seja de INSTRUTOR, retorna
+        # apenas as inscrições do usuário em cursos de sua autoria
         if request.user.tem_perfil_instrutor():
             inscricoes = Inscricao.objects.filter(
                 usuario=usuario,
@@ -2649,7 +2776,8 @@ def obtemRelatorio(request, usuario_id):
                     questionario__unidade__curso=inscricao.curso
                 )
                 if usuario_questionarios.count() > 0:
-                    dict_inscricao['usuario_questionarios'] = usuario_questionarios
+                    dict_inscricao['usuario_questionarios'] = \
+                        usuario_questionarios
                 else:
                     dict_inscricao['usuario_questionarios'] = None
 
@@ -2664,6 +2792,8 @@ def obtemRelatorio(request, usuario_id):
             'nao_tem_usuarios': False,
             'nao_tem_inscricoes': False,
         }
+
+        # Cria o arquivo PDF com base no template HTML fornecido
         pdf = render_to_pdf('core/relatorio-conteudo.html', contexto)
 
         if pdf:
@@ -2684,7 +2814,7 @@ def obtemRelatorio(request, usuario_id):
 @never_cache
 def cadastroConteudoCursoView(request, id):
     """
-    View responsável pelo tratamento cadastrar os conteúdos de um curso
+    View responsável pelo tratamento de cadastro de conteúdos de um curso
     """
 
     perfil_aluno = False
@@ -2701,19 +2831,32 @@ def cadastroConteudoCursoView(request, id):
     if request.user.tem_perfil_instrutor():
         perfil_instrutor = True
 
+    # Obtém o curso associado aos cadastros
     curso = get_object_or_404(Curso, pk=id)
 
+    # Obtém as unidades associadas ao curso
     unidades = curso.obtem_unidades()
 
+    # Obtém os vídeos associados as unidades do curso
     videos = Video.objects.filter(unidade__in=unidades).order_by('ordem')
 
+    # Obtém os arquivos associados as unidades do curso
     arquivos = Arquivo.objects.filter(unidade__in=unidades).order_by('ordem')
 
-    questionarios = Questionario.objects.filter(unidade__in=unidades).order_by('ordem')
+    # Obtém os questionários associados as unidades do curso
+    questionarios = Questionario.objects.filter(
+        unidade__in=unidades
+    ).order_by('ordem')
 
-    questoes = Questao.objects.filter(questionario__in=questionarios).order_by('ordem')
+    # Obtém as questões assocciadas questionários do curso
+    questoes = Questao.objects.filter(
+        questionario__in=questionarios
+    ).order_by('ordem')
 
-    alternativas = Alternativa.objects.filter(questao__in=questoes).order_by('ordem')
+    # Ohtém as alternativas associadas as questões do curso
+    alternativas = Alternativa.objects.filter(
+        questao__in=questoes
+    ).order_by('ordem')
 
     # Caso o método HTTP associado a requisição seja POST
     # Exibe o formulário com os dados já existentes, senão, um em branco
@@ -2728,9 +2871,13 @@ def cadastroConteudoCursoView(request, id):
         objeto_ordem = 0
 
         try:
-
+            # Obtém o id do conteúdo a ser tratado
             conteudo_id = int(request.POST['conteudo_id'])
+
+            # Obtém o tipo do conteúdo a ser tratado
             conteudo_tipo = request.POST['conteudo_tipo']
+
+            # Obtém a ordem da unidade do conteúdo a ser tratado
             unidade_ordem = request.POST['unidade_ordem']
 
             response_data['conteudo_tipo'] = conteudo_tipo
@@ -2739,6 +2886,8 @@ def cadastroConteudoCursoView(request, id):
             # Tenta obter a unidade de acordo com sua ordem no curso
             unidade = Unidade.objects.filter(curso=curso, ordem=unidade_ordem)
 
+            # Caso o tipo de conteúdo não seja uma unidade, obtem a unidade
+            # associada ao conteúdo
             if conteudo_tipo != "unidade" and unidade.count() == 1:
                 unidade = unidade[0]
             else:
@@ -2749,6 +2898,7 @@ def cadastroConteudoCursoView(request, id):
                         json.dumps(response_data), status=status_response
                     )
 
+            # Monta dicionários do modelos a serem tratados
             dict_modelo = {
                 'unidade': Unidade,
                 'video': Video,
@@ -2764,8 +2914,8 @@ def cadastroConteudoCursoView(request, id):
             max_ordem_objeto = 0
             objeto = None
 
+            # Obtém a instância do conteúdo
             if conteudo_id > 0:
-                # Obtém a instância do conteúdo
                 try:
                     objeto = modelo.objects.get(pk=conteudo_id)
                 except:
@@ -2775,6 +2925,7 @@ def cadastroConteudoCursoView(request, id):
                         json.dumps(response_data), status=status_response
                     )
 
+            # Caso o tipo de conteúdo seja uma unidade
             if conteudo_tipo == 'unidade':
                 unidade_titulo = request.POST['titulo-unidade']
                 unidade_descricao = request.POST['descricao-unidade']
@@ -2789,7 +2940,8 @@ def cadastroConteudoCursoView(request, id):
                 }
 
                 if unidade_titulo == "":
-                    response_data[f"titulo-unidade-{unidade_ordem}"] = 'O título da unidade é obrigatório'
+                    response_data[f"titulo-unidade-{unidade_ordem}"] = \
+                        'O título da unidade é obrigatório'
                     response_data['resultado'] = "Falha ao salvar o item."
                     status_response = 500
                     return HttpResponse(
@@ -2806,12 +2958,18 @@ def cadastroConteudoCursoView(request, id):
                     curso
                 )
 
-            if conteudo_tipo == 'video' or conteudo_tipo == 'arquivo' or conteudo_tipo == 'questionario':
+            # Caso o tipo de conteúdo seja um vídeo, arquivo ou questionário
+            if conteudo_tipo == 'video' or conteudo_tipo == 'arquivo' or \
+                    conteudo_tipo == 'questionario':
                 objeto_ordem = request.POST['conteudo_ordem']
                 conteudo_titulo = request.POST['titulo']
 
                 if conteudo_titulo == "":
-                    response_data[f"titulo-{conteudo_tipo}-{objeto_ordem}-unidade-{unidade_ordem}"] = f"O Título do {conteudo_tipo} é obrigatório."
+                    response_data[
+                        f"titulo-{conteudo_tipo}-{objeto_ordem}-unidade-"
+                        f"{unidade_ordem}"
+                    ] = f"O Título do {conteudo_tipo} é obrigatório."
+
                     response_data['resultado'] = "Falha ao salvar o item."
                     status_response = 500
                     return HttpResponse(
@@ -2837,18 +2995,21 @@ def cadastroConteudoCursoView(request, id):
                     video_interno = True
                     conteudo_url = ''
 
+                # Verifica se foi submetido o arquivo de vídeo
                 file_len = request.FILES.__len__()
 
                 if (conteudo_url == None or len(conteudo_url) == 0) and \
                         ((objeto != None and objeto.caminho == "" and
                          file_len == 0) or (objeto == None and file_len == 0)):
 
-                    response_data['resultado'] = "Configure uma URL ou selecione um arquivo de vídeo."
+                    response_data['resultado'] = \
+                        "Configure uma URL ou selecione um arquivo de vídeo."
                     status_response = 500
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
 
+                # Monta dicionário com as informações do vídeo
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'unidade': unidade.id,
@@ -2858,17 +3019,24 @@ def cadastroConteudoCursoView(request, id):
                     'ordem': objeto_ordem
                 }
 
+            # Caso o tipode conteúdo seja um arquivo
             if conteudo_tipo == 'arquivo':
+
+                # Verifica se foi submetido um arquivo
                 file_len = request.FILES.__len__()
 
-                if (objeto != None and objeto.caminho == "" and file_len == 0) or (objeto == None and file_len == 0):
+                if (objeto != None and objeto.caminho == "" and file_len == 0) \
+                        or (objeto == None and file_len == 0):
                     response_data[
-                        f"path-{conteudo_tipo}-{objeto_ordem}-unidade-{unidade_ordem}"] = "Selecione um arquivo."
+                        f"path-{conteudo_tipo}-{objeto_ordem}-unidade"
+                        f"-{unidade_ordem}"
+                    ] = "Selecione um arquivo."
                     status_response = 500
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
 
+                # Monta dicionário com as informações do arquivo
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'unidade': unidade.id,
@@ -2876,6 +3044,7 @@ def cadastroConteudoCursoView(request, id):
                     'ordem': objeto_ordem
                 }
 
+            # Caso o tipo de conteúdo seja um questinário
             if conteudo_tipo == 'questionario':
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
@@ -2884,21 +3053,27 @@ def cadastroConteudoCursoView(request, id):
                     'ordem': objeto_ordem
                 }
 
+            # Caso o tipo de conteúdo seja uma questão de um questionário
             if conteudo_tipo == 'questao':
                 questionario_ordem = request.POST['questionario_ordem']
                 questao_enunciado = request.POST['questao']
                 objeto_ordem = request.POST['questao_ordem']
 
-                response_data['questionario-selector'] = f"questionario-{questionario_ordem}-unidade-{unidade_ordem}"
+                response_data['questionario-selector'] = \
+                    f"questionario-{questionario_ordem}-unidade-{unidade_ordem}"
 
                 if questao_enunciado == "":
-                    response_data[f"titulo-questao-{objeto_ordem}-questionario-{questionario_ordem}-unidade-{unidade_ordem}"] = f"Enunciado da questão é obrigatório."
+                    response_data[
+                        f"titulo-questao-{objeto_ordem}-questionario-"
+                        f"{questionario_ordem}-unidade-{unidade_ordem}"
+                    ] = f"Enunciado da questão é obrigatório."
                     response_data['resultado'] = "Falha ao salvar o item."
                     status_response = 500
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
 
+                # Obtém o questionário associado a questão
                 questionario = Questionario.objects.filter(
                     unidade=unidade,
                     ordem=questionario_ordem
@@ -2930,14 +3105,19 @@ def cadastroConteudoCursoView(request, id):
                     questionario[0]
                 )
 
+            # Caso o tipo de conteúdo seja uma alternativa de uma questão
             if conteudo_tipo == 'alternativa':
 
                 questionario_ordem = request.POST['questionario_ordem']
                 questao_ordem = request.POST['questao_ordem']
                 alternativa_descricao = request.POST['alternativa']
 
-                response_data['questionario-selector'] = f"questionario-{questionario_ordem}-unidade-{unidade_ordem}"
-                response_data['questao-selector'] = f"questao-{questao_ordem}-questionario-{questionario_ordem}-unidade-{unidade_ordem}"
+                response_data['questionario-selector'] = \
+                    f"questionario-{questionario_ordem}-unidade-{unidade_ordem}"
+
+                response_data['questao-selector'] \
+                    = f"questao-{questao_ordem}-questionario-" \
+                    f"{questionario_ordem}-unidade-{unidade_ordem}"
 
                 try:
                     request.POST['alternativa-correta']
@@ -2947,13 +3127,18 @@ def cadastroConteudoCursoView(request, id):
                 objeto_ordem = request.POST['alternativa_ordem']
 
                 if alternativa_descricao == "":
-                    response_data[f"titulo-alternativa-{objeto_ordem}-questao-{questao_ordem}-questionario-{questionario_ordem}-unidade-{unidade_ordem}"] = f"Descrição da alternativa é obrigatória."
+                    response_data[f"titulo-alternativa-{objeto_ordem}-questao-"
+                                  f"{questao_ordem}-questionario-"
+                                  f"{questionario_ordem}-unidade-"
+                                  f"{unidade_ordem}"] = \
+                        f"Descrição da alternativa é obrigatória."
                     response_data['resultado'] = "Falha ao salvar o item."
                     status_response = 500
                     return HttpResponse(
                         json.dumps(response_data), status=status_response
                     )
 
+                # Obtém o questionário associado a questão da alternativa
                 questionario = Questionario.objects.filter(
                     unidade=unidade,
                     ordem=questionario_ordem
@@ -2966,6 +3151,7 @@ def cadastroConteudoCursoView(request, id):
                         json.dumps(response_data), status=status_response
                     )
 
+                # Obtém a questão associada a alternativa
                 questao = Questao.objects.filter(
                     questionario=questionario[0],
                     ordem=questao_ordem
@@ -2992,6 +3178,7 @@ def cadastroConteudoCursoView(request, id):
                         alternativa.correta = False
                         alternativa.save()
 
+                # Monta dicionário com as informações da alternativa
                 dict_objeto = {
                     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                     'questao': questao[0].id,
@@ -3019,7 +3206,9 @@ def cadastroConteudoCursoView(request, id):
                     # Caso existe uma instância do objeto para a ordem atual,
                     # inscrementa a ordem do mesmo
                     if objeto_ordem_atual.count() == 1:
-                        objeto_aux = modelo.objects.get(pk=objeto_ordem_atual[0].id)
+                        objeto_aux = modelo.objects.get(
+                            pk=objeto_ordem_atual[0].id
+                        )
                         objeto_aux.ordem = max_ordem_objeto + 1
                         objeto_aux.save()
 
@@ -3028,7 +3217,11 @@ def cadastroConteudoCursoView(request, id):
                 # criar a nova
                 if request.FILES.__len__() > 0:
                     objeto.delete()
-                    form = formModelo(data=dict_objeto, files=request.FILES or None, user=request.user)
+                    form = formModelo(
+                        data=dict_objeto,
+                        files=request.FILES or None,
+                        user=request.user
+                    )
 
                     objeto = form.save()
 
@@ -3043,7 +3236,7 @@ def cadastroConteudoCursoView(request, id):
                     objeto.save()
 
                 else:
-                    # Atualiza as informações do Objeto
+                    # Atualiza as informações do Objeto de acordo com seu tipo
                     if conteudo_tipo == 'unidade':
                         objeto.curso = curso
                         objeto.titulo = dict_objeto['titulo']
@@ -3094,7 +3287,12 @@ def cadastroConteudoCursoView(request, id):
                     objeto_aux = modelo.objects.get(pk=objeto_ordem_atual[0].id)
                     objeto_aux.ordem = max_ordem_objeto + 1
                     objeto_aux.save()
-                form = formModelo(data=dict_objeto, files=request.FILES or None, user=request.user)
+
+                form = formModelo(
+                    data=dict_objeto,
+                    files=request.FILES or None,
+                    user=request.user
+                )
 
                 objeto = form.save()
 
@@ -3126,9 +3324,6 @@ def cadastroConteudoCursoView(request, id):
         return HttpResponse(
             json.dumps(response_data), status=status_response
         )
-
-    else:
-        teste = "a"
 
     return render(
         request,
@@ -3162,7 +3357,10 @@ def removeConteudoCursoView(request):
 
     if request.method == 'GET':
 
+        # Obtém o tipo de conteúdo a ser removido
         tipo_conteudo = request.GET['tipo_conteudo']
+
+        # Obtém o ID do conteúdo a ser removido
         conteudo_id = request.GET['conteudo_id']
         id_resultado = request.GET['id_resultado']
 
@@ -3183,12 +3381,16 @@ def removeConteudoCursoView(request):
         modelo = dict_modelo[tipo_conteudo]
         objeto_reordenacao = None
         try:
+            # Obtém a instãncia de modelo a ser removida
             objeto = modelo.objects.get(pk=conteudo_id)
 
+            # De acordo com o tipo de conteúdo, remove o conteúdo e reordena
+            # os outro objetos
             if tipo_conteudo == "unidade":
                 objeto_reordenacao = objeto.curso
 
-            if tipo_conteudo == "video" or tipo_conteudo == "arquivo" or tipo_conteudo == "questionario":
+            if tipo_conteudo == "video" or tipo_conteudo == "arquivo" \
+                    or tipo_conteudo == "questionario":
                 objeto_reordenacao = objeto.unidade
 
             if tipo_conteudo == "questao":
@@ -3196,7 +3398,6 @@ def removeConteudoCursoView(request):
 
             if tipo_conteudo == "alternativa":
                 objeto_reordenacao = objeto.questao
-
             objeto.delete()
             modelo.objects.reordena_objetos(objeto_reordenacao)
         except:
@@ -3229,7 +3430,8 @@ def cadastroConteudosView(request):
         perfil_instrutor = True
 
 
-    # Verifica o perfil do usuário para obter o curso associado ao ID da requisição
+    # Verifica o perfil do usuário para obter o curso associado ao ID da
+    # requisição
     if perfil_aluno:
         return trata_usuario_sem_permissao(request)
 

@@ -9,14 +9,17 @@ from functools import reduce
 from operator import or_
 from django.db.models import Q
 from django.contrib import messages
-
-from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomAuthenticationForm
+from .forms import \
+    CustomUserCreationForm, CustomUserChangeForm, CustomAuthenticationForm
 from .models import CustomUser
 from core.views import paginaInicialView, trata_usuario_sem_permissao
 from django.http import JsonResponse
 
 
 def LoginView(request):
+    """
+    View associada ao login de usuários no sistema
+    """
     # Caso o método HTTP associado a requisição seja POST
     # Exibe o formulário com os dados já existentes, senão, um em branco
     if request.method == 'POST':
@@ -48,6 +51,9 @@ class SignUpView(CreateView):
     success_url = reverse_lazy(paginaInicialView)
     template_name = 'signup.html'
 
+    # Exclui  a opção do form de registro no sistema de se registrar com um
+    # usuário de perfil ADMINISTRADOR, sendo possível apenas registrar-se com
+    # perfil de ALUNO ou INSTRUTOR
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
         form_kwargs['perfil'] = CustomUser.PERFIS[:-1]
@@ -66,7 +72,7 @@ class SignUpView(CreateView):
 @login_required
 def EditUserView(request, id):
     """
-    View para edição de um usuário
+    View para edição de um usuário do sistema
     """
     usuario = get_object_or_404(CustomUser, pk=id)
     form = CustomUserChangeForm(instance=usuario)
@@ -90,12 +96,14 @@ def EditUserView(request, id):
         perfil_instrutor = True
         menu_dados_cadastrais = True
 
-    #if perfil_administrador:
+    # Na edição do usuário, permite a edição do nome e sobrenome
     form.fields['first_name'].widget.attrs['readonly'] = False
     form.fields['last_name'].widget.attrs['readonly'] = False
 
+    # Não permite a edição do perfil do usuário
     form.fields['perfil'].widget.attrs['disabled'] = True
 
+    # Caso seja uma requisição POST, atualiza os dados do usuário
     if request.method == 'POST':
         perfil_usuario = usuario.perfil
         form = CustomUserChangeForm(request.POST, instance=usuario)
@@ -155,6 +163,7 @@ def listaUsuariosView(request):
     """
     perfil_administrador = False
 
+    # Apenas usuários de perfil admnistrador podem acessar a lista de usuários
     if request.user.tem_perfil_administrador():
         perfil_administrador = True
 
@@ -170,27 +179,42 @@ def listaUsuariosView(request):
         # Verifica se na requisição de GET foi passado o parametro de pesquisa.
         # Caso sim, verifica o texto pesquisado nas informações do modelo
         if search:
-            search_fields = ['username', 'first_name', 'last_name', 'email']
-            filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search}) for f in search_fields], Q())
+            search_fields = ['first_name', 'last_name', 'email']
+            filtro = reduce(or_, [Q(**{'{}__icontains'.format(f): search})
+                                  for f in search_fields], Q())
+
             objetos = CustomUser.objects.filter(filtro)
 
-            objetos = objetos.filter(Q(perfil=1) | (Q(perfil=2) | (Q(perfil=3)))).order_by('username')
+            # Filtra todos os usuários de perfil Administrador, Aluno ou
+            # Instrutor
+            objetos = objetos.filter(
+                Q(perfil=1) | Q(perfil=2) | Q(perfil=3)
+            ).order_by('username')
 
         # Caso não, obtém a lista de todos os objetos
         else:
             lista_objetos = CustomUser.objects.all().order_by('username')
-            lista_objetos = lista_objetos.filter(Q(perfil=1) | (Q(perfil=2) | (Q(perfil=3))))
 
+            # Filtra todos os usuários de perfil Administrador, Aluno ou
+            # Instrutor
+            lista_objetos = lista_objetos.filter(
+                Q(perfil=1) | Q(perfil=2) | Q(perfil=3)
+            )
+
+            # Cria páginação de no máximo 10 registros na página
             paginator = Paginator(lista_objetos, 10)
 
             page = request.GET.get('page')
 
             objetos = paginator.get_page(page)
 
+        # Verfica te não serão retornados nenhum usuário
         nao_tem_objetos = False
         if len(objetos) == 0:
             nao_tem_objetos = True
 
+        # Marca qual template será retorna em virtude da chama a view ser
+        # realizada via AJAX ou não
         nome_template = 'usuarios-lista.html'
         if request.is_ajax():
             nome_template = 'usuarios-lista-conteudo.html'
@@ -223,6 +247,7 @@ def novoUsuarioView(request):
     """
 
     # Avalia o perfil do usuário da requsição
+    # Apenas usuários de perfil ADMINISTRADOR podem adicionar novos usuários
     if request.user.tem_perfil_administrador():
         perfil_administrador = True
 
@@ -264,11 +289,11 @@ def removeUsuarioView(request, id):
     """
     View responsável pelo tratamento de remoção de um registro de usuário
     """
-    perfil_administrador = False
-
-    # Avalia o perfil do usuário da requsição
-    if (not request.is_ajax() and request.user.tem_perfil_administrador()) or request.is_ajax():
-        perfil_administrador = True
+    # Permite a remoção de usuário caso a requsição seja realizada via AJAX ou
+    # caso perfil do usuário da requisição seja de ADMINISTRADOR
+    if(
+            not request.is_ajax() and request.user.tem_perfil_administrador()
+    ) or request.is_ajax():
 
         # Obtém o objeto a ser removido e em caso de sucesso, o remove
         try:

@@ -1,41 +1,41 @@
-                <div class="row">
-                {% for elemento in lista_cursos %}
-                    <div class="col-sm-3 py-2">
-                        <div class="card card-curso h-100">
+<div class="row">
+{% for elemento in lista_cursos %}
+    <div class="col-sm-3 py-2">
+        <div class="card card-curso h-100">
 
-                            <div class="card-header">
-                                <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
-                            </div>
+            <div class="card-header">
+                <h5 class="text-center" style="margin: 0; padding: 0;">{{elemento.curso.titulo}}</h5>
+            </div>
 
-                            <div class="card-body">
+            <div class="card-body">
 
-                                <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted text-center">{{elemento.categoria}}</h6>
 
-                                <hr/>
+                <hr/>
 
-                                <p class="card-text text-center">{{elemento.curso.descricao}}</p>
-                                <p>
-                                    <div class="stars text-center">
-                                        <span class="star {{ elemento.nota_1 }}"></span>
-                                        <span class="star {{ elemento.nota_2 }}"></span>
-                                        <span class="star {{ elemento.nota_3 }}"></span>
-                                        <span class="star {{ elemento.nota_4 }}"></span>
-                                        <span class="star {{ elemento.nota_5 }}"></span>
-                                        <span><b>({{elemento.nota_media}})</b></span>
-                                        <span>({{elemento.numero_avaliacoes}})</span>
-                                    </div>
-                                </p>
-                                <p>
-
-                                <div class="col text-center">
-                                    <a href="/informacoes-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button" title="Acessa página de informações detalhadas do curso">
-                                        <i class="fas fa-info-circle class-icone-button"></i>
-                                            Mais informações
-                                    </a>
-                                </div>
-                                </p>
-                            </div>
-                        </div>
+                <p class="card-text text-center">{{elemento.curso.descricao}}</p>
+                <p>
+                    <div class="stars text-center">
+                        <span class="star {{ elemento.nota_1 }}"></span>
+                        <span class="star {{ elemento.nota_2 }}"></span>
+                        <span class="star {{ elemento.nota_3 }}"></span>
+                        <span class="star {{ elemento.nota_4 }}"></span>
+                        <span class="star {{ elemento.nota_5 }}"></span>
+                        <span><b>({{elemento.nota_media}})</b></span>
+                        <span>({{elemento.numero_avaliacoes}})</span>
                     </div>
-                {% endfor %}
+                </p>
+                <p>
+
+                <div class="col text-center">
+                    <a href="/informacoes-curso/{{elemento.curso.id}}" class="btn btn-primary" role="button" title="Acessa página de informações detalhadas do curso">
+                        <i class="fas fa-info-circle class-icone-button"></i>
+                            Mais informações
+                    </a>
                 </div>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>

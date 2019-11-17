@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gdstorage',
     'core',
-    'crispy_forms',  # aplicação instalada através de pip install django-crispy-forms
-    'accounts',      # aplicação de contas de usuário
+    'crispy_forms',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +60,7 @@ ROOT_URLCONF = 'sistema_treinamentos.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], #adicionado o conteúdo desse dicionário para os templates criados de login
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -1,6 +1,7 @@
 from .models import *
 from django.db.models import Max, Q
 
+
 class CategoriaManager(models.Manager):
     """
         Manager associado ao modelo UsuarioVideo
@@ -21,7 +22,7 @@ class AvaliacaoManager(models.Manager):
     """
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para obter avaliações de acordo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
@@ -65,7 +66,8 @@ class InscricaoManager(models.Manager):
 
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para retornar as inscrições de acorodo com o perfil do usuário
+            Método para retornar as inscrições de acordo com o perfil
+            do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
@@ -73,12 +75,15 @@ class InscricaoManager(models.Manager):
         return objetos
 
     def obtem_url_ultimo_conteudo_acessado_usuario(self, usuario):
-
+        """
+            Método para obter a URL do último conteúdo acessado pelo usuário
+        """
         inscricao = self.filter(
             usuario=usuario
         ).order_by('-data_ultimo_conteudo_acessado')[:1]
 
         return inscricao
+
 
 class UnidadeManager(models.Manager):
     """
@@ -86,7 +91,7 @@ class UnidadeManager(models.Manager):
     """
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para obter unidades de acordo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
@@ -97,6 +102,9 @@ class UnidadeManager(models.Manager):
         return objetos
 
     def obtem_ultima_ordem(self, curso):
+        """
+            Obtém o valor da maior ordem entre os objetos
+        """
         max_ordem_conteudo = self.filter(
             curso=curso,
         ).aggregate(
@@ -107,6 +115,9 @@ class UnidadeManager(models.Manager):
         return max_ordem_conteudo
 
     def reordena_objetos(self, curso):
+        """
+            Reordena a propriedade de ordem dos objetos
+        """
         objetos = self.filter(curso=curso).order_by('ordem')
 
         ordem = 1
@@ -116,6 +127,9 @@ class UnidadeManager(models.Manager):
             ordem = ordem + 1
 
     def verifica_titulo_repetido(self, curso, titulo, ordem):
+        """
+            Verifica se existe algum título repetido entre os objetos
+        """
         objetos = self.filter(
             curso=curso,
             titulo=titulo
@@ -132,7 +146,7 @@ class VideoManager(models.Manager):
     """
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para obter vídeos de acordo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
@@ -143,6 +157,9 @@ class VideoManager(models.Manager):
         return objetos
 
     def obtem_ultima_ordem(self, unidade):
+        """
+            Obtém o valor da maior ordem entre os objetos
+        """
         max_ordem_conteudo = self.filter(
             unidade=unidade,
         ).aggregate(
@@ -153,6 +170,9 @@ class VideoManager(models.Manager):
         return max_ordem_conteudo
 
     def reordena_objetos(self, unidade):
+        """
+            Reordena a propriedade de ordem dos objetos
+        """
         objetos = self.filter(unidade=unidade).order_by('ordem')
 
         ordem = 1
@@ -168,7 +188,7 @@ class ArquivoManager(models.Manager):
     """
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para obter arquivos de acordo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
@@ -179,6 +199,9 @@ class ArquivoManager(models.Manager):
         return objetos
 
     def obtem_ultima_ordem(self, unidade):
+        """
+            Obtém o valor máximo de ordem entre os objetos
+        """
         max_ordem_conteudo = self.filter(
             unidade=unidade,
         ).aggregate(
@@ -189,6 +212,9 @@ class ArquivoManager(models.Manager):
         return max_ordem_conteudo
 
     def reordena_objetos(self, unidade):
+        """
+            Reordena a propriedade de ordem dos objetos
+        """
         objetos = self.filter(unidade=unidade).order_by('ordem')
 
         ordem = 1
@@ -204,7 +230,7 @@ class QuestionarioManager(models.Manager):
     """
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para obter questionários de acordo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
@@ -215,6 +241,9 @@ class QuestionarioManager(models.Manager):
         return objetos
 
     def obtem_ultima_ordem(self, unidade):
+        """
+            Obtém o valor da maior ordem entre os objetos
+        """
         max_ordem_conteudo = self.filter(
             unidade=unidade,
         ).aggregate(
@@ -226,6 +255,9 @@ class QuestionarioManager(models.Manager):
 
 
     def reordena_objetos(self, unidade):
+        """
+            Reordena a propriedade de ordem dos objetos
+        """
         objetos = self.filter(unidade=unidade).order_by('ordem')
 
         ordem = 1
@@ -241,17 +273,22 @@ class QuestaoManager(models.Manager):
     """
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para obter questões de acordo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
             objetos = self.all()
         else:
             if usuario.tem_perfil_instrutor():
-                objetos = self.filter(questionario__unidade__curso__usuario=usuario)
+                objetos = self.filter(
+                    questionario__unidade__curso__usuario=usuario
+                )
         return objetos
 
     def obtem_ultima_ordem(self, questionario):
+        """
+            Obtém o valor da maior ordem entre os objetos
+        """
         max_ordem_conteudo = self.filter(
             questionario=questionario,
         ).aggregate(
@@ -262,6 +299,9 @@ class QuestaoManager(models.Manager):
         return max_ordem_conteudo
 
     def reordena_objetos(self, questionario):
+        """
+            Reordena a propriedade de ordem dos objetos
+        """
         objetos = self.filter(questionario=questionario).order_by('ordem')
 
         ordem = 1
@@ -277,17 +317,22 @@ class AlternativaManager(models.Manager):
     """
     def obtem_objetos_por_perfil_usuario(self, usuario):
         """
-            Método para
+            Método para obter alternativas de acordo com o perfil do usuário
         """
         objetos = self.none()
         if usuario.tem_perfil_administrador():
             objetos = self.all()
         else:
             if usuario.tem_perfil_instrutor():
-                objetos = self.filter(questao__questionario__unidade__curso__usuario=usuario)
+                objetos = self.filter(
+                    questao__questionario__unidade__curso__usuario=usuario
+                )
         return objetos
 
     def obtem_ultima_ordem(self, questao):
+        """
+            Obtém o valor da maior ordem entre os objetos
+        """
         max_ordem_conteudo = self.filter(
             questao=questao,
         ).aggregate(
@@ -298,6 +343,9 @@ class AlternativaManager(models.Manager):
         return max_ordem_conteudo
 
     def reordena_objetos(self, questao):
+        """
+            Reordena a propriedade de ordem dos objetos
+        """
         objetos = self.filter(questao=questao).order_by('ordem')
 
         ordem = 1
@@ -329,7 +377,8 @@ class UsuarioArquivoManager(models.Manager):
 
     def obtem_arquivos_acessados_por_usuario(self, curso, usuario):
         """
-            Método para obter a lista de associação entre usuários e questionários
+            Método para obter a lista de associação entre usuários e
+            questionários
         """
         arquivos_acessados = self.filter(
             usuario=usuario,
@@ -346,7 +395,8 @@ class UsuarioQuestionarioManager(models.Manager):
 
     def obtem_questionarios_respondidos_por_usuario(self, curso, usuario):
         """
-            Método para obter a lista de associação entre usuários e questionários
+            Método para obter a lista de associação entre usuários e
+            questionários
         """
         questionarios_respondidos = self.filter(
             usuario=usuario,

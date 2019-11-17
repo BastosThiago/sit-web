@@ -1,35 +1,65 @@
-# users/forms.py
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
+from django.contrib.auth.forms import \
+    UserCreationForm, UserChangeForm, AuthenticationForm
 from .models import CustomUser
 
+
 class CustomAuthenticationForm(AuthenticationForm):
-    email = forms.CharField(label='Endereço de E-mail', max_length=50,
-                            required=True)
+    """
+    Form de login do usuário
+    """
+    email = forms.CharField(
+        label='Endereço de E-mail',
+        max_length=50,
+        required=True
+    )
 
     class Meta(AuthenticationForm):
         model = CustomUser
-        #fields = ('username', 'password', 'email')
         fields = ('email', 'password', )
         exclude = ('username')
 
+
 class CustomUserCreationForm(UserCreationForm):
-    first_name = forms.CharField(label="Nome", max_length=30, required=True)
-    last_name = forms.CharField(label="Sobrenome", max_length=30, required=True)
-    email = forms.CharField(label='Endereço de E-mail', max_length=50, required=True)
+    """
+    Form de registro do usuário
+    """
+    first_name = forms.CharField(
+        label="Nome",
+        max_length=30,
+        required=True
+    )
+
+    last_name = forms.CharField(
+        label="Sobrenome",
+        max_length=30,
+        required=True
+    )
+
+    email = forms.CharField(
+        label='Endereço de E-mail',
+        max_length=50,
+        required=True
+    )
 
     class Meta(UserCreationForm):
         model = CustomUser
-        #fields = ('username', 'first_name', 'last_name', 'email', 'perfil')
         fields = ('email', 'first_name', 'last_name', 'perfil')
 
     def __init__(self, *args, **kwargs):
+        """
+        Customiza as opções de perfil do usuário no registro
+        """
         perfil = kwargs.pop('perfil', False)
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
         if perfil:
             self.fields['perfil'].choices = perfil
 
+
 class CustomUserChangeForm(UserChangeForm):
+    """
+    Form de alteração das informações cadastrais de um usuário
+    """
     def __init__(self, *args, **kwargs):
         super(UserChangeForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)

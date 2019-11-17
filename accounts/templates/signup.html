@@ -3,30 +3,27 @@
 
 {% block head %}
     <style>
+        html,
+        body {
+          height: 100%;
+        }
 
-            html,
-            body {
-              height: 100%;
-            }
+        #page-content {
+          flex: 1 0 auto;
+          margin-top: 40px;
+        }
 
-            #page-content {
-              flex: 1 0 auto;
-              margin-top: 40px;
-            }
+        #sticky-footer {
+          flex-shrink: none;
+        }
 
-            #sticky-footer {
-              flex-shrink: none;
-            }
+        .class-icone {
+          margin-right: 10px;
+        }
 
-            .class-icone {
-              margin-right: 10px;
-            }
-
-            .navbar-dark {
-                background-color: #343a40;
-            }
-
-
+        .navbar-dark {
+            background-color: #343a40;
+        }
     </style>
 
 {% endblock %}

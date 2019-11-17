@@ -3,98 +3,98 @@
 {% block title %} Lista de Usuários {% endblock %}
 
 {% block content_page %}
-<div class="col-12 list-div">
-    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
-        <h2 class="text-center" style="margin-top: 5px;">Lista de Usuários</h2>
-    </div>
-
-    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-        <div class="col text-center" style="margin-top: 0px; margin-bottom: 5px;">
-          <a href="/accounts/novo-usuario/" class="btn btn-primary" role="button" title="Adiciona um novo usuário">
-              <i class="fas fa-plus class-icone-button"></i>
-                  Adicionar usuário
-          </a>
+    <div class="col-12 list-div">
+        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0;">
+            <h2 class="text-center" style="margin-top: 5px;">Lista de Usuários</h2>
         </div>
-    </div>
 
-    <div class="col-12 search-div">
-        <form method="GET" id="search-form">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-search" id="teste"></i></span>
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="col text-center" style="margin-top: 0px; margin-bottom: 5px;">
+              <a href="/accounts/novo-usuario/" class="btn btn-primary" role="button" title="Adiciona um novo usuário">
+                  <i class="fas fa-plus class-icone-button"></i>
+                      Adicionar usuário
+              </a>
+            </div>
+        </div>
+
+        <div class="col-12 search-div">
+            <form method="GET" id="search-form">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-search" id="teste"></i></span>
+                        </div>
+                        <input class="form-control" type="text" id="search" name="search"
+                               placeholder="Digite algo para buscar"
+                               value="{{ request.GET.search }}"
+                               style="font-size: 0.9rem"
+                               title="Informe qualquer caracteristica de um curso para filtrar">
                     </div>
-                    <input class="form-control" type="text" id="search" name="search"
-                           placeholder="Digite algo para buscar"
-                           value="{{ request.GET.search }}"
-                           style="font-size: 0.9rem"
-                           title="Informe qualquer caracteristica de um curso para filtrar">
-                </div>
-        </form>
-    </div>
-
-    {% if nao_tem_objetos == False %}
-    <div class="container-pesquisa">
-        {% include  'usuarios-lista-conteudo.html' %}
-    </div>
-
-
-        <div class="pagination" style="margin-top: 10px;">
-            <span class="step-links">
-                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-                    <span>
-                        {% if objetos.has_previous %}
-                            <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-angle-left" style="font-size: 1.2rem;"></i></a>
-                        {% endif %}
-
-                        {% if objetos.paginator.num_pages %}
-                        <span class="current" style="font-size: 1.2rem;">
-                            {{ objetos.number }} de {{ objetos.paginator.num_pages }}
-                        </span>
-                        {% endif %}
-
-                        {% if objetos.has_next %}
-                            <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-angle-right" style="font-size: 1.2rem;"></i></a>
-                        {% endif %}
-                    </span>
-                </div>
-            </span>
+            </form>
         </div>
-    {% else %}
-        <h5 class="text-center" style="margin-top: 20px;">Sem cadastros a serem exibidos</h5>
-    {% endif %}
-</div>
 
-<div class="modal fade modal-delete-item" id="confirmDeleteModal" id_objeto="" link_objeto="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body confirm-delete">
-        Deseja realmente remover o item?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
-        <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteButtonModal">Remove</button>
+        {% if nao_tem_objetos == False %}
+        <div class="container-pesquisa">
+            {% include  'usuarios-lista-conteudo.html' %}
+        </div>
+
+
+            <div class="pagination" style="margin-top: 10px;">
+                <span class="step-links">
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <span>
+                            {% if objetos.has_previous %}
+                                <a href="?page={{ objetos.previous_page_number }}"><i class="fas fa-angle-left" style="font-size: 1.2rem;"></i></a>
+                            {% endif %}
+
+                            {% if objetos.paginator.num_pages %}
+                            <span class="current" style="font-size: 1.2rem;">
+                                {{ objetos.number }} de {{ objetos.paginator.num_pages }}
+                            </span>
+                            {% endif %}
+
+                            {% if objetos.has_next %}
+                                <a href="?page={{ objetos.next_page_number }}"><i class="fas fa-angle-right" style="font-size: 1.2rem;"></i></a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </span>
+            </div>
+        {% else %}
+            <h5 class="text-center" style="margin-top: 20px;">Sem cadastros a serem exibidos</h5>
+        {% endif %}
+    </div>
+
+    <div class="modal fade modal-delete-item" id="confirmDeleteModal" id_objeto="" link_objeto="" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body confirm-delete">
+            Deseja realmente remover o item?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancela</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteButtonModal">Remove</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<script>
+    <script>
 
-    function removeItem(id_objeto, link_objeto) {
+        function removeItem(id_objeto, link_objeto) {
 
-        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto", id_objeto)
-        $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto", link_objeto)
+            $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto", id_objeto)
+            $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto", link_objeto)
 
-        $('.modal-delete-item').modal('show');
+            $('.modal-delete-item').modal('show');
 
-    }
+        }
 
-    $(document).on('click', '#confirmDeleteButtonModal', function () {
-        id_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto")
-        link_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto")
+        $(document).on('click', '#confirmDeleteButtonModal', function () {
+            id_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("id_objeto")
+            link_objeto = $("#confirmDeleteButtonModal").closest(".modal-delete-item").attr("link_objeto")
 
 
-        window.location.href = link_objeto;
-    });
-</script>
+            window.location.href = link_objeto;
+        });
+    </script>
 {% endblock %}

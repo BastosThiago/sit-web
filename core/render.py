@@ -4,8 +4,10 @@ from django.template.loader import get_template
 import xhtml2pdf.pisa as pisa
 
 
-
 def render_to_pdf(template_src, context_dict={}):
+    """
+    Função para criar um arquivo PDF a partir de um template HTML fornecido
+    """
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()

@@ -14,19 +14,32 @@ from sistema_treinamentos.settings \
 
 from gdstorage.storage import GoogleDriveStorage
 
-# Define Google Drive Storage
+# Define Google Drive Storage para armzenamento de arquivos de media
 gd_storage = GoogleDriveStorage()
 
 class Categoria(models.Model):
     """
-        Modelo de Categorias para um curso
+        Modelo de Categorias de um curso
     """
     objects = CategoriaManager()
 
-    titulo = models.CharField(max_length=40, verbose_name=u"título")
+    titulo = models.CharField(
+        max_length=40,
+        verbose_name=u"título",
+        help_text=u"Indique o título da categoria"
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Categoria"
@@ -46,17 +59,69 @@ class Curso(models.Model):
     """
     objects = CursoManager()
 
-    titulo = models.CharField(unique=True, max_length=70, verbose_name=u"título")
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    nome_instrutor = models.CharField(null=True, verbose_name=u"Nome do instrutor", blank=True, max_length=50)
-    palavras_chaves = models.CharField(max_length=150, null=True, blank=True)
-    descricao = models.TextField(max_length=250, verbose_name=u"descrição", null=True, blank=True)
-    publicado = models.BooleanField(default=False)
-    data_publicado = models.DateTimeField(null=True, blank=True)
+    titulo = models.CharField(
+        unique=True,
+        max_length=70,
+        verbose_name=u"título",
+        help_text=u"Indique o título do curso"
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.CASCADE,
+        help_text=u"Selecione a categoria do curso"
+    )
+
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    nome_instrutor = models.CharField(
+        null=True,
+        verbose_name=u"Nome do instrutor",
+        help_text=u"Indique o nome do instrutor do curso",
+        blank=True,
+        max_length=50
+    )
+
+    palavras_chaves = models.CharField(
+        max_length=150,
+        verbose_name=u"Palavras-chave",
+        help_text=u"Indique palavras-chave para o curso",
+        null=True,
+        blank=True
+    )
+
+    descricao = models.TextField(
+        max_length=250,
+        verbose_name=u"descrição",
+        help_text=u"Indique uma descrição para o curso",
+        null=True,
+        blank=True
+    )
+
+    publicado = models.BooleanField(
+        default=False,
+        help_text=u"Indique o status de publicação do curso no sistema",
+    )
+
+    data_publicado = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Curso"
@@ -64,7 +129,8 @@ class Curso(models.Model):
 
     class CustomMeta:
         ordering_field = 'titulo'
-        search_fields = ['titulo', 'categoria__titulo', 'usuario__first_name', 'nome_instrutor', 'palavras_chaves', 'descricao']
+        search_fields = ['titulo', 'categoria__titulo', 'usuario__first_name',
+                         'nome_instrutor', 'palavras_chaves', 'descricao']
 
     def __str__(self):
         return self.titulo
@@ -90,18 +156,14 @@ class Curso(models.Model):
                 Avg('nota')
             )['nota__avg']
 
-        #if (float(nota_media_curso) % 1) >= 0.5:
-        #    nota_media_curso = math.ceil(nota_media_curso)
-        #else:
-        #    nota_media_curso = round(nota_media_curso)
-
         nota_media_curso = float("{0:.1f}".format(nota_media_curso, 1))
 
         return nota_media_curso
 
     def tem_conteudo(self):
         """
-            Método que verifica se um curso tem algum conteúdo(videos, arquivos, ou questionários)
+            Método que verifica se um curso tem algum conteúdo
+            (videos, arquivos, ou questionários)
         """
         unidades = Unidade.objects.filter(curso=self)
 
@@ -115,7 +177,9 @@ class Curso(models.Model):
                 if arquivos.count() > 0:
                     return True
                 else:
-                    questionarios = Questionario.objects.filter(unidade__in=unidades)
+                    questionarios = Questionario.objects.filter(
+                        unidade__in=unidades
+                    )
                     if questionarios.count() > 0:
                         return True
                     else:
@@ -172,48 +236,56 @@ class Curso(models.Model):
 
         return questionarios_curso
 
-
     def obtem_percentual_andamento_por_usuario(self, usuario):
         """
-            Método para obter o percentual de andamento nos conteúdos de um curso
+            Método para obter o percentual de andamento nos conteúdos de um
+            curso por um dado usuário
         """
         try:
             total_videos_curso = self.obtem_videos().count()
             total_arquivos_curso = self.obtem_arquivos().count()
             total_questionarios_curso = self.obtem_questionarios().count()
 
-            total_videos_assistidos = UsuarioVideo.objects.obtem_videos_assistidos_por_usuario(
-                self,
-                usuario
-            ).count()
+            total_videos_assistidos = \
+                UsuarioVideo.objects.obtem_videos_assistidos_por_usuario(
+                    self,
+                    usuario
+                ).count()
 
-            total_arquivos_acessados = UsuarioArquivo.objects.obtem_arquivos_acessados_por_usuario(
-                self,
-                usuario
-            ).count()
+            total_arquivos_acessados = \
+                UsuarioArquivo.objects.obtem_arquivos_acessados_por_usuario(
+                    self,
+                    usuario
+                ).count()
 
-            total_questionarios_respondidos = UsuarioQuestionario.objects.obtem_questionarios_respondidos_por_usuario(
-                self,
-                usuario
-            ).count()
+            total_questionarios_respondidos = \
+                UsuarioQuestionario.objects.\
+                obtem_questionarios_respondidos_por_usuario(
+                    self,
+                    usuario
+                ).count()
 
             total_conteudo = 0
             total_conteudo_realizado = 0
 
             if PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_VIDEOS:
                 total_conteudo = total_conteudo + total_videos_curso
-                total_conteudo_realizado = total_conteudo_realizado + total_videos_assistidos
+                total_conteudo_realizado = \
+                    total_conteudo_realizado + total_videos_assistidos
 
             if PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_ARQUIVOS:
                 total_conteudo = total_conteudo + total_arquivos_curso
-                total_conteudo_realizado = total_conteudo_realizado + total_arquivos_acessados
+                total_conteudo_realizado = \
+                    total_conteudo_realizado + total_arquivos_acessados
 
             if PERCENTUAL_ANDAMENTO_CURSO_CONSIDERA_QUESTIONARIOS:
                 total_conteudo = total_conteudo + total_questionarios_curso
-                total_conteudo_realizado = total_conteudo_realizado + total_questionarios_respondidos
+                total_conteudo_realizado = \
+                    total_conteudo_realizado + total_questionarios_respondidos
 
             if total_conteudo > 0:
-                percentual_andamento = (total_conteudo_realizado / total_conteudo) * 100
+                percentual_andamento = \
+                    (total_conteudo_realizado / total_conteudo) * 100
             else:
                 percentual_andamento = 0
 
@@ -223,15 +295,20 @@ class Curso(models.Model):
 
     def obtem_percentual_acertos_por_usuario(self, usuario):
         """
-            Método para obter o percentual de acertos nos questionários de um curso
+            Método para obter o percentual de acertos nos questionários de um
+            curso por dado usuário
         """
         try:
-            questionarios_respondidos = UsuarioQuestionario.objects.obtem_questionarios_respondidos_por_usuario(
-                self,
-                usuario
-            )
+            questionarios_respondidos = \
+                UsuarioQuestionario.objects.\
+                obtem_questionarios_respondidos_por_usuario(
+                    self,
+                    usuario
+                )
 
-            percentual_acertos = (questionarios_respondidos.aggregate(Avg('percentual_acertos')))['percentual_acertos__avg']
+            percentual_acertos = (
+                questionarios_respondidos.aggregate(Avg('percentual_acertos'))
+            )['percentual_acertos__avg']
 
             if percentual_acertos is None:
                 percentual_acertos = 0
@@ -258,19 +335,69 @@ class Inscricao(models.Model):
         ('APROVADO', 'APROVADO'),
         ('REPROVADO', 'REPROVADO'),
     ]
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    percentual_andamento = models.DecimalField(max_digits=10, decimal_places=1, default=0)
-    percentual_acertos = models.DecimalField(max_digits=10, decimal_places=1, default=0)
-    situacao = models.CharField(max_length=12, choices=SITUACOES, default='EM ANDAMENTO')
-    obteve_certificado = models.BooleanField(default=False)
-    data_inscricao = models.DateTimeField(auto_now_add=True)
-    data_conclusao = models.DateTimeField(null=True, blank=True)
-    ultimo_conteudo_acessado = models.CharField(max_length=50, null=True, blank=True)
-    data_ultimo_conteudo_acessado = models.DateTimeField(null=True, blank=True)
+    curso = models.ForeignKey(
+        Curso,
+        on_delete=models.CASCADE,
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    )
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    percentual_andamento = models.DecimalField(
+        max_digits=10,
+        decimal_places=1,
+        default=0
+    )
+
+    percentual_acertos = models.DecimalField(
+        max_digits=10,
+        decimal_places=1,
+        default=0
+    )
+
+    situacao = models.CharField(
+        max_length=12,
+        choices=SITUACOES,
+        default='EM ANDAMENTO'
+    )
+
+    obteve_certificado = models.BooleanField(
+        default=False
+    )
+
+    data_inscricao = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    data_conclusao = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    ultimo_conteudo_acessado = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True
+    )
+
+    data_ultimo_conteudo_acessado = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"Inscrição do usuário {self.usuario}"
@@ -282,7 +409,8 @@ class Inscricao(models.Model):
 
     class CustomMeta:
         ordering_field = 'data_inscricao'
-        search_fields = ['curso__titulo', 'usuario__email', 'usuario__first_name', 'data_inscricao', 'situacao']
+        search_fields = ['curso__titulo', 'usuario__email',
+                         'usuario__first_name', 'data_inscricao', 'situacao']
 
 
 class Avaliacao(models.Model):
@@ -298,27 +426,55 @@ class Avaliacao(models.Model):
         (4, '4'),
         (5, '5'),
     ]
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(AUTH_USER_MODEL, verbose_name=u"usuário", on_delete=models.CASCADE)
-    nota = models.IntegerField(choices=NOTAS)
-    comentario = models.TextField(max_length=300, verbose_name=u"comentário", null=True, blank=True)
-    data_avaliacao = models.DateTimeField(auto_now_add=True)
+    curso = models.ForeignKey(
+        Curso,
+        on_delete=models.CASCADE
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        verbose_name=u"usuário",
+        on_delete=models.CASCADE
+    )
+
+    nota = models.IntegerField(choices=NOTAS)
+
+    comentario = models.TextField(
+        max_length=300,
+        verbose_name=u"comentário",
+        null=True,
+        blank=True
+    )
+
+    data_avaliacao = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Avaliação"
         verbose_name_plural = "Avaliações"
         unique_together = (('curso', 'usuario'),)
 
-
     def __str__(self):
         return f"Avaliação do usuário {self.usuario}"
 
     class CustomMeta:
         ordering_field = 'data_avaliacao'
-        search_fields = ['curso__titulo', 'usuario__email', 'usuario__first_name', 'nota', 'comentario', 'data_avaliacao']
+        search_fields = ['curso__titulo', 'usuario__email',
+                         'usuario__first_name', 'nota', 'comentario',
+                         'data_avaliacao']
 
 
 class Unidade(models.Model):
@@ -327,13 +483,45 @@ class Unidade(models.Model):
     """
     objects = UnidadeManager()
 
-    titulo = models.CharField(max_length=70, verbose_name=u"título")
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    descricao = models.TextField(max_length=250, verbose_name=u"descrição", blank=True, null=True, default=None)
-    ordem = OrderField(blank=True, for_fields=['curso'])
+    titulo = models.CharField(
+        max_length=70,
+        verbose_name=u"título",
+        help_text=u"Indique um título para a unidade",
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    curso = models.ForeignKey(
+        Curso,
+        on_delete=models.CASCADE,
+        help_text=u"Selecione o curso da unidade",
+    )
+
+    descricao = models.TextField(
+        max_length=250,
+        verbose_name=u"descrição",
+        help_text=u"Indique uma descrição para a unidade",
+        blank=True,
+        null=True,
+        default=None
+    )
+
+    ordem = OrderField(
+        blank=True,
+        help_text=u"Indique a ordem de apresentação da unidade no curso "
+                  u"(em branco = próxima ordem disponível)",
+        for_fields=['curso']
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Unidade"
@@ -355,16 +543,60 @@ class Video(models.Model):
     """
     objects = VideoManager()
 
-    titulo = models.CharField(max_length=70, verbose_name=u"título")
-    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    video_interno = models.BooleanField(default=False)
-    url = models.URLField(max_length=200, null=True, blank=True)
-    caminho = models.FileField(upload_to='videos', storage=gd_storage, null=True, blank=True, default=None)
-    arquivo_media_url = models.CharField(max_length=250, null=True, blank=True)
-    ordem = OrderField(blank=True, for_fields=['unidade'])
+    titulo = models.CharField(
+        max_length=70,
+        verbose_name=u"título",
+        help_text=u"Indique um título para o vídeo",
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    unidade = models.ForeignKey(
+        Unidade,
+        on_delete=models.CASCADE,
+        help_text=u"Selecione uma unidade a ser associada a este vídeo",
+    )
+
+    video_interno = models.BooleanField(default=False)
+
+    url = models.URLField(
+        max_length=200,
+        help_text=u"Indique um link de incorporação para o vídeo",
+        null=True,
+        blank=True
+    )
+
+    caminho = models.FileField(
+        upload_to='videos',
+        storage=gd_storage,
+        help_text=u"Selecione um arquivo de vídeo a ser associado a este vídeo",
+        null=True,
+        blank=True,
+        default=None
+    )
+
+    arquivo_media_url = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True
+    )
+
+    ordem = OrderField(
+        blank=True,
+        help_text=u"Indique a ordem de apresentação do vídeo na unidade "
+                  u"(em branco = próxima ordem disponível)",
+        for_fields=['unidade']
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Vídeo"
@@ -386,14 +618,46 @@ class Arquivo(models.Model):
     """
     objects = ArquivoManager()
 
-    titulo = models.CharField(max_length=70, verbose_name=u"título")
-    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    caminho = models.FileField(upload_to='arquivos', storage=gd_storage)
-    arquivo_media_url = models.CharField(max_length=250, null=True, blank=True)
-    ordem = OrderField(blank=True, for_fields=['unidade'])
+    titulo = models.CharField(
+        max_length=70,
+        verbose_name=u"título"
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    unidade = models.ForeignKey(
+        Unidade, on_delete=models.CASCADE,
+        help_text=u"Selecione uma unidade a ser associada a este arquivo",
+    )
+
+    caminho = models.FileField(
+        upload_to='arquivos',
+        storage=gd_storage,
+        help_text=u"Selecione um arquivo a ser associado a este registro",
+    )
+
+    arquivo_media_url = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True
+    )
+
+    ordem = OrderField(
+        blank=True,
+        help_text=u"Indique a ordem de apresentação do arquivo na unidade "
+                  u"(em branco = próxima ordem disponível)",
+        for_fields=['unidade']
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Arquivo"
@@ -415,16 +679,43 @@ class UsuarioVideo(models.Model):
     """
     objects = UsuarioVideoManager()
 
-    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    acessado = models.BooleanField(default=True)
-    data_acesso = models.DateTimeField(auto_now=True)
-    tempo_corrente = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-    assistido = models.BooleanField(default=False)
-    data_assistido = models.DateTimeField(null=True, blank=True)
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    video = models.ForeignKey(
+        Video, on_delete=models.CASCADE
+    )
+
+    acessado = models.BooleanField(default=True)
+
+    data_acesso = models.DateTimeField(auto_now=True)
+
+    tempo_corrente = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        default=0
+    )
+
+    assistido = models.BooleanField(default=False)
+
+    data_assistido = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Vídeos"
@@ -440,13 +731,31 @@ class UsuarioArquivo(models.Model):
     """
     objects = UsuarioArquivoManager()
 
-    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    arquivo = models.ForeignKey(Arquivo, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    arquivo = models.ForeignKey(
+        Arquivo,
+        on_delete=models.CASCADE
+    )
+
     acessado = models.BooleanField(default=False)
+
     data_acesso = models.DateTimeField(auto_now=True)
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Arquivos"
@@ -462,12 +771,35 @@ class Questionario(models.Model):
     """
     objects = QuestionarioManager()
 
-    titulo = models.CharField(max_length=70, verbose_name=u"título")
-    unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
-    ordem = OrderField(blank=True, for_fields=['unidade'])
+    titulo = models.CharField(
+        max_length=70,
+        verbose_name=u"título",
+        help_text=u"Indique um título para o questionário",
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    unidade = models.ForeignKey(
+        Unidade, on_delete=models.CASCADE,
+        help_text=u"Selecione uma unidade a ser associada a este questionário",
+    )
+
+    ordem = OrderField(
+        blank=True,
+        help_text=u"Indique a ordem de apresentação do quetionário na unidade "
+                  u"(em branco = próxima ordem disponível)",
+        for_fields=['unidade']
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Questionário"
@@ -489,14 +821,37 @@ class UsuarioQuestionario(models.Model):
     """
     objects = UsuarioQuestionarioManager()
 
-    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
-    percentual_acertos = models.DecimalField(max_digits=10, default=0, decimal_places=1)
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    questionario = models.ForeignKey(
+        Questionario,
+        on_delete=models.CASCADE
+    )
+
+    percentual_acertos = models.DecimalField(
+        max_digits=10,
+        default=0,
+        decimal_places=1
+    )
+
     respondido = models.BooleanField(default=False)
+
     data_execucao = models.DateTimeField(auto_now=True)
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name_plural = "Registros Usuários - Questionarios"
@@ -512,12 +867,36 @@ class Questao(models.Model):
     """
     objects = QuestaoManager()
 
-    questionario = models.ForeignKey(Questionario, verbose_name=u"questionário", on_delete=models.CASCADE)
-    enunciado = models.TextField(max_length=300)
-    ordem = OrderField(blank=True, for_fields=['questionario'])
+    questionario = models.ForeignKey(
+        Questionario,
+        verbose_name=u"questionário",
+        help_text=u"Selecione um questionário a ser associado a esta questão",
+        on_delete=models.CASCADE
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    enunciado = models.TextField(
+        max_length=300,
+        help_text=u"Indique um enunciado(pergunta) para a questão",
+    )
+
+    ordem = OrderField(
+        blank=True,
+        help_text=u"Indique a ordem de apresentação da questão no questionário "
+                  u"(em branco = próxima ordem disponível)",
+        for_fields=['questionario']
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Questão"
@@ -539,13 +918,39 @@ class Alternativa(models.Model):
     """
     objects = AlternativaManager()
 
-    questao = models.ForeignKey(Questao, verbose_name=u"questão", on_delete=models.CASCADE)
-    descricao = models.TextField(max_length=350, verbose_name=u"descrição")
-    ordem = OrderField(blank=True, for_fields=['questao'])
+    questao = models.ForeignKey(
+        Questao,
+        verbose_name=u"questão",
+        on_delete=models.CASCADE,
+        help_text=u"Selecione uma questão a ser associada esta alternativa",
+    )
+
+    descricao = models.TextField(
+        max_length=350,
+        verbose_name=u"descrição",
+        help_text=u"Indique uma descrição(resposta) para a alternativa",
+    )
+
+    ordem = OrderField(
+        blank=True,
+        help_text=u"Indique a ordem de apresentação da alternativa na questão"
+                  u"(em branco = próxima ordem disponível)",
+        for_fields=['questao']
+    )
+
     correta = models.BooleanField()
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Alternativa"
@@ -565,12 +970,34 @@ class UsuarioResposta(models.Model):
     """
         Modelo associado as respostas dos usuários para as questões
     """
-    usuario = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
-    alternativa = models.ForeignKey(Alternativa, null=True, blank=True, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
-    data_criacao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    data_atualizacao = models.DateTimeField(auto_now=True, null=True, blank=True)
+    questao = models.ForeignKey(
+        Questao,
+        on_delete=models.CASCADE
+    )
+
+    alternativa = models.ForeignKey(
+        Alternativa,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True
+    )
+
+    data_atualizacao = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.usuario} - {self.questao} - {self.alternativa}"

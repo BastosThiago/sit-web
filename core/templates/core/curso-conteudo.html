@@ -206,7 +206,7 @@
                     <div class="tab-content-body">
                         {% if perfil_aluno == True %}
                         <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03);">
-                            <h5 class="text-center"><i class="fas fa-clock class-icone-content"></i>Último acesso em: <b>{{ data_ultimo_acesso|date:"d/m/Y h:m:s" }}</b></h5>
+                            <h5 class="text-center"><i class="fas fa-clock class-icone-content"></i>Último acesso em: <b>{{ data_ultimo_acesso|date:"d/m/Y H:m:s" }}</b></h5>
 
                             {% if curso_objeto_ultimo_conteudo != None %}
 
@@ -254,7 +254,7 @@
                                 </div>
                             </div>
                             <hr/>
-                            <h5 class="text-center"><i class="fas fa-play class-icone-content"></i>Iniciado em: <b>{{ data_inicio|date:"d/m/Y h:m:s" }}</b></h5>
+                            <h5 class="text-center"><i class="fas fa-play class-icone-content"></i>Iniciado em: <b>{{ data_inicio|date:"d/m/Y H:m:s" }}</b></h5>
                             <hr/>
                                 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
 
@@ -545,7 +545,7 @@
                     <div class="tab-content-body">
                       <hr/>
                       <p> Para obter o certificado de participação do curso, é necessário ter assistido a todos os vídeos disponibilizados nas unidades
-                      e também ter um percentual de acerto de do mínimo 70% nos questionários propostos.</p>
+                      e também ter um percentual de acertos de do mínimo 70% nos questionários propostos.</p>
                       <hr/>
 
                       {% if situacao_aluno_curso == "APROVADO" %}

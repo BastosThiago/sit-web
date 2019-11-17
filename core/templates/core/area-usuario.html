@@ -15,90 +15,90 @@
 {% block content_page %}
 
 
-        <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0; margin-left: 0px; margin-right: 0px;">
-            <h2 class="text-center" style="margin-top: 10px;">Área do aluno</h2>
-        </div>
+    <div class="alert alert-secondary" role="alert" style="background-color: rgba(0,0,0,.03); padding: 0; margin-left: 0px; margin-right: 0px;">
+        <h2 class="text-center" style="margin-top: 10px;">Área do aluno</h2>
+    </div>
 
-        <div style="margin: 0px">
+    <div style="margin: 0px">
 
-            <div class="row">
-                {% if dict_ultimo_conteudo.objeto_ultimo_conteudo != None %}
-                <div class="col-sm-4" style="margin-bottom: 20px;">
-                    <div class="card card-curso h-100 ">
+        <div class="row">
+            {% if dict_ultimo_conteudo.objeto_ultimo_conteudo != None %}
+            <div class="col-sm-4" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100 ">
 
-                        <div class="card-header">
-                            <h5 class="text-center" style="margin: 0; padding: 0;">Último conteúdo acessado</h5>
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Último conteúdo acessado</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="col text-center">
+                            <p class="col text-center">{{ dict_ultimo_conteudo.curso_titulo }}</p>
+                            <i class="fab fa-contao " style="font-size: 6em; color: #007bff;"></i>
                         </div>
-
-                        <div class="card-body">
-
+                        <p>
                             <div class="col text-center">
-                                <p class="col text-center">{{ dict_ultimo_conteudo.curso_titulo }}</p>
-                                <i class="fab fa-contao " style="font-size: 6em; color: #007bff;"></i>
+                                <a href="/{{ dict_ultimo_conteudo.url }}" class="btn btn-primary" role="button" title="Clique aqui para continuar no último conteúdo que parou">
+                                    <i class="fas fa-angle-double-right class-icone-button"></i>
+                                        Continuar
+                                </a>
                             </div>
-                            <p>
-                                <div class="col text-center">
-                                    <a href="/{{ dict_ultimo_conteudo.url }}" class="btn btn-primary" role="button" title="Clique aqui para continuar no último conteúdo que parou">
-                                        <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Continuar
-                                    </a>
-                                </div>
-                            </p>
-                        </div>
+                        </p>
                     </div>
                 </div>
-                {% endif %}
+            </div>
+            {% endif %}
 
-                <div class="col-sm-4" style="margin-bottom: 20px;">
-                    <div class="card card-curso h-100 ">
+            <div class="col-sm-4" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100 ">
 
-                        <div class="card-header">
-                            <h5 class="text-center" style="margin: 0; padding: 0;">Meus cursos</h5>
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Meus cursos</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="col text-center">
+                            <p class="card-text text-center">Cursos em que estou inscrito</p>
+                            <i class="fas fa-graduation-cap" style="font-size: 6em; color: #007bff;"></i>
                         </div>
-
-                        <div class="card-body">
-
+                        <p>
                             <div class="col text-center">
-                                <p class="card-text text-center">Cursos em que estou inscrito</p>
-                                <i class="fas fa-graduation-cap" style="font-size: 6em; color: #007bff;"></i>
+                                <a href="/meus-cursos/" class="btn btn-primary" role="button" title="Acessa lista de cursoss em quem você está inscrito">
+                                    <i class="fas fa-angle-double-right class-icone-button"></i>
+                                        Acessar
+                                </a>
                             </div>
-                            <p>
-                                <div class="col text-center">
-                                    <a href="/meus-cursos/" class="btn btn-primary" role="button" title="Acessa lista de cursoss em quem você está inscrito">
-                                        <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Acessar
-                                    </a>
-                                </div>
-                            </p>
-                        </div>
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-sm-4" style="margin-bottom: 20px;">
-                    <div class="card card-curso h-100 ">
+            <div class="col-sm-4" style="margin-bottom: 20px;">
+                <div class="card card-curso h-100 ">
 
-                        <div class="card-header">
-                            <h5 class="text-center" style="margin: 0; padding: 0;">Relatórios</h5>
+                    <div class="card-header">
+                        <h5 class="text-center" style="margin: 0; padding: 0;">Relatórios</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="col text-center">
+                            <p class="card-text text-center">Acompanhamento dos meus cursos</p>
+                            <i class="fas fa-chart-line" style="font-size: 6em; color: #007bff;"></i>
                         </div>
-
-                        <div class="card-body">
-
+                        <p>
                             <div class="col text-center">
-                                <p class="card-text text-center">Acompanhamento dos meus cursos</p>
-                                <i class="fas fa-chart-line" style="font-size: 6em; color: #007bff;"></i>
+                                <a href="/relatorio-acompanhamento/" class="btn btn-primary" role="button" title="Acessa página de relatórios de acompanhamento">
+                                    <i class="fas fa-angle-double-right class-icone-button"></i>
+                                        Acessar
+                                </a>
                             </div>
-                            <p>
-                                <div class="col text-center">
-                                    <a href="/relatorio-acompanhamento/" class="btn btn-primary" role="button" title="Acessa página de relatórios de acompanhamento">
-                                        <i class="fas fa-angle-double-right class-icone-button"></i>
-                                            Acessar
-                                    </a>
-                                </div>
-                            </p>
-                        </div>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
 {% endblock %}
