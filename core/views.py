@@ -1054,7 +1054,18 @@ def removeInscricaoCursoView(request, id):
                     usuario=request.user
                 )
 
+                # Realiza uma transação atômica para eliminação dos registros
+                # do usuário nos conteúdos do curso
                 with transaction.atomic():
+
+                    avaliacao_usuario_curso = Avaliacao.objects.filter(
+                        curso=curso,
+                        usuario=request.user
+                    )
+
+                    if avaliacao_usuario_curso.count() == 1:
+                        avaliacao_usuario_curso[0].delete()
+
                     usuario_videos_curso = UsuarioVideo.objects.filter(
                         usuario=request.user,
                         video__unidade__curso=curso
